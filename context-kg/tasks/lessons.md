@@ -35,3 +35,9 @@
 - 用户纠正：顶部 GitHub 入口左侧不应使用 `GitFork` 分叉图标，应使用 GitHub mark。
 - 后续规则：第三方品牌入口不能用语义相近的通用图标替代；图标库缺失时，使用准确的品牌 mark SVG，而不是退而使用 lucide 近似图标。
 - 设计落实：`SiteHeader` 内 GitHub 入口使用 `GitHubMark` SVG 组件。
+
+## GitHub Pages 404 要核对部署模式
+
+- 用户纠正：Pages 预览页面报 404，说明不能只以 workflow success 或 Pages status=built 作为上线完成。
+- 后续规则：GitHub Pages 从 legacy source 切换到 Actions workflow 时，必须确认 `build_type=workflow` 后重新触发一次部署，并用公网 URL 的 HTTP 状态码验证首页、子路径和关键静态资源。
+- 设计落实：`lattice-hub/lattice-hub.github.io` 已切换为 workflow 部署；重新跑 `deploy-pages.yml` 后验证 `/`、`/docs/`、`/lattice-hub-logo.png` 均返回 200。

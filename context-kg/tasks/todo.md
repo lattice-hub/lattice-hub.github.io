@@ -14,6 +14,7 @@
 - [x] 将全站 GitHub 入口改为 `https://github.com/lattice-hub`。
 - [x] 增加 GitHub Pages 静态部署配置，支持 Next/Fumadocs 静态导出到 `out/`。
 - [x] 验证普通构建与 Pages 静态导出都能通过，并检查导出 HTML 的 basePath、logo 与 GitHub 链接。
+- [x] 创建并配置 `lattice-hub/lattice-hub.github.io` 仓库，切换 GitHub Pages 到 workflow 部署并处理线上 404。
 
 ## 已完成计划
 
@@ -64,3 +65,4 @@
 - 本轮修复 sticky 根因：`.site-shell { overflow-x: hidden }` 会让 sticky 绑定到错误滚动容器，改为 `overflow-x: clip` 后滚动时 `.topnav` 保持 `top: 0`。已验证桌面 topnav 高 59px、CTA 高 32px 且蓝色直角；390px 移动端汉堡显示、抽屉展开后 `aria-expanded=true`、6 个链接可见；桌面/移动均无横向溢出；`npm test`、`npm run lint`、`npm run build` 均通过。
 - 根据用户要求将 GitHub 入口切换到 `https://github.com/lattice-hub`，并同步组件页 action 与测试断言；新增 `.github/workflows/deploy-pages.yml`，workflow 在 GitHub Actions 中运行 test/lint 后用 `NEXT_OUTPUT=export` 静态导出并部署 Pages。
 - Pages 构建兼容性：`next.config.mjs` 仅在 `NEXT_OUTPUT=export` 时启用 `output: 'export'`、`trailingSlash` 与 `images.unoptimized`；workflow 根据仓库名写入 `NEXT_PUBLIC_BASE_PATH`，项目型 Pages 自动使用 `/<repo>`，`lattice-hub.github.io` 根站点则使用空 base path。已验证 `NEXT_OUTPUT=export NEXT_PUBLIC_BASE_PATH=/website npm run build` 通过，`out/` 包含首页、docs、components 和 logo，导出 HTML 中 `_next`、内部链接和 logo 均带 `/website` 前缀。
+- 已通过 `gh` 创建并推送 `lattice-hub/lattice-hub.github.io`，Pages URL 为 `https://lattice-hub.github.io/`。初次页面 404 的根因为 Pages 仍处于 legacy/root 构建路径，已用 GitHub API 切换为 `build_type=workflow` 并重新触发 `deploy-pages.yml`；新 run `28539821573` 成功后，`curl -I https://lattice-hub.github.io/`、`/docs/` 与 `/lattice-hub-logo.png` 均返回 200。
