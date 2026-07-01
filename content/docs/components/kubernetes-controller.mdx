@@ -1,0 +1,30 @@
+---
+title: Kubernetes Controller
+description: 打通 Kubernetes Service 同步与 Sidecar 自动注入。
+---
+
+Kubernetes Controller 用于把 Kubernetes 生态接入 Lattice Hub。它提供两个核心方向：K8s Service 同步到服务治理控制面，以及 Sidecar 自动注入。
+
+## Service 同步模式
+
+- `all`：全量同步，将 K8s Service 全部同步到服务治理控制面。
+- `demand`：按需同步，默认不同步，需要在 Namespace 或 Service 上添加 annotation。
+
+## 常用 annotation
+
+| 注解 | 说明 |
+| --- | --- |
+| `polarismesh.cn/sync` | 是否同步服务，`true` 同步，`false` 不同步 |
+| `polarismesh.cn/aliasService` | 同步时创建的服务别名 |
+| `polarismesh.cn/aliasNamespace` | 服务别名所在命名空间 |
+
+## Sidecar 注入
+
+Controller 支持给应用 Pod 自动注入 sidecar。现有文档记录了两种模式：
+
+- `dns`：通过拦截 DNS 请求实现服务发现和治理。
+- `mesh`：注入 sidecar 和 Envoy，通过劫持流量实现低侵入服务治理。
+
+## 推荐阅读
+
+- [Kubernetes Service 到 Lattice Hub 的同步模型](../blog/kubernetes-service-sync)

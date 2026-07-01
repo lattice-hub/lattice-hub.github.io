@@ -1,0 +1,27 @@
+---
+title: Control Plane
+description: Lattice Hub 的核心控制面，承载服务发现、配置中心、治理规则和 AI Native Registry。
+---
+
+Control Plane 是 Lattice Hub 的核心组件。它基于服务治理控制面的职责组织 API、业务逻辑、缓存和存储，向外提供 HTTP、gRPC、xDS、Nacos、Apollo、Eureka 等多协议入口。
+
+## 关键职责
+
+- 服务发现：管理命名空间、服务、实例和健康状态。
+- 配置中心：支持配置发布、灰度、回滚、SSE 或长轮询监听。
+- 治理规则：承载路由、限流、熔断、故障探测、泳道、无损上下线等规则。
+- AI Native：支持 MCP Registry，并规划更完整的 MCP Registry API 与 A2A Agent Registry。
+- 权限控制：资源支持细粒度鉴权，对标云厂商 CAM/RAM 类型能力。
+
+## 已确认工程事实
+
+- 技术栈包括 Go、`go-restful/v3`、gRPC、MySQL、`envoyproxy/go-control-plane`、`mark3labs/mcp-go`、OpenTelemetry 与 bbolt。
+- 控制面按 API 服务层、业务逻辑层、缓存层、存储层组织。
+- 缓存层记录包含 19 类缓存，后台每 1 秒增量刷新。
+- 增量查询窗口使用 `lastMtime - 5s` 规避时钟偏差。
+
+## 适合继续深入的原理
+
+- [四层控制面架构](../principles/architecture)
+- [增量缓存与事件流](../principles/cache-eventhub)
+- [鉴权链与多协议映射](../principles/auth-protocols)

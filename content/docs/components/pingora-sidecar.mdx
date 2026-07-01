@@ -1,0 +1,27 @@
+---
+title: Pingora Sidecar
+description: 基于 Pingora 的轻量 sidecar 数据面骨架。
+---
+
+Pingora Sidecar 是 Lattice Hub 的轻量数据面方向。它使用 TOML 配置，当前支持 HTTP 与 gRPC 转发，并保留治理拦截器扩展点。
+
+## 当前能力
+
+- 入站：HTTP/1.1 与 HTTP/2，支持 gRPC-h2c。
+- 出站：按 HTTP 路由前缀或 gRPC 前缀选择上游集群。
+- 负载均衡：简单轮询。
+- 拦截器骨架：请求阶段与上游阶段的回调占位，可扩展 ACL、限流、熔断和指标。
+
+## 配置要点
+
+- 路由匹配顺序：先匹配 `grpc_prefix`，再匹配 `prefix`。
+- gRPC 识别：HTTP/2 且 `content-type` 以 `application/grpc` 开头。
+- Rust 工具链要求：`1.74+`。
+
+## 后续演进
+
+文档中的设计建议包括访问控制、限流、熔断、动态路由和 Prometheus 指标暴露。
+
+## 推荐阅读
+
+- [Pingora Sidecar 的轻量数据面路线](../blog/pingora-sidecar)

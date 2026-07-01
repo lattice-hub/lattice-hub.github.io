@@ -1,0 +1,18 @@
+---
+title: Kubernetes Service 到 Lattice Hub 的同步模型
+description: 全量同步、按需同步、annotation 与服务别名的使用场景。
+---
+
+Kubernetes Controller 让 Lattice Hub 可以接入 K8s 生态。核心问题是：哪些 Service 应该同步，如何映射命名空间和服务名，以及如何处理多集群。
+
+## 全量同步
+
+`all` 模式适合希望把集群中的 Service 全部纳入服务治理控制面的场景。它部署简单，但需要更谨慎地处理命名空间、噪声服务和权限边界。
+
+## 按需同步
+
+`demand` 模式默认不同步，需要通过 Namespace 或 Service annotation 显式开启，更适合渐进接入。
+
+## 服务别名
+
+`polarismesh.cn/aliasService` 与 `polarismesh.cn/aliasNamespace` 可以在同步时创建服务别名，适合兼容历史命名或跨团队访问习惯。

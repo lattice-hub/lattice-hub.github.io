@@ -1,0 +1,10 @@
+.superpowers/
+node_modules/
+.next/
+.next-dev.*
+.source/
+out/
+dist/
+.env*
+!.env.example
+.DS_Store

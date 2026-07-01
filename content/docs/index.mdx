@@ -1,0 +1,27 @@
+---
+title: Lattice Hub 文档按 fumadocs 目录组织
+description: 产品能力、架构原理、治理规则、组件生态、博客和报告都在文档体系中展开。
+---
+
+Lattice Hub 文档不是营销页集合，而是围绕 fumadocs 目录组织的产品知识库。产品能力、架构原理、治理规则、组件说明、博客与报告都在这里展开。
+
+## 目录树
+
+- 概览：产品主张、能力地图与阅读路径。
+- Principles：架构原理、增量缓存与事件流、治理规则发布、鉴权链与多协议映射。
+- Components：Control Plane、Console、Rust SDK、Kubernetes Controller、Pingora Sidecar、Specification。
+- Blog：MCP/A2A Registry、Kubernetes Service 同步、Pingora Sidecar、配置灰度与长轮询。
+- Reports：性能数据报告与待实测口径。
+
+## 能力地图
+
+| 分区 | 入口 | 说明 |
+| --- | --- | --- |
+| Principles | [架构原理](./principles/architecture) | 控制面分层、缓存、事件、治理发布和鉴权链。 |
+| Components | [组件文档](./components/control-plane) | 控制面、控制台、SDK、Controller、Sidecar 和标准协议。 |
+| Blog | [最佳实践](./blog) | 真实场景中的接入、同步、发布和数据面实践。 |
+| Reports | [报告](./reports) | 已确认配置事实、观测口径和待实测计划。 |
+
+## 首版边界
+
+首版只写已经能从组件 README、context-kg 和设计文档确认的事实。缺少压测数据时，文档明确标注待实测指标，不用猜测数字填充报告。

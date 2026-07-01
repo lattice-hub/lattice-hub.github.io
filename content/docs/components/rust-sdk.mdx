@@ -1,0 +1,28 @@
+---
+title: Rust SDK
+description: Proxyless Service Governance 的 Rust 接入方式。
+---
+
+Rust SDK 用于在不依赖数据面代理的情况下接入服务治理能力，适合需要 Proxyless Service Governance 的 Rust 应用。
+
+## 安装
+
+```toml
+[dependencies]
+pole_rust = "0.2.0"
+```
+
+## 环境要求
+
+- Rust 版本要求：`>= 1.63.0`。
+- 现有 README 中建议通过 `cargo bench` 自行运行 benchmark。
+
+## 文档边界
+
+当前同级 README 的 Quickstart 代码片段仍为空。首版官网只写安装方式、定位和测试方向，不补造不存在的 SDK 示例。
+
+## 后续可补充
+
+- 服务注册发现最小示例。
+- 配置监听示例。
+- 治理规则 e2e 验证流程。
