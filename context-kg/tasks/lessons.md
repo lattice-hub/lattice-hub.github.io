@@ -65,3 +65,9 @@
 - 用户纠正：Fumadocs 文档 light/dark 模式文字显示有问题，且文档格式和 Fumadocs 默认质感差距明显。
 - 后续规则：首页视觉 token 只能作用在首页容器内，不能在 `:root` 覆盖 Fumadocs 使用的 `--radius-*`、背景、前景等全局变量；文档图片、表格和 prose 样式不要用裸 `article` 选择器全站覆盖。
 - 设计落实：把 Lattice Hub 首页变量收敛到 `.site-shell`，`body` 使用 `--color-fd-background / --color-fd-foreground`，图片补充只限定在 `#nd-docs-layout` 内。
+
+## 文档分区切换应使用 Fumadocs 原生 tabs
+
+- 用户纠正：文档、博客、报告不应该只是左侧目录树里的普通目录，而应该像 Fumadocs 官方示例一样在搜索框下方的分区选择器里切换。
+- 后续规则：多内容分区优先接入 `DocsLayout` 的 `tabs` / sidebar dropdown；当前分区下方只展示该分区的目录树，避免把 blog/reports 混进 docs 普通目录。
+- 设计落实：`src/lib/docs-navigation.tsx` 维护「文档 / 博客 / 报告」tabs，并按当前 slug 过滤 `source.pageTree`。

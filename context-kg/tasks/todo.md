@@ -11,6 +11,12 @@
 
 ## 计划
 
+- [x] 按 Fumadocs 官方布局能力确认左侧分区切换实现方式。
+- [x] 将文档、博客、报告接入 `DocsLayout` 的 `tabs` / sidebar dropdown。
+- [x] 按当前分区过滤左侧目录树，避免博客和报告混在文档目录里。
+- [x] 用测试、lint、build、静态导出和浏览器截图验证分区切换。
+- [ ] 提交、推送并确认 GitHub Pages 部署。
+
 - [x] 定位 Fumadocs 文档 light/dark 文字与格式异常的样式覆盖源。
 - [x] 将官网首页视觉变量和 `article img` 等规则限制在首页作用域，避免污染 docs。
 - [x] 为 Fumadocs 文档补齐 light/dark token 映射，恢复默认文档质感。
@@ -113,3 +119,5 @@
 - 本轮修复将首页视觉 token 收敛到 `.site-shell`，`body` 改回 `--color-fd-background / --color-fd-foreground`，并将文档图片补充规则限定到 `#nd-docs-layout article img`；新增测试防止再次覆盖 Fumadocs 主题变量。
 - 本轮本地验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；Playwright 截图验证 `/docs/reports/performance` light/dark 文字、表格、侧栏均正常，首页首屏未被作用域调整破坏。
 - 本轮部署：提交 `d82e61a fix: isolate fumadocs document theme` 并推送到 `origin/main`；GitHub Actions Pages run `28590223259` 成功；线上 `/docs/reports/performance/` 返回 200，light/dark 截图均显示 Fumadocs 文档文字、表格和侧栏正常。
+- 根据用户指出「文档、博客、报告应该在 Fumadocs 左侧顶部切换」，已确认 `DocsLayout` 原生支持 `tabs` 和 sidebar dropdown；新增 `docs-navigation` 将三个分区作为 tabs 接入，并按当前 slug 过滤左侧目录树。
+- 本轮本地验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；Playwright 截图验证 `/docs` 显示「文档」并只展示产品能力/原理/组件，`/docs/blog` 显示「博客」并只展示博客文章，`/docs/reports/performance` 显示「报告」并只展示报告目录。

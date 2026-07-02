@@ -9,6 +9,7 @@ import {
   principles,
   siteNav,
 } from '../src/lib/site-content';
+import { docsLayoutTabs, getDocsSectionTree } from '../src/lib/docs-navigation';
 import { resolveImageSrc } from '../src/mdx-components';
 
 test('site navigation exposes real site-level destinations', () => {
@@ -102,4 +103,52 @@ test('global styles do not override fumadocs document theming', () => {
   assert.doesNotMatch(globalCss, /body\s*{[^}]*color:\s*var\(--fg\)/, 'body text color should follow Fumadocs');
   assert.doesNotMatch(globalCss, /^article img\s*{/m, 'docs images must not be styled through a global article selector');
   assert.match(globalCss, /\.site-shell\s*{[\s\S]*--bg:/, 'homepage design tokens should be scoped to the homepage shell');
+});
+
+test('docs layout uses fumadocs section switcher for docs blog and reports', () => {
+  assert.deepEqual(
+    docsLayoutTabs.map((tab) => ({ title: tab.title, url: tab.url })),
+    [
+      { title: '文档', url: '/docs' },
+      { title: '博客', url: '/docs/blog' },
+      { title: '报告', url: '/docs/reports' },
+    ],
+  );
+
+  const tree = {
+    name: 'Lattice Hub',
+    children: [
+      { type: 'page', name: '产品能力总览', url: '/docs' },
+      {
+        type: 'folder',
+        name: '原理',
+        children: [{ type: 'page', name: '架构', url: '/docs/principles/architecture' }],
+      },
+      {
+        type: 'folder',
+        name: '博客',
+        index: { type: 'page', name: '博客', url: '/docs/blog' },
+        children: [{ type: 'page', name: '实践', url: '/docs/blog/practice' }],
+      },
+      {
+        type: 'folder',
+        name: '报告',
+        index: { type: 'page', name: '报告', url: '/docs/reports' },
+        children: [{ type: 'page', name: '性能', url: '/docs/reports/performance' }],
+      },
+    ],
+  };
+
+  assert.deepEqual(
+    getDocsSectionTree(tree, ['blog']).children.map((node) => node.name),
+    ['博客', '实践'],
+  );
+  assert.deepEqual(
+    getDocsSectionTree(tree, ['reports', 'performance']).children.map((node) => node.name),
+    ['报告', '性能'],
+  );
+  assert.deepEqual(
+    getDocsSectionTree(tree, ['principles', 'architecture']).children.map((node) => node.name),
+    ['产品能力总览', '原理'],
+  );
 });
