@@ -15,8 +15,8 @@
 - [x] 按真实实现补全 docs/principles 下的原理文档，加入架构图和数据流程图。
 - [x] 更新必要的导航/索引元数据，确保文档模块可发现。
 - [x] 运行测试、lint、build，并抽查生成后的文档内容。
-- [ ] 提交本轮文档与 Mermaid 渲染变更，推送到 `lattice-hub.github.io` 触发 GitHub Pages 部署。
-- [ ] 用 `gh` 检查 GitHub Actions 部署结果，并抽查线上 Principles 页面。
+- [x] 提交本轮文档与 Mermaid 渲染变更，推送到 `lattice-hub.github.io` 触发 GitHub Pages 部署。
+- [x] 用 `gh` 检查 GitHub Actions 部署结果，并抽查线上 Principles 页面。
 
 ## 已完成计划
 
@@ -75,3 +75,4 @@
 - 已通过 `gh` 创建并推送 `lattice-hub/lattice-hub.github.io`，Pages URL 为 `https://lattice-hub.github.io/`。初次页面 404 的根因为 Pages 仍处于 legacy/root 构建路径，已用 GitHub API 切换为 `build_type=workflow` 并重新触发 `deploy-pages.yml`；新 run `28539821573` 成功后，`curl -I https://lattice-hub.github.io/`、`/docs/` 与 `/lattice-hub-logo.png` 均返回 200。
 - 根据 `../pole-control-plane` 真实代码补全原理文档：覆盖启动组件链路、CacheManager/EventHub、治理规则草稿与发布视图、鉴权资源映射、AI Registry、History/DiscoverEvent/Statis/OTel 观测链路；新增 Mermaid 架构图与数据流程图，并接入 Fumadocs Mermaid MDX 渲染组件。
 - 本轮已验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；本地 `/docs/principles/architecture` 返回 200；生成产物包含新增 Principles 页面与 Mermaid 组件引用。`npm install mermaid` 后 npm audit 仍报告 5 个 moderate 级依赖告警，本轮未做依赖安全升级。
+- 本轮部署：提交 `fbdacd3 docs: expand control-plane principles` 并推送到 `origin/main`；GitHub Actions Pages run `28560402296` 成功；线上 `https://lattice-hub.github.io/`、`/docs/principles/architecture/`、`/docs/principles/ai-registry/`、`/docs/principles/observability-chain/` 均返回 200。
