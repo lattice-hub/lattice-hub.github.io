@@ -1,0 +1,6 @@
+:HL["/_next/static/chunks/0dg2e8pj9y48q.css","style"]
+:HL["/_next/static/media/history-plugin-chain.2c0p8e6xbfdkm.svg","image"]
+:HL["/_next/static/media/discover-event-chain.0zy-_v9bw1xii.svg","image"]
+:HL["/_next/static/media/statis-metrics-chain.3abeuliqiy62v.svg","image"]
+:HL["/_next/static/media/otel-boundary.1e97au5adnm6m.svg","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"docs","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"oc","key":"principles/observability-chain","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"UCCo9S5B6pfFdQmAoyYWV"}

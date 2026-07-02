@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="380" viewBox="0 0 960 380" role="img" aria-label="API Protocols and Shared Servers">
+<defs>
+<marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#2563eb"/></marker>
+<marker id="arrow-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#ea580c"/></marker>
+<marker id="arrow-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#6b7280"/></marker>
+<marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#059669"/></marker>
+</defs>
+
+  <style>
+    .title{font:700 18px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#111827;letter-spacing:0}
+    .label{font:600 13px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#111827}
+    .sub{font:500 10.5px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#6b7280}
+    .tiny{font:500 10px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#6b7280}
+    .note{font:600 10px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}
+    .box{stroke:#8fb5ff;stroke-width:1.4;fill:#eef5ff;rx:10;ry:10}
+    .box-green{stroke:#34d399;stroke-width:1.4;fill:#ecfdf5;rx:10;ry:10}
+    .box-orange{stroke:#fb923c;stroke-width:1.4;fill:#fff7ed;rx:10;ry:10}
+    .box-purple{stroke:#a78bfa;stroke-width:1.4;fill:#f5f3ff;rx:10;ry:10}
+    .box-gray{stroke:#cbd5e1;stroke-width:1.2;fill:#f8fafc;rx:10;ry:10}
+    .group{stroke:#d7e3f8;stroke-width:1.2;stroke-dasharray:6 5;fill:#fbfdff;rx:14;ry:14}
+    .lane{fill:#f8fbff;stroke:#dbeafe;stroke-width:1}
+    .arrow{stroke:#2563eb;stroke-width:2;fill:none;marker-end:url(#arrow-blue)}
+    .ctrl{stroke:#ea580c;stroke-width:1.7;fill:none;marker-end:url(#arrow-orange)}
+    .async{stroke:#6b7280;stroke-width:1.6;stroke-dasharray:5 4;fill:none;marker-end:url(#arrow-gray)}
+    .write{stroke:#059669;stroke-width:1.7;stroke-dasharray:5 4;fill:none;marker-end:url(#arrow-green)}
+    .read{stroke:#059669;stroke-width:1.7;fill:none;marker-end:url(#arrow-green)}
+  </style>
+
+<rect width="960" height="380" fill="#ffffff"/>
+<rect x="70" y="80" width="120" height="58" class="box"/>
+<rect x="230" y="80" width="120" height="58" class="box"/>
+<rect x="390" y="80" width="120" height="58" class="box"/>
+<rect x="210" y="185" width="330" height="66" class="box-purple"/>
+<rect x="650" y="120" width="210" height="54" class="box-orange"/>
+<rect x="170" y="285" width="170" height="54" class="box-green"/>
+<rect x="390" y="285" width="170" height="54" class="box-green"/>
+<rect x="610" y="285" width="170" height="54" class="box-green"/>
+<path d="M130,138 L215.0,138 L215.0,185 L300,185" class="arrow"/>
+<path d="M290,138 L295.0,138 L295.0,185 L300,185" class="arrow"/>
+<path d="M450,138 L375.0,138 L375.0,185 L300,185" class="arrow"/>
+<path d="M540,218 L595.0,218 L595.0,148 L650,148" class="ctrl"/>
+<path d="M375,251 L315.0,251 L315.0,285 L255,285" class="arrow"/>
+<path d="M375,251 L425.0,251 L425.0,285 L475,285" class="arrow"/>
+<path d="M375,251 L535.0,251 L535.0,285 L695,285" class="arrow"/>
+<text x="32" y="36" class="title">API Protocols and Shared Servers</text>
+<text x="130.0" y="108" text-anchor="middle" class="label">Console</text>
+<text x="130.0" y="128" text-anchor="middle" class="sub">HTTP UI</text>
+<text x="290.0" y="108" text-anchor="middle" class="label">SDK</text>
+<text x="290.0" y="128" text-anchor="middle" class="sub">gRPC / Discover</text>
+<text x="450.0" y="108" text-anchor="middle" class="label">Agent</text>
+<text x="450.0" y="128" text-anchor="middle" class="sub">MCP / A2A</text>
+<text x="375.0" y="213" text-anchor="middle" class="label">API Server Plugins</text>
+<text x="375.0" y="233" text-anchor="middle" class="sub">api-http / service-grpc / xds-v3</text>
+<text x="755.0" y="148" text-anchor="middle" class="label">Interceptors</text>
+<text x="755.0" y="168" text-anchor="middle" class="sub">auth + paramcheck</text>
+<text x="255.0" y="313" text-anchor="middle" class="label">DiscoverServer</text>
+<text x="255.0" y="333" text-anchor="middle" class="sub">service view</text>
+<text x="475.0" y="313" text-anchor="middle" class="label">GoverRuleServer</text>
+<text x="475.0" y="333" text-anchor="middle" class="sub">rule release</text>
+<text x="695.0" y="313" text-anchor="middle" class="label">ConfigServer</text>
+<text x="695.0" y="333" text-anchor="middle" class="sub">config files</text>
+</svg>

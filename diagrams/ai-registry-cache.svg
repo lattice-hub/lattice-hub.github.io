@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="340" viewBox="0 0 960 340" role="img" aria-label="AI Registry Resource Cache">
+<defs>
+<marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#2563eb"/></marker>
+<marker id="arrow-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#ea580c"/></marker>
+<marker id="arrow-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#6b7280"/></marker>
+<marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#059669"/></marker>
+</defs>
+
+  <style>
+    .title{font:700 18px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#111827;letter-spacing:0}
+    .label{font:600 13px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#111827}
+    .sub{font:500 10.5px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#6b7280}
+    .tiny{font:500 10px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#6b7280}
+    .note{font:600 10px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}
+    .box{stroke:#8fb5ff;stroke-width:1.4;fill:#eef5ff;rx:10;ry:10}
+    .box-green{stroke:#34d399;stroke-width:1.4;fill:#ecfdf5;rx:10;ry:10}
+    .box-orange{stroke:#fb923c;stroke-width:1.4;fill:#fff7ed;rx:10;ry:10}
+    .box-purple{stroke:#a78bfa;stroke-width:1.4;fill:#f5f3ff;rx:10;ry:10}
+    .box-gray{stroke:#cbd5e1;stroke-width:1.2;fill:#f8fafc;rx:10;ry:10}
+    .group{stroke:#d7e3f8;stroke-width:1.2;stroke-dasharray:6 5;fill:#fbfdff;rx:14;ry:14}
+    .lane{fill:#f8fbff;stroke:#dbeafe;stroke-width:1}
+    .arrow{stroke:#2563eb;stroke-width:2;fill:none;marker-end:url(#arrow-blue)}
+    .ctrl{stroke:#ea580c;stroke-width:1.7;fill:none;marker-end:url(#arrow-orange)}
+    .async{stroke:#6b7280;stroke-width:1.6;stroke-dasharray:5 4;fill:none;marker-end:url(#arrow-gray)}
+    .write{stroke:#059669;stroke-width:1.7;stroke-dasharray:5 4;fill:none;marker-end:url(#arrow-green)}
+    .read{stroke:#059669;stroke-width:1.7;fill:none;marker-end:url(#arrow-green)}
+  </style>
+
+<rect width="960" height="340" fill="#ffffff"/>
+<path d="M70,142 C70,128 220,128 220,142 L220,186 C220,200 70,200 70,186 Z" class="box-green"/>
+<path d="M70,142 C70,156 220,156 220,142" fill="none" stroke="#34d399" stroke-width="1.2"/>
+<rect x="310" y="82" width="170" height="58" class="box-purple"/>
+<rect x="310" y="196" width="170" height="58" class="box-purple"/>
+<rect x="670" y="82" width="170" height="58" class="box"/>
+<rect x="670" y="196" width="170" height="58" class="box"/>
+<path d="M220,164 L265.0,164 L265.0,111 L310,111" class="read"/>
+<path d="M220,164 L265.0,164 L265.0,225 L310,225" class="read"/>
+<path d="M480,111 L670,111" class="arrow"/>
+<path d="M480,225 L670,225" class="arrow"/>
+<text x="32" y="36" class="title">AI Registry Resource Cache</text>
+<text x="145.0" y="164" text-anchor="middle" class="label">MySQL</text>
+<text x="145.0" y="183" text-anchor="middle" class="sub">MCP / A2A tables</text>
+<text x="395.0" y="110" text-anchor="middle" class="label">MCPServerCache</text>
+<text x="395.0" y="130" text-anchor="middle" class="sub">servers + tools</text>
+<text x="395.0" y="224" text-anchor="middle" class="label">A2AAgentCache</text>
+<text x="395.0" y="244" text-anchor="middle" class="sub">agents + skills</text>
+<text x="755.0" y="110" text-anchor="middle" class="label">MCP APIs</text>
+<text x="755.0" y="130" text-anchor="middle" class="sub">/ai/mcp/v1</text>
+<text x="755.0" y="224" text-anchor="middle" class="label">A2A APIs</text>
+<text x="755.0" y="244" text-anchor="middle" class="sub">agent card</text>
+</svg>

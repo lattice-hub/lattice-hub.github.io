@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="330" viewBox="0 0 960 330" role="img" aria-label="Authorization Check Path">
+<defs>
+<marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#2563eb"/></marker>
+<marker id="arrow-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#ea580c"/></marker>
+<marker id="arrow-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#6b7280"/></marker>
+<marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#059669"/></marker>
+</defs>
+
+  <style>
+    .title{font:700 18px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#111827;letter-spacing:0}
+    .label{font:600 13px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#111827}
+    .sub{font:500 10.5px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#6b7280}
+    .tiny{font:500 10px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#6b7280}
+    .note{font:600 10px Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}
+    .box{stroke:#8fb5ff;stroke-width:1.4;fill:#eef5ff;rx:10;ry:10}
+    .box-green{stroke:#34d399;stroke-width:1.4;fill:#ecfdf5;rx:10;ry:10}
+    .box-orange{stroke:#fb923c;stroke-width:1.4;fill:#fff7ed;rx:10;ry:10}
+    .box-purple{stroke:#a78bfa;stroke-width:1.4;fill:#f5f3ff;rx:10;ry:10}
+    .box-gray{stroke:#cbd5e1;stroke-width:1.2;fill:#f8fafc;rx:10;ry:10}
+    .group{stroke:#d7e3f8;stroke-width:1.2;stroke-dasharray:6 5;fill:#fbfdff;rx:14;ry:14}
+    .lane{fill:#f8fbff;stroke:#dbeafe;stroke-width:1}
+    .arrow{stroke:#2563eb;stroke-width:2;fill:none;marker-end:url(#arrow-blue)}
+    .ctrl{stroke:#ea580c;stroke-width:1.7;fill:none;marker-end:url(#arrow-orange)}
+    .async{stroke:#6b7280;stroke-width:1.6;stroke-dasharray:5 4;fill:none;marker-end:url(#arrow-gray)}
+    .write{stroke:#059669;stroke-width:1.7;stroke-dasharray:5 4;fill:none;marker-end:url(#arrow-green)}
+    .read{stroke:#059669;stroke-width:1.7;fill:none;marker-end:url(#arrow-green)}
+  </style>
+
+<rect width="960" height="330" fill="#ffffff"/>
+<rect x="60" y="90" width="140" height="58" class="box"/>
+<rect x="270" y="90" width="140" height="58" class="box-orange"/>
+<rect x="480" y="90" width="140" height="58" class="box-purple"/>
+<rect x="690" y="90" width="140" height="58" class="box-green"/>
+<rect x="140" y="220" width="680" height="54" class="group"/>
+<path d="M200,119 L270,119" class="arrow"/>
+<path d="M410,119 L480,119" class="arrow"/>
+<path d="M620,119 L690,119" class="arrow"/>
+<path d="M550,148 L550,220" class="ctrl"/>
+<text x="32" y="36" class="title">Authorization Check Path</text>
+<text x="130.0" y="118" text-anchor="middle" class="label">API Server</text>
+<text x="130.0" y="138" text-anchor="middle" class="sub">incoming request</text>
+<text x="340.0" y="118" text-anchor="middle" class="label">Auth proxy</text>
+<text x="340.0" y="138" text-anchor="middle" class="sub">AcquireContext</text>
+<text x="550.0" y="118" text-anchor="middle" class="label">AuthChecker</text>
+<text x="550.0" y="138" text-anchor="middle" class="sub">roles + policy</text>
+<text x="760.0" y="118" text-anchor="middle" class="label">Decision</text>
+<text x="760.0" y="138" text-anchor="middle" class="sub">allow / deny</text>
+<text x="480" y="242" text-anchor="middle" class="label">Resource mapping: namespace / service / config / governance / AI resource</text>
+<text x="550.0" y="177.0" text-anchor="middle" class="note">resource</text>
+</svg>

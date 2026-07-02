@@ -1,0 +1,7 @@
+:HL["/_next/static/chunks/0dg2e8pj9y48q.css","style"]
+:HL["/_next/static/media/cache-manager-lifecycle.20nf_bm9n39bk.svg","image"]
+:HL["/_next/static/media/base-cache-update.0h64cphwttq46.svg","image"]
+:HL["/_next/static/media/discover-response-cache.3tn7qpwc5ezcd.svg","image"]
+:HL["/_next/static/media/governance-cache-fanout.31yp-2gwdqcu_.svg","image"]
+:HL["/_next/static/media/eventhub-write-path.0_3de2yarbo61.svg","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"docs","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"oc","key":"principles/cache-eventhub","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"UCCo9S5B6pfFdQmAoyYWV"}

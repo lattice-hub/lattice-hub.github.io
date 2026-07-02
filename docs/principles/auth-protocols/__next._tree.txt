@@ -1,0 +1,5 @@
+:HL["/_next/static/chunks/0dg2e8pj9y48q.css","style"]
+:HL["/_next/static/media/auth-check-path.11gbonj3pgrb4.svg","image"]
+:HL["/_next/static/media/policy-resource-validation.3ye_6yv8ma9yx.svg","image"]
+:HL["/_next/static/media/release-auth-mapping.2nm2oqdf8vrhn.svg","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"docs","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"oc","key":"principles/auth-protocols","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"UCCo9S5B6pfFdQmAoyYWV"}
