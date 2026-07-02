@@ -53,3 +53,9 @@
 - 用户纠正：Mermaid 默认生成的架构图过大，单个节点占据过多屏幕空间，需要用 `fireworks-tech-graph` 重画，并整体检查所有架构图。
 - 后续规则：文档里的架构图、数据流图和流程图应优先使用固定尺寸 SVG 资产，节点标签保持短句，正文承载细节说明；不要把 Mermaid 自动布局直接交给页面渲染，尤其不要让纵向流程图在文档页里无限拉长。
 - 设计落实：图资产放在 `public/diagrams`，同名导出 PNG 作为自检产物；MDX 直接引用 SVG，页面只负责响应式缩放。
+
+## MDX 图片不能假设 src 是字符串
+
+- 用户纠正：`/docs` 页面截图显示 `product capability map` 破图，说明文档图片即使在本地构建通过，也可能在导出 HTML 中变成无效 `src`。
+- 后续规则：Fumadocs/MDX 静态图片可能被编译为结构化对象；渲染原生 `img` 前必须解包 `.src`，并在完成前检查导出 HTML 与线上 HTML 不再包含 `src="[object Object]"`。
+- 设计落实：`src/mdx-components.tsx` 统一处理 MDX 图片 `src`，docs 页面显式使用该组件映射，测试覆盖字符串路径和结构化 `{ src }` 输入。

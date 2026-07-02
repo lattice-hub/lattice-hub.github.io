@@ -9,6 +9,7 @@ import {
   principles,
   siteNav,
 } from '../src/lib/site-content';
+import { resolveImageSrc } from '../src/mdx-components';
 
 test('site navigation exposes real site-level destinations', () => {
   assert.deepEqual(
@@ -83,4 +84,12 @@ test('docs diagrams use compact static SVG assets', () => {
   assert.doesNotMatch(combined, /```mermaid/);
   assert.match(combined, /\/diagrams\/control-plane-startup\.svg/);
   assert.ok(svgAssets.length >= 20, 'expected generated SVG diagrams for docs architecture content');
+});
+
+test('mdx image component resolves structured image src objects', () => {
+  assert.equal(resolveImageSrc('/diagrams/product-capability-map.svg'), '/diagrams/product-capability-map.svg');
+  assert.equal(
+    resolveImageSrc({ src: '/_next/static/media/product-capability-map.svg' }),
+    '/_next/static/media/product-capability-map.svg',
+  );
 });

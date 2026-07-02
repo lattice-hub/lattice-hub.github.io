@@ -11,6 +11,12 @@
 
 ## 计划
 
+- [x] 定位 `/docs` 图片显示为 `[object Object]` 的根因。
+- [x] 为结构化 image `src` 解包增加 RED/GREEN 测试。
+- [x] 在 MDX 组件层解包结构化图片对象并接入 docs 页面。
+- [x] 运行 test/lint/build/export，并检查导出 HTML 不再出现 `[object Object]`。
+- [ ] 提交、推送并确认 GitHub Pages 部署。
+
 - [x] 使用 `fireworks-tech-graph` 规范重画文档里的架构图、流程图和数据流图。
 - [x] 将 Mermaid 图替换为 `public/diagrams` 下的紧凑 SVG，并导出 PNG 自检产物。
 - [x] 清理 Mermaid 运行时依赖、MDX 插件和组件注入。
@@ -93,3 +99,6 @@
 - 根据用户指出 Mermaid 架构图过大，已按 `fireworks-tech-graph` 规范重画文档内 23 张技术图，生成 `public/diagrams/*.svg` 和对应 PNG；所有 MDX Mermaid 代码块已替换为 SVG 引用，并移除 Mermaid 依赖、MDX 插件和运行时组件。
 - 本轮已验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；本地 `/docs`、`/docs/principles/architecture` 与 `/diagrams/control-plane-startup.svg` 均返回 200；构建产物中无 Mermaid 残留，CSS 已包含 `article img` 图样式。
 - 本轮部署：提交 `f35be0e docs: replace mermaid diagrams with compact svgs` 并推送到 `origin/main`；GitHub Actions Pages run `28565439290` 成功；线上 `/docs/`、`/docs/principles/architecture/` 和 `/_next/static/media/control-plane-startup.0ogm7gn_2phni.svg` 均返回 200。
+- 根据用户截图指出的破图问题，已定位到 Fumadocs/MDX 将 Markdown 图片编译成结构化静态资源对象，而原生 `img` 直接接收对象导致线上 HTML 出现 `src="[object Object]"`。
+- 本轮修复在 `mdx-components` 中增加图片 `src` 解包逻辑，并显式把 docs 页面 MDX 渲染接入该组件；测试覆盖字符串路径和结构化 `{ src }` 两种输入，防止文档图再次破图。
+- 本轮本地验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；`out/docs` 与 `.next/server/app/docs` 中不再出现 `[object Object]`，`product capability map` 和 `control plane startup` 均导出为真实 SVG 静态资源路径。
