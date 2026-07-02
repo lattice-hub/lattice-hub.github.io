@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   blogPosts,
   componentGroups,
@@ -53,4 +54,14 @@ test('governance carousel keeps seven unified topology rules', () => {
 test('docs include principles and blog seed content', () => {
   assert.ok(principles.length >= 4, 'expected at least four principle articles');
   assert.ok(blogPosts.length >= 4, 'expected at least four blog posts');
+});
+
+test('docs index is a product capability overview', () => {
+  const docsIndex = readFileSync('content/docs/index.mdx', 'utf8');
+
+  assert.match(docsIndex, /title: 产品能力总览/);
+  for (const keyword of ['服务发现', '流量治理', '配置中心', '权限审计', 'AI Registry', '多运行时接入']) {
+    assert.match(docsIndex, new RegExp(keyword));
+  }
+  assert.doesNotMatch(docsIndex, /title: .*fumadocs 目录组织/);
 });

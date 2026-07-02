@@ -260,7 +260,7 @@ export const docsSections: ContentEntry[] = [
   {
     title: '概览',
     href: '/docs',
-    summary: '产品能力地图、文档目录树和首版边界。',
+    summary: '服务发现、治理规则、配置、权限、AI Registry 与运行时接入的完整能力总览。',
   },
   {
     title: 'Principles',

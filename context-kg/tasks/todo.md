@@ -11,14 +11,20 @@
 
 ## 计划
 
+- [x] 将 `/docs` 首页从 fumadocs 目录说明改为完整的产品能力总览。
+- [x] 更新首页文档分流摘要，使“概览”表达产品能力入口而非目录入口。
+- [x] 增加测试约束，防止 `/docs` 首页标题再次退回目录组织描述。
+- [x] 运行测试、lint、build，并抽查 `/docs` 页面。
+- [ ] 提交并推送产品能力总览更新，等待 GitHub Pages 部署完成。
+
+## 已完成计划
+
 - [x] 核对 `../pole-control-plane` 真实代码入口，提取控制面架构、缓存事件流、治理规则发布、鉴权协议与观测链路。
 - [x] 按真实实现补全 docs/principles 下的原理文档，加入架构图和数据流程图。
 - [x] 更新必要的导航/索引元数据，确保文档模块可发现。
 - [x] 运行测试、lint、build，并抽查生成后的文档内容。
 - [x] 提交本轮文档与 Mermaid 渲染变更，推送到 `lattice-hub.github.io` 触发 GitHub Pages 部署。
 - [x] 用 `gh` 检查 GitHub Actions 部署结果，并抽查线上 Principles 页面。
-
-## 已完成计划
 
 - [x] 将全站 GitHub 入口改为 `https://github.com/lattice-hub`。
 - [x] 增加 GitHub Pages 静态部署配置，支持 Next/Fumadocs 静态导出到 `out/`。
@@ -76,3 +82,5 @@
 - 根据 `../pole-control-plane` 真实代码补全原理文档：覆盖启动组件链路、CacheManager/EventHub、治理规则草稿与发布视图、鉴权资源映射、AI Registry、History/DiscoverEvent/Statis/OTel 观测链路；新增 Mermaid 架构图与数据流程图，并接入 Fumadocs Mermaid MDX 渲染组件。
 - 本轮已验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；本地 `/docs/principles/architecture` 返回 200；生成产物包含新增 Principles 页面与 Mermaid 组件引用。`npm install mermaid` 后 npm audit 仍报告 5 个 moderate 级依赖告警，本轮未做依赖安全升级。
 - 本轮部署：提交 `fbdacd3 docs: expand control-plane principles` 并推送到 `origin/main`；GitHub Actions Pages run `28560402296` 成功；线上 `https://lattice-hub.github.io/`、`/docs/principles/architecture/`、`/docs/principles/ai-registry/`、`/docs/principles/observability-chain/` 均返回 200。
+- 根据用户指出 `/docs` 首页应是产品能力介绍页，已将 `content/docs/index.mdx` 从 fumadocs 目录说明重写为“产品能力总览”，覆盖产品定位、核心能力、典型工作流、组件协作、阅读路径和首版边界；同步更新首页 docs 分流摘要，并新增测试防止标题退回目录说明。
+- 本轮已验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；本地 `http://localhost:3000/docs` 返回 200。

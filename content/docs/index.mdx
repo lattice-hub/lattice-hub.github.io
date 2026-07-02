@@ -1,27 +1,97 @@
 ---
-title: Lattice Hub 文档按 fumadocs 目录组织
-description: 产品能力、架构原理、治理规则、组件生态、博客和报告都在文档体系中展开。
+title: 产品能力总览
+description: Lattice Hub 把服务发现、流量治理、配置中心、权限审计、AI Registry 与多运行时接入收敛到同一个控制面。
 ---
 
-Lattice Hub 文档不是营销页集合，而是围绕 fumadocs 目录组织的产品知识库。产品能力、架构原理、治理规则、组件说明、博客与报告都在这里展开。
+Lattice Hub 是面向云原生与 AI Native 场景的服务治理控制面。它把传统微服务治理中的服务注册发现、配置分发、流量规则、权限审计和运行时接入统一起来，同时把 MCP Server 与 A2A Agent 纳入同一套资源模型，让服务能力可以被应用、SDK、Sidecar、Controller 和 Agent 共同发现与治理。
 
-## 目录树
+这页是产品能力的总览，不是目录说明。你可以先用它理解 Lattice Hub 的能力边界，再进入 [架构原理](./principles/architecture)、[组件文档](./components/control-plane)、[最佳实践](./blog) 和 [报告](./reports)。
 
-- 概览：产品主张、能力地图与阅读路径。
-- Principles：架构原理、增量缓存与事件流、治理规则发布、鉴权链与多协议映射。
-- Components：Control Plane、Console、Rust SDK、Kubernetes Controller、Pingora Sidecar、Specification。
-- Blog：MCP/A2A Registry、Kubernetes Service 同步、Pingora Sidecar、配置灰度与长轮询。
-- Reports：性能数据报告与待实测口径。
+## 产品定位
 
-## 能力地图
+Lattice Hub 解决的是“控制面碎片化”的问题：
 
-| 分区 | 入口 | 说明 |
+- 服务目录、实例状态、配置、治理规则和 AI 能力注册不再散落在多个系统里。
+- 控制台、HTTP API、SDK、Kubernetes Controller 和 Sidecar 复用同一套资源视图。
+- 治理规则先进入控制面，再通过缓存、事件和发现链路下发给客户端或数据面。
+- MCP Server 与 A2A Agent 不是额外展示层，而是和服务、实例、规则一样进入缓存与 API 链路。
+
+```mermaid
+flowchart LR
+  Console["Console / HTTP API"] --> Control["Lattice Hub Control Plane"]
+  K8s["Kubernetes Controller"] --> Control
+  SDK["Rust SDK / Client"] --> Control
+  Sidecar["Pingora Sidecar"] --> Control
+  Agent["Agent Runtime"] --> Control
+
+  Control --> Registry["服务与实例目录"]
+  Control --> Config["配置中心"]
+  Control --> Rules["治理规则"]
+  Control --> Auth["权限与审计"]
+  Control --> AI["MCP / A2A Registry"]
+  Control --> Obs["History / Events / Statis / OTel"]
+```
+
+## 核心能力
+
+| 能力域 | 解决的问题 | 当前入口 |
 | --- | --- | --- |
-| Principles | [架构原理](./principles/architecture) | 控制面分层、缓存、事件、治理发布和鉴权链。 |
-| Components | [组件文档](./components/control-plane) | 控制面、控制台、SDK、Controller、Sidecar 和标准协议。 |
-| Blog | [最佳实践](./blog) | 真实场景中的接入、同步、发布和数据面实践。 |
-| Reports | [报告](./reports) | 已确认配置事实、观测口径和待实测计划。 |
+| 服务注册发现 | 维护 namespace、service、instance、revision 与健康状态，让客户端按服务名拿到可用实例。 | [Control Plane](./components/control-plane) |
+| 流量治理 | 管理路由、泳道、限流、熔断、故障注入、镜像、Mock、鉴权等治理规则。 | [治理规则发布](./principles/governance-release) |
+| 配置中心 | 提供配置文件发布、监听、灰度和回滚的控制面能力。 | [配置灰度实践](./blog/config-rollout) |
+| 权限与审计 | 通过用户、角色、策略、资源映射和操作历史约束控制面操作。 | [鉴权链与资源映射](./principles/auth-protocols) |
+| AI Registry | 将 MCP Server、MCP Tool、A2A Agent 和 Agent Skill 纳入控制面资源。 | [AI Registry 实现原理](./principles/ai-registry) |
+| 观测链路 | 汇聚控制面操作历史、发现事件、调用统计，并为 OTel 接入保留边界。 | [观测链路](./principles/observability-chain) |
+| 多运行时接入 | 同时服务 SDK、Kubernetes Controller、Sidecar 和未来 Agent Runtime。 | [组件生态](../components) |
+
+## 典型工作流
+
+```mermaid
+sequenceDiagram
+  participant Operator as 平台工程师
+  participant Console as Console / API
+  participant CP as Control Plane
+  participant Cache as CacheManager
+  participant Client as SDK / Sidecar / Agent
+
+  Operator->>Console: 创建服务、配置或治理规则
+  Console->>CP: 调用控制面 API
+  CP->>CP: 鉴权、参数校验、资源存在性检查
+  CP->>CP: 写入 store 并生成 revision / release
+  CP->>Cache: 增量刷新资源视图
+  Client->>CP: Discover / Config / Registry 查询
+  CP-->>Client: 返回按 revision 组织的运行时视图
+```
+
+从产品视角看，Lattice Hub 的关键不是“多做几个 API”，而是把控制面资源变更变成稳定的运行时视图：
+
+1. 平台工程师在 Console 或 API 中维护服务、配置、规则和 AI 能力。
+2. 控制面先做鉴权、参数校验和资源存在性校验。
+3. 数据进入 store 后，由缓存层按增量时间窗刷新。
+4. SDK、Sidecar、Controller 或 Agent 通过发现、配置或 Registry 接口拿到最新视图。
+5. History、DiscoverEvent、Statis 与 OTel 负责记录操作、事件和统计信号。
+
+## 组件协作
+
+| 组件 | 产品职责 | 文档入口 |
+| --- | --- | --- |
+| Control Plane | 统一控制面，承载服务发现、配置中心、治理规则、权限、缓存和 AI Registry。 | [查看](./components/control-plane) |
+| Console | 面向平台团队的可视化操作入口，负责服务、配置、治理和用户权限管理。 | [查看](./components/console) |
+| Rust SDK | Proxyless 接入形态，客户端直接消费控制面发现与治理视图。 | [查看](./components/rust-sdk) |
+| Kubernetes Controller | 把 Kubernetes Service 和注解同步到控制面，并承接集群侧自动化。 | [查看](./components/kubernetes-controller) |
+| Pingora Sidecar | 轻量数据面骨架，用于承载路由、负载均衡和治理拦截器。 | [查看](./components/pingora-sidecar) |
+| Specification | protobuf 与协议约束，是跨组件协作的契约层。 | [查看](./components/specification) |
+
+## 阅读路径
+
+如果你要快速理解产品，建议按这个顺序读：
+
+1. [控制面装配架构](./principles/architecture)：先理解控制面如何启动和组合业务模块。
+2. [增量缓存与事件流](./principles/cache-eventhub)：再理解运行时读路径为什么依赖缓存视图。
+3. [治理规则与灰度发布](./principles/governance-release)：看规则如何从草稿变成 active release。
+4. [AI Registry 实现原理](./principles/ai-registry)：理解 MCP/A2A 如何接入统一控制面。
+5. [性能数据报告](./reports/performance)：查看当前已确认的配置事实和待实测指标。
 
 ## 首版边界
 
-首版只写已经能从组件 README、context-kg 和设计文档确认的事实。缺少压测数据时，文档明确标注待实测指标，不用猜测数字填充报告。
+当前文档优先记录能从真实代码、组件 README 和已确认设计中验证的事实。缺少正式压测数据时，报告只保留观测口径和待实测计划，不用猜测数字填充结论。

@@ -41,3 +41,9 @@
 - 用户纠正：Pages 预览页面报 404，说明不能只以 workflow success 或 Pages status=built 作为上线完成。
 - 后续规则：GitHub Pages 从 legacy source 切换到 Actions workflow 时，必须确认 `build_type=workflow` 后重新触发一次部署，并用公网 URL 的 HTTP 状态码验证首页、子路径和关键静态资源。
 - 设计落实：`lattice-hub/lattice-hub.github.io` 已切换为 workflow 部署；重新跑 `deploy-pages.yml` 后验证 `/`、`/docs/`、`/lattice-hub-logo.png` 均返回 200。
+
+## 文档首页应先讲产品能力
+
+- 用户纠正：`/docs` 首页不应只是 fumadocs 目录组织说明，而应是产品能力的完整介绍页面。
+- 后续规则：文档模块首页承担“产品能力总览”职责，先解释 Lattice Hub 解决什么问题、有哪些能力域、组件如何协作、典型数据流是什么，再给阅读路径；目录结构只能作为辅助信息出现。
+- 设计落实：`content/docs/index.mdx` 标题使用“产品能力总览”，正文覆盖服务发现、治理规则、配置中心、权限审计、AI Registry、观测链路和多运行时接入。
