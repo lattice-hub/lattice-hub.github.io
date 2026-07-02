@@ -32,22 +32,7 @@ description: AcquireContext、AuthChecker、资源存在性校验和多协议入
 
 权限失败会被转换成 API code，权限成功后会把更新后的 request context 继续传给下一层 Server。
 
-```mermaid
-sequenceDiagram
-  participant API as API Server
-  participant Auth as auth interceptor
-  participant Checker as AuthChecker
-  participant Next as next Server
-  participant Cache as CacheManager
-
-  API->>Auth: 领域方法调用
-  Auth->>Cache: 查询资源 ID / metadata
-  Auth->>Auth: 构造 AcquireContext
-  Auth->>Checker: CheckConsolePermission / CheckClientPermission
-  Checker-->>Auth: allow / deny
-  Auth->>Next: allow 后继续调用
-  Auth-->>API: deny 时返回鉴权错误
-```
+![auth check path](/diagrams/auth-check-path.svg)
 
 ## 资源类型映射
 
@@ -90,16 +75,7 @@ sequenceDiagram
 
 特殊规则是：资源 ID 为 `*` 时跳过存在性检查，表示全量授权。
 
-```mermaid
-flowchart TB
-  PolicyReq["Create / Update AuthStrategy"] --> Param["policy paramcheck"]
-  Param --> Star{"resource id == * ?"}
-  Star -->|是| Skip["跳过存在性检查"]
-  Star -->|否| Cache["按 ResourceType 查询 CacheManager"]
-  Cache --> Found{"存在?"}
-  Found -->|否| NotFound["Code_NotFoundResource"]
-  Found -->|是| Next["进入 policy server 写入"]
-```
+![policy resource validation](/diagrams/policy-resource-validation.svg)
 
 这条链路保证策略不会引用一个已经不存在的治理资源。后续如果新增资源类型，必须同时更新：
 
@@ -127,15 +103,7 @@ flowchart TB
 
 `collectRuleReleases` 再到对应 cache 找规则，把资源 ID、资源类型和 metadata 写进 `AcquireContext`。这让“发布某条规则”不是普通写权限，而是针对具体规则资源的修改权限。
 
-```mermaid
-flowchart LR
-  Release["RuleRelease"] --> Switch["按 Resource 分派"]
-  Switch --> Collect["collectRuleReleases"]
-  Collect --> Cache["从规则 cache 取 metadata"]
-  Cache --> Ctx["AcquireContext"]
-  Ctx --> Checker["CheckConsolePermission"]
-  Checker --> Next["nextSvr.Publish / Rollback / Stopbeta"]
-```
+![release auth mapping](/diagrams/release-auth-mapping.svg)
 
 ## 列表和详情会标记操作权限
 

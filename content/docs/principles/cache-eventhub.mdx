@@ -23,16 +23,7 @@ description: CacheManager、BaseCache、治理规则更新器和 EventHub 如何
 
 `CacheManager.OpenResourceCache` 只打开配置中要求加载的资源。被打开的 cache name 会进入 `needLoad`，`CacheManager.Start` 先 warm-up 一次，再按固定间隔刷新。
 
-```mermaid
-flowchart TB
-  Config["bootstrap config"] --> Open["OpenResourceCache"]
-  Open --> NeedLoad["needLoad set"]
-  NeedLoad --> WarmUp["warmUp: 并发 Update"]
-  WarmUp --> Ticker["每 1s ticker"]
-  Ticker --> CacheUpdate["c.Update"]
-  CacheUpdate --> Store["store.GetMore*"]
-  Store --> Memory["SyncMap / bbolt / revision worker"]
-```
+![cache manager lifecycle](/diagrams/cache-manager-lifecycle.svg)
 
 ## BaseCache 的时间窗口
 
@@ -45,21 +36,7 @@ flowchart TB
 
 `BaseCache.LastFetchTime()` 会把 `lastFetchTime` 加上 `CacheManager.GetTimeDiff()`。默认 `DefaultTimeDiff = -5s`，也可以通过 `cache.diffTime` 配置覆盖。这个负偏移是为了容忍数据库时间、控制面节点和事务提交之间的边界偏差：下一次增量查询会回看一个小窗口，而不是刚好从上次秒级时间戳之后开始。
 
-```mermaid
-sequenceDiagram
-  participant Cache as BaseCache
-  participant Store as Store
-  participant Impl as realUpdate
-
-  Cache->>Store: GetUnixSecond(0)
-  Store-->>Cache: curStoreTime
-  Cache->>Impl: executor(LastFetchTime = lastFetchTime - 5s)
-  Impl->>Store: GetMore*(mtime, firstUpdate)
-  Store-->>Impl: changed rows
-  Impl-->>Cache: lastMtimes, total
-  Cache->>Cache: update lastFetchTime = curStoreTime
-  Cache->>Cache: firstUpdate = false
-```
+![base cache update](/diagrams/base-cache-update.svg)
 
 `DoCacheUpdate` 只有在 executor 没有 panic 且返回成功时才更新 `lastFetchTime`。如果首次拉取失败，它不会把时间推进到当前值，从而避免后续增量永远为空。
 
@@ -77,20 +54,7 @@ sequenceDiagram
 6. 命中完整响应缓存时直接返回 clone 后的 `DiscoverResponse`。
 7. 未命中时遍历实例缓存构造响应，并写回 LRU。
 
-```mermaid
-flowchart TB
-  Req["Discover INSTANCE 请求"] --> ServiceCache["Service cache: 找源服务"]
-  ServiceCache --> Rev["revision worker"]
-  Rev --> Same{"revision 相同?"}
-  Same -->|是| NoChange["Code_DataNoChange"]
-  Same -->|否| RespCache["DiscoverResponse LRU"]
-  RespCache --> Hit{"命中?"}
-  Hit -->|是| Clone["proto.Clone 后返回"]
-  Hit -->|否| InstanceCache["Instance cache 遍历"]
-  InstanceCache --> Build["构造 DiscoverResponse"]
-  Build --> Put["proto.Clone 后写 LRU"]
-  Put --> Return["返回实例列表"]
-```
+![discover response cache](/diagrams/discover-response-cache.svg)
 
 完整响应缓存的实现位于 `pkg/service/discover_response_cache.go`：
 
@@ -115,17 +79,7 @@ flowchart TB
 - `LossLessCache.applyGovernanceRuleUpdate`
 - `TrafficGovernanceCache.applyGovernanceRuleUpdate`
 
-```mermaid
-flowchart LR
-  Store["GetMoreGovernanceRuleUpdates / Releases"] --> Updater["governanceRuleUpdateCache"]
-  Updater --> Route["RouteRuleCache"]
-  Updater --> Rate["RateLimitCache"]
-  Updater --> CB["CircuitBreakerCache"]
-  Updater --> FD["FaultDetectCache"]
-  Updater --> Lane["LaneCache"]
-  Updater --> Lossless["LossLessCache"]
-  Updater --> Traffic["TrafficSecurity / Mirror / Mock"]
-```
+![governance cache fanout](/diagrams/governance-cache-fanout.svg)
 
 这个设计避免每一种治理规则都单独查询一次统一规则更新表，也让 release active 视图在同一轮更新里被推进。
 
@@ -137,15 +91,7 @@ EventHub 不替代缓存轮询，它承担资源事件广播。
 
 因此真实数据流是：
 
-```mermaid
-flowchart TB
-  Write["资源写入"] --> Store["Store 持久化"]
-  Write --> EventHub["EventHub 发布事件"]
-  EventHub --> DiscoverEvent["DiscoverEvent 插件链"]
-  Write --> History["History 插件链"]
-  Store --> CachePoll["Cache 1s 增量拉取"]
-  CachePoll --> ReadPath["SDK / Console / xDS / AI Registry 读路径"]
-```
+![eventhub write path](/diagrams/eventhub-write-path.svg)
 
 ## 设计边界
 

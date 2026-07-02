@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/page';
-import { MermaidDiagram } from '@/components/docs/MermaidDiagram';
 import { source } from '@/lib/source';
 
 export default async function Page(props: {
@@ -20,7 +19,7 @@ export default async function Page(props: {
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
-        <MDX components={{ Mermaid: MermaidDiagram }} />
+        <MDX />
       </DocsBody>
     </DocsPage>
   );

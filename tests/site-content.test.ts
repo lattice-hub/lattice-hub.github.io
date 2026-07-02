@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import {
   blogPosts,
   componentGroups,
@@ -64,4 +64,23 @@ test('docs index is a product capability overview', () => {
     assert.match(docsIndex, new RegExp(keyword));
   }
   assert.doesNotMatch(docsIndex, /title: .*fumadocs 目录组织/);
+});
+
+test('docs diagrams use compact static SVG assets', () => {
+  const docsFiles = [
+    'content/docs/index.mdx',
+    'content/docs/principles/architecture.mdx',
+    'content/docs/principles/cache-eventhub.mdx',
+    'content/docs/principles/governance-release.mdx',
+    'content/docs/principles/auth-protocols.mdx',
+    'content/docs/principles/ai-registry.mdx',
+    'content/docs/principles/observability-chain.mdx',
+  ];
+
+  const combined = docsFiles.map((file) => readFileSync(file, 'utf8')).join('\n');
+  const svgAssets = readdirSync('public/diagrams').filter((file) => file.endsWith('.svg'));
+
+  assert.doesNotMatch(combined, /```mermaid/);
+  assert.match(combined, /\/diagrams\/control-plane-startup\.svg/);
+  assert.ok(svgAssets.length >= 20, 'expected generated SVG diagrams for docs architecture content');
 });

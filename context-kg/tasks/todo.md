@@ -11,13 +11,19 @@
 
 ## 计划
 
+- [x] 使用 `fireworks-tech-graph` 规范重画文档里的架构图、流程图和数据流图。
+- [x] 将 Mermaid 图替换为 `public/diagrams` 下的紧凑 SVG，并导出 PNG 自检产物。
+- [x] 清理 Mermaid 运行时依赖、MDX 插件和组件注入。
+- [x] 运行测试、lint、build，并抽查 `/docs` 与 `/docs/principles/architecture`。
+- [ ] 提交、推送并确认 GitHub Pages 部署。
+
+## 已完成计划
+
 - [x] 将 `/docs` 首页从 fumadocs 目录说明改为完整的产品能力总览。
 - [x] 更新首页文档分流摘要，使“概览”表达产品能力入口而非目录入口。
 - [x] 增加测试约束，防止 `/docs` 首页标题再次退回目录组织描述。
 - [x] 运行测试、lint、build，并抽查 `/docs` 页面。
 - [ ] 提交并推送产品能力总览更新，等待 GitHub Pages 部署完成。
-
-## 已完成计划
 
 - [x] 核对 `../pole-control-plane` 真实代码入口，提取控制面架构、缓存事件流、治理规则发布、鉴权协议与观测链路。
 - [x] 按真实实现补全 docs/principles 下的原理文档，加入架构图和数据流程图。
@@ -84,3 +90,5 @@
 - 本轮部署：提交 `fbdacd3 docs: expand control-plane principles` 并推送到 `origin/main`；GitHub Actions Pages run `28560402296` 成功；线上 `https://lattice-hub.github.io/`、`/docs/principles/architecture/`、`/docs/principles/ai-registry/`、`/docs/principles/observability-chain/` 均返回 200。
 - 根据用户指出 `/docs` 首页应是产品能力介绍页，已将 `content/docs/index.mdx` 从 fumadocs 目录说明重写为“产品能力总览”，覆盖产品定位、核心能力、典型工作流、组件协作、阅读路径和首版边界；同步更新首页 docs 分流摘要，并新增测试防止标题退回目录说明。
 - 本轮已验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；本地 `http://localhost:3000/docs` 返回 200。
+- 根据用户指出 Mermaid 架构图过大，已按 `fireworks-tech-graph` 规范重画文档内 23 张技术图，生成 `public/diagrams/*.svg` 和对应 PNG；所有 MDX Mermaid 代码块已替换为 SVG 引用，并移除 Mermaid 依赖、MDX 插件和运行时组件。
+- 本轮已验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；本地 `/docs`、`/docs/principles/architecture` 与 `/diagrams/control-plane-startup.svg` 均返回 200；构建产物中无 Mermaid 残留，CSS 已包含 `article img` 图样式。

@@ -27,13 +27,7 @@ description: 治理规则如何从 Console 写入、生成版本、发布 active
 
 `realUpdate` 会分别调用 `loadRules` 和 `loadRelease`，再执行 `setRulesConsole` 与 `setRulesClient`。release 如果不是 active，或者已经被删除，就会从客户端视图移除。
 
-```mermaid
-flowchart TB
-  RuleStore["规则表 / rule"] --> ConsoleCache["Console cache: ruleID -> rule"]
-  ReleaseStore["发布表 / release"] --> ClientCache["Client cache: ActiveKey -> active release"]
-  ConsoleCache --> Console["Console 列表 / 详情 / 编辑"]
-  ClientCache --> SDK["SDK / xDS / Nacos / HTTP Discover"]
-```
+![governance release views](/diagrams/governance-release-views.svg)
 
 ## 创建与更新
 
@@ -51,27 +45,7 @@ flowchart TB
 
 更新规则时会先通过 `getOne` 确认旧规则存在，再生成新的 `Revision`。创建、更新、删除都会调用 `RecordHistory` 记录操作历史。
 
-```mermaid
-sequenceDiagram
-  participant Console
-  participant HTTP as api-http
-  participant Auth as goverrule auth proxy
-  participant Param as paramcheck proxy
-  participant Rule as goverrule.Server
-  participant Store as MySQL store
-  participant History as history chain
-
-  Console->>HTTP: Create / Update rule
-  HTTP->>Auth: 调用 GoverRuleServer
-  Auth->>Auth: CheckConsolePermission
-  Auth->>Param: 通过后进入参数校验
-  Param->>Rule: 调用真实 Server
-  Rule->>Rule: 生成 ID / Revision
-  Rule->>Store: CreateRule / UpdateRule
-  Store-->>Rule: success
-  Rule->>History: RecordHistory
-  Rule-->>Console: BatchWriteResponse
-```
+![governance publish request](/diagrams/governance-publish-request.svg)
 
 ## 发布 active release
 
@@ -104,16 +78,7 @@ sequenceDiagram
 
 `governance_rule_base.go` 中的 `ExecInactiveRelease` 会把同一规则或同一发布条件下旧 release 置为 inactive。`ExecuteActiveRule` 会在 inactive 后写入新 active 版本，并将 `version` 设置为当前最大版本加一。
 
-```mermaid
-flowchart TB
-  Publish["PublishGovernanceRules"] --> Auth["collectRuleReleases + CheckConsolePermission"]
-  Auth --> Tx["Store transaction"]
-  Tx --> Inactive["旧 release active = 0"]
-  Inactive --> Insert["写入新 release"]
-  Insert --> Version["version = max + 1"]
-  Version --> CachePoll["治理 cache 增量更新"]
-  CachePoll --> ActiveView["Client active release 视图"]
-```
+![governance publish flow](/diagrams/governance-publish-flow.svg)
 
 ## 回滚与停止灰度
 

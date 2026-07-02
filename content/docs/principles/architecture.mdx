@@ -23,20 +23,7 @@ description: 从 bootstrap、插件化 API Server、业务 Server、缓存和存
 
 这意味着控制面先完成所有业务 Server 和缓存对象的装配，再启动缓存刷新协程；API Server 对外服务时拿到的已经是完成初始化的共享对象。
 
-```mermaid
-flowchart TB
-  Start["cmd/start.go"] --> Bootstrap["bootstrap.Start"]
-  Bootstrap --> Store["storeapi.GetStore"]
-  Store --> Cache["cache.Initialize / CacheManager"]
-  Cache --> Auth["auth.Initialize"]
-  Auth --> Namespace["namespace.Initialize"]
-  Namespace --> Discover["StartDiscoverComponents"]
-  Discover --> GoverRule["StartGoverRuleComponents"]
-  GoverRule --> Config["StartConfigCenterComponents"]
-  Config --> Admin["admin.Initialize"]
-  Admin --> CacheRun["cache.Run"]
-  CacheRun --> ApiServers["StartServers"]
-```
+![control plane startup](/diagrams/control-plane-startup.svg)
 
 ## API Server 是插件槽位
 
@@ -51,33 +38,7 @@ API 层由 `apis/apiserver` 的 slot 注册机制驱动。`plugin/apiserver/http
 
 HTTP Server 的 `Run` 方法会从各领域包获取已初始化的 Server：`admin.GetServer()`、`namespace.GetServer()`、`service.GetServer()`、`goverrule.GetServer()`、`authapi.GetUserServer()`、`authapi.GetStrategyServer()`、`healthcheck.GetServer()`。这说明 HTTP 只是协议适配和路由分发层，不持有独立业务状态。
 
-```mermaid
-flowchart LR
-  Client["Console / SDK / Agent"] --> HTTP["api-http"]
-  Client --> GRPC["service-grpc"]
-  Client --> XDS["xds-v3"]
-  Client --> Nacos["nacos"]
-  Client --> Apollo["apollo"]
-  Client --> Eureka["eureka"]
-
-  HTTP --> Services["service.DiscoverServer"]
-  HTTP --> Rules["goverrule.GoverRuleServer"]
-  HTTP --> Config["config.ConfigCenterServer"]
-  HTTP --> Admin["admin.AdminOperateServer"]
-  HTTP --> AI["aimcp / aia2a HTTPServer"]
-  GRPC --> Services
-  XDS --> Services
-  XDS --> Rules
-  Nacos --> Services
-  Apollo --> Config
-  Eureka --> Services
-
-  Services --> Cache["cache.CacheManager"]
-  Rules --> Cache
-  Config --> Cache
-  AI --> Cache
-  Cache --> Store["store.Store"]
-```
+![api shared servers](/diagrams/api-shared-servers.svg)
 
 ## 业务 Server 通过 interceptor 链扩展
 
@@ -92,16 +53,7 @@ flowchart LR
 - 鉴权、参数校验不散落在每个协议入口里，而是包在领域 Server 前面。
 - HTTP、gRPC、xDS 等入口调用同一业务 Server 时，会自然复用同一套鉴权和校验规则。
 
-```mermaid
-flowchart LR
-  API["API Server"] --> Auth["auth proxy"]
-  Auth --> Param["paramcheck proxy"]
-  Param --> Core["domain Server"]
-  Core --> Cache["CacheManager"]
-  Core --> Store["Store"]
-  Auth --> User["auth.UserServer"]
-  Auth --> Policy["auth.StrategyServer"]
-```
+![interceptor chain](/diagrams/interceptor-chain.svg)
 
 ## 真实模块边界
 

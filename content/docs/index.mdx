@@ -16,21 +16,7 @@ Lattice Hub 解决的是“控制面碎片化”的问题：
 - 治理规则先进入控制面，再通过缓存、事件和发现链路下发给客户端或数据面。
 - MCP Server 与 A2A Agent 不是额外展示层，而是和服务、实例、规则一样进入缓存与 API 链路。
 
-```mermaid
-flowchart LR
-  Console["Console / HTTP API"] --> Control["Lattice Hub Control Plane"]
-  K8s["Kubernetes Controller"] --> Control
-  SDK["Rust SDK / Client"] --> Control
-  Sidecar["Pingora Sidecar"] --> Control
-  Agent["Agent Runtime"] --> Control
-
-  Control --> Registry["服务与实例目录"]
-  Control --> Config["配置中心"]
-  Control --> Rules["治理规则"]
-  Control --> Auth["权限与审计"]
-  Control --> AI["MCP / A2A Registry"]
-  Control --> Obs["History / Events / Statis / OTel"]
-```
+![product capability map](/diagrams/product-capability-map.svg)
 
 ## 核心能力
 
@@ -46,22 +32,7 @@ flowchart LR
 
 ## 典型工作流
 
-```mermaid
-sequenceDiagram
-  participant Operator as 平台工程师
-  participant Console as Console / API
-  participant CP as Control Plane
-  participant Cache as CacheManager
-  participant Client as SDK / Sidecar / Agent
-
-  Operator->>Console: 创建服务、配置或治理规则
-  Console->>CP: 调用控制面 API
-  CP->>CP: 鉴权、参数校验、资源存在性检查
-  CP->>CP: 写入 store 并生成 revision / release
-  CP->>Cache: 增量刷新资源视图
-  Client->>CP: Discover / Config / Registry 查询
-  CP-->>Client: 返回按 revision 组织的运行时视图
-```
+![product runtime workflow](/diagrams/product-runtime-workflow.svg)
 
 从产品视角看，Lattice Hub 的关键不是“多做几个 API”，而是把控制面资源变更变成稳定的运行时视图：
 

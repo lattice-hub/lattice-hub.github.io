@@ -34,15 +34,7 @@ Lattice Hub 的 AI Native 能力不是独立于服务治理之外的演示入口
 
 这两个 cache 和服务、实例、治理规则一样，都进入 `CacheManager`。
 
-```mermaid
-flowchart TB
-  Store["MySQL AI resource tables"] --> MCP["MCPServerCache"]
-  Store --> A2A["A2AAgentCache"]
-  MCP --> MCPAPI["/ai/mcp/v1"]
-  A2A --> A2AAPI["/ai/a2a/v1"]
-  MCP --> Agent["AI Agent / MCP Client"]
-  A2A --> Agent
-```
+![ai registry cache](/diagrams/ai-registry-cache.svg)
 
 ## MCP Server 启动链路
 
@@ -55,21 +47,7 @@ HTTP Server 在 `Run` 时会创建 `aimcp.HTTPServer`。`aimcp.NewServer` 会：
 5. 创建 SSE Server，base path 为 `/ai/mcp/v1`，SSE endpoint 为 `/sse`，message endpoint 为 `/message`。
 6. 在 SSE context 中重写 `Authorization` header，去掉 `Bearer ` 前缀后写入请求上下文。
 
-```mermaid
-sequenceDiagram
-  participant HTTP as api-http
-  participant AIMCP as aimcp.NewServer
-  participant Cache as CacheManager
-  participant MCP as MCPServerCache
-  participant SSE as MCP SSE Server
-
-  HTTP->>AIMCP: 初始化 MCP HTTPServer
-  AIMCP->>Cache: OpenResourceCache(MCPServerName)
-  AIMCP->>MCP: startMCPServerCache
-  MCP->>MCP: Update + ticker
-  AIMCP->>SSE: NewMCPServer + NewSSEServer
-  SSE-->>HTTP: /ai/mcp/v1/sse, /message
-```
+![mcp api assembly](/diagrams/mcp-api-assembly.svg)
 
 ## A2A Agent 启动链路
 
@@ -89,14 +67,7 @@ A2A 入口只有在 HTTP Server 配置启用 `aia2a` API 时创建。`aia2a.NewS
 - `GET /agent/skills`
 - `GET /agents/{id}/card`
 
-```mermaid
-flowchart LR
-  API["api-http"] --> Enabled{"isAPIEnabled('aia2a')"}
-  Enabled -->|true| Server["aia2a.NewServer"]
-  Server --> Cache["OpenResourceCache(A2AAgentName)"]
-  Cache --> Ticker["startA2AAgentCache"]
-  Ticker --> Routes["/ai/a2a/v1/agents / skills / card"]
-```
+![a2a registration](/diagrams/a2a-registration.svg)
 
 ## 增量缓存机制
 

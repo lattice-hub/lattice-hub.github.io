@@ -24,13 +24,7 @@ history.GetHistory().Record(entry)
 
 但它会跳过来自客户端的请求，避免把客户端发现路径误记为控制台操作历史。
 
-```mermaid
-flowchart LR
-  GoverRule["goverrule.Server"] --> Record["RecordHistory"]
-  Record --> Composite["CompositeHistory"]
-  Composite --> Logger["history/logger"]
-  Composite --> RDS["history/rds"]
-```
+![history plugin chain](/diagrams/history-plugin-chain.svg)
 
 ## DiscoverEvent 插件链
 
@@ -38,19 +32,7 @@ flowchart LR
 
 事件来源包括服务实例注册、注销、更新和推空保护状态变化等。
 
-```mermaid
-sequenceDiagram
-  participant Service as service.Server
-  participant EventHub as eventhub
-  participant Handler as PluginInstanceEventHandler
-  participant Channel as CompositeDiscoverChannel
-  participant Entry as logger / rds
-
-  Service->>EventHub: Publish InstanceEventTopic
-  EventHub->>Handler: OnEvent
-  Handler->>Channel: PublishEvent
-  Channel->>Entry: PublishEvent
-```
+![discover event chain](/diagrams/discover-event-chain.svg)
 
 ## Statis 插件链
 
@@ -63,13 +45,7 @@ sequenceDiagram
 
 如果配置里没有显式 `statis.entries`，但旧式 `statis.name` 为 `local`，默认会加载 `local` 和 `prometheus` 两个 entry。`service/discover_response_cache.go` 中的 `reportDiscoverCacheCall` 会把 revision cache 与 response cache 命中上报为 `DiscoverCacheCallMetric`。
 
-```mermaid
-flowchart LR
-  Discover["Discover hot path"] --> CacheMetric["reportDiscoverCacheCall"]
-  CacheMetric --> Statis["statis.GetStatis"]
-  Statis --> Local["statis/logger"]
-  Statis --> Prom["statis/prometheus"]
-```
+![statis metrics chain](/diagrams/statis-metrics-chain.svg)
 
 ## OpenTelemetry SDK
 
@@ -93,15 +69,7 @@ flowchart LR
 
 这些指标会被缓存、批处理、客户端连接和健康检查等模块调用。
 
-```mermaid
-flowchart TB
-  Runtime["runtime / cache / batch / client"] --> Metrics["pkg/common/otel/metrics"]
-  Metrics --> Meter["otel.Meter()"]
-  Meter --> Exporter["OTLP metric exporter"]
-  Trace["trace provider"] --> TraceExporter["OTLP trace exporter"]
-  Exporter --> Backend["OTel Collector / OpenObserver / backend"]
-  TraceExporter --> Backend
-```
+![otel boundary](/diagrams/otel-boundary.svg)
 
 ## 边界和扩展方式
 
