@@ -11,6 +11,12 @@
 
 ## 计划
 
+- [x] 定位 Fumadocs 文档 light/dark 文字与格式异常的样式覆盖源。
+- [x] 将官网首页视觉变量和 `article img` 等规则限制在首页作用域，避免污染 docs。
+- [x] 为 Fumadocs 文档补齐 light/dark token 映射，恢复默认文档质感。
+- [x] 用测试、lint、build、静态导出和浏览器截图验证 docs light/dark。
+- [ ] 提交、推送并确认 GitHub Pages 部署。
+
 - [x] 定位 `/docs` 图片显示为 `[object Object]` 的根因。
 - [x] 为结构化 image `src` 解包增加 RED/GREEN 测试。
 - [x] 在 MDX 组件层解包结构化图片对象并接入 docs 页面。
@@ -103,3 +109,6 @@
 - 本轮修复在 `mdx-components` 中增加图片 `src` 解包逻辑，并显式把 docs 页面 MDX 渲染接入该组件；测试覆盖字符串路径和结构化 `{ src }` 两种输入，防止文档图再次破图。
 - 本轮本地验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；`out/docs` 与 `.next/server/app/docs` 中不再出现 `[object Object]`，`product capability map` 和 `control plane startup` 均导出为真实 SVG 静态资源路径。
 - 本轮部署：提交 `61586d3 fix: resolve mdx diagram image sources` 并推送到 `origin/main`；GitHub Actions Pages run `28579686730` 成功；线上 `/docs/` 返回 200，HTML 不再包含 `[object Object]`，`product-capability-map` 与 `control-plane-startup` SVG 静态资源均返回 200。
+- 根据用户指出 Fumadocs 文档 light/dark 文字和格式异常，已定位到官网全局样式污染文档主题：`:root` 覆盖了 Fumadocs 使用的 `--radius-lg`，`body` 覆盖了 Fumadocs 背景/文字变量，裸 `article img` 覆盖了文档 prose 图片样式。
+- 本轮修复将首页视觉 token 收敛到 `.site-shell`，`body` 改回 `--color-fd-background / --color-fd-foreground`，并将文档图片补充规则限定到 `#nd-docs-layout article img`；新增测试防止再次覆盖 Fumadocs 主题变量。
+- 本轮本地验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；Playwright 截图验证 `/docs/reports/performance` light/dark 文字、表格、侧栏均正常，首页首屏未被作用域调整破坏。

@@ -1,5 +1,13 @@
 :root {
   color-scheme: light;
+  --focus-ring: 0 0 0 3px color-mix(in oklch, var(--color-fd-primary) 30%, transparent);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.site-shell {
   --bg: #f6f8fb;
   --surface: #ffffff;
   --fg: #0b1020;
@@ -26,8 +34,6 @@
   --fs-h2: clamp(28px, 3.4vw, 42px);
   --container: 1180px;
   --gutter: 32px;
-  --radius: 0px;
-  --radius-lg: 0px;
   --lh-bg: var(--bg);
   --lh-surface: var(--surface);
   --lh-ink: var(--fg);
@@ -49,9 +55,9 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: var(--font-body);
+  background: var(--color-fd-background);
+  color: var(--color-fd-foreground);
+  font-family: var(--font-body, "Inter", -apple-system, system-ui, sans-serif);
 }
 
 a {
@@ -1212,7 +1218,7 @@ nextjs-portal,
 }
 
 @media (max-width: 760px) {
-  :root {
+  .site-shell {
     --gutter: 18px;
   }
 
@@ -1331,18 +1337,7 @@ nextjs-portal,
   }
 }
 
-article img {
-  display: block;
+#nd-docs-layout article img {
   width: 100%;
   height: auto;
-  margin: 1.125rem 0 1.5rem;
-  border: 1px solid var(--border);
-  background: #fff;
-}
-
-@media (max-width: 720px) {
-  article img {
-    margin-inline: calc(var(--gutter) * -0.5);
-    width: calc(100% + var(--gutter));
-  }
 }

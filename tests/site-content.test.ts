@@ -93,3 +93,13 @@ test('mdx image component resolves structured image src objects', () => {
     '/_next/static/media/product-capability-map.svg',
   );
 });
+
+test('global styles do not override fumadocs document theming', () => {
+  const globalCss = readFileSync('src/app/global.css', 'utf8');
+
+  assert.doesNotMatch(globalCss, /:root\s*{[\s\S]*--radius(?:-lg)?:/, 'Fumadocs radius tokens must stay intact');
+  assert.doesNotMatch(globalCss, /body\s*{[^}]*background:\s*var\(--bg\)/, 'body background should follow Fumadocs');
+  assert.doesNotMatch(globalCss, /body\s*{[^}]*color:\s*var\(--fg\)/, 'body text color should follow Fumadocs');
+  assert.doesNotMatch(globalCss, /^article img\s*{/m, 'docs images must not be styled through a global article selector');
+  assert.match(globalCss, /\.site-shell\s*{[\s\S]*--bg:/, 'homepage design tokens should be scoped to the homepage shell');
+});
