@@ -15,7 +15,7 @@
 - [x] 为结构化 image `src` 解包增加 RED/GREEN 测试。
 - [x] 在 MDX 组件层解包结构化图片对象并接入 docs 页面。
 - [x] 运行 test/lint/build/export，并检查导出 HTML 不再出现 `[object Object]`。
-- [ ] 提交、推送并确认 GitHub Pages 部署。
+- [x] 提交、推送并确认 GitHub Pages 部署。
 
 - [x] 使用 `fireworks-tech-graph` 规范重画文档里的架构图、流程图和数据流图。
 - [x] 将 Mermaid 图替换为 `public/diagrams` 下的紧凑 SVG，并导出 PNG 自检产物。
@@ -102,3 +102,4 @@
 - 根据用户截图指出的破图问题，已定位到 Fumadocs/MDX 将 Markdown 图片编译成结构化静态资源对象，而原生 `img` 直接接收对象导致线上 HTML 出现 `src="[object Object]"`。
 - 本轮修复在 `mdx-components` 中增加图片 `src` 解包逻辑，并显式把 docs 页面 MDX 渲染接入该组件；测试覆盖字符串路径和结构化 `{ src }` 两种输入，防止文档图再次破图。
 - 本轮本地验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；`out/docs` 与 `.next/server/app/docs` 中不再出现 `[object Object]`，`product capability map` 和 `control plane startup` 均导出为真实 SVG 静态资源路径。
+- 本轮部署：提交 `61586d3 fix: resolve mdx diagram image sources` 并推送到 `origin/main`；GitHub Actions Pages run `28579686730` 成功；线上 `/docs/` 返回 200，HTML 不再包含 `[object Object]`，`product-capability-map` 与 `control-plane-startup` SVG 静态资源均返回 200。
