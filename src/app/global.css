@@ -1330,3 +1330,44 @@ nextjs-portal,
     transition: none !important;
   }
 }
+
+.mermaid-diagram {
+  margin: 1.25rem 0;
+  overflow-x: auto;
+  border: 1px solid var(--glass-border);
+  background: color-mix(in oklch, var(--surface) 68%, transparent);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  padding: 1rem;
+}
+
+.mermaid-diagram:empty {
+  min-height: 9rem;
+}
+
+.mermaid-diagram svg {
+  display: block;
+  min-width: 42rem;
+  max-width: none;
+  height: auto;
+  margin: 0 auto;
+}
+
+.mermaid-fallback {
+  margin: 1.25rem 0;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  padding: 1rem;
+}
+
+@media (max-width: 720px) {
+  .mermaid-diagram {
+    margin-inline: calc(var(--gutter) * -0.5);
+    padding: 0.875rem;
+  }
+
+  .mermaid-diagram svg {
+    min-width: 36rem;
+  }
+}

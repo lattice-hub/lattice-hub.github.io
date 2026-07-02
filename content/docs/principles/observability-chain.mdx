@@ -1,0 +1,121 @@
+---
+title: 观测链路
+description: History、DiscoverEvent、Statis 与 OpenTelemetry 在控制面中的边界。
+---
+
+`pole-control-plane` 的观测实现分为两层：一层是内部插件化观测模型，包含 `history`、`discoverEvent`、`statis`；另一层是 `pkg/common/otel`，负责把指标和 trace 接到 OTLP/OpenTelemetry。
+
+这两层不是同一个概念：
+
+- `history` 记录控制面资源操作历史。
+- `discoverEvent` 发布服务发现相关事件。
+- `statis` 汇总 API call、discover call、config metrics 等统计。
+- `otel` 初始化 OpenTelemetry tracer、meter 和 runtime metrics。
+
+## History 插件链
+
+`apis/observability/history/history.go` 定义 `History` 接口和 `CompositeHistory`。`GetHistory()` 会从插件配置读取 `History.Entries`，逐个加载实现，并在 `Record` 时广播给所有 entry。
+
+治理规则 Server 的 `RecordHistory` 会调用：
+
+```go
+history.GetHistory().Record(entry)
+```
+
+但它会跳过来自客户端的请求，避免把客户端发现路径误记为控制台操作历史。
+
+```mermaid
+flowchart LR
+  GoverRule["goverrule.Server"] --> Record["RecordHistory"]
+  Record --> Composite["CompositeHistory"]
+  Composite --> Logger["history/logger"]
+  Composite --> RDS["history/rds"]
+```
+
+## DiscoverEvent 插件链
+
+`apis/observability/event/discoverevent.go` 定义 `DiscoverChannel`。服务发现 Server 初始化时，如果存在 DiscoverEvent 插件，会订阅 `eventhub.InstanceEventTopic`，并把事件转发到 `DiscoverChannel.PublishEvent`。
+
+事件来源包括服务实例注册、注销、更新和推空保护状态变化等。
+
+```mermaid
+sequenceDiagram
+  participant Service as service.Server
+  participant EventHub as eventhub
+  participant Handler as PluginInstanceEventHandler
+  participant Channel as CompositeDiscoverChannel
+  participant Entry as logger / rds
+
+  Service->>EventHub: Publish InstanceEventTopic
+  EventHub->>Handler: OnEvent
+  Handler->>Channel: PublishEvent
+  Channel->>Entry: PublishEvent
+```
+
+## Statis 插件链
+
+`apis/observability/statis/statis.go` 定义 `Statis` 接口，包含：
+
+- `ReportCallMetrics`
+- `ReportDiscoveryMetrics`
+- `ReportConfigMetrics`
+- `ReportDiscoverCall`
+
+如果配置里没有显式 `statis.entries`，但旧式 `statis.name` 为 `local`，默认会加载 `local` 和 `prometheus` 两个 entry。`service/discover_response_cache.go` 中的 `reportDiscoverCacheCall` 会把 revision cache 与 response cache 命中上报为 `DiscoverCacheCallMetric`。
+
+```mermaid
+flowchart LR
+  Discover["Discover hot path"] --> CacheMetric["reportDiscoverCacheCall"]
+  CacheMetric --> Statis["statis.GetStatis"]
+  Statis --> Local["statis/logger"]
+  Statis --> Prom["statis/prometheus"]
+```
+
+## OpenTelemetry SDK
+
+`pkg/common/otel/otel.go` 的 `SetupOTelSDK` 会初始化：
+
+- W3C TraceContext 与 Baggage propagator。
+- OTLP trace exporter。
+- OTLP metric exporter。
+- periodic metric reader，默认推送间隔由 `Config.PushInterval` 控制，默认 5 秒。
+- runtime metrics producer。
+
+`pkg/common/otel/metrics` 定义了控制面内置指标，例如：
+
+- `instance_regis_cost_time`
+- `instance_regis_task_expire`
+- `cache_update_cost`
+- `batch_job_unfinish`
+- `discovery_conn_total`
+- `config_conn_total`
+- `sdk_client_total`
+
+这些指标会被缓存、批处理、客户端连接和健康检查等模块调用。
+
+```mermaid
+flowchart TB
+  Runtime["runtime / cache / batch / client"] --> Metrics["pkg/common/otel/metrics"]
+  Metrics --> Meter["otel.Meter()"]
+  Meter --> Exporter["OTLP metric exporter"]
+  Trace["trace provider"] --> TraceExporter["OTLP trace exporter"]
+  Exporter --> Backend["OTel Collector / OpenObserver / backend"]
+  TraceExporter --> Backend
+```
+
+## 边界和扩展方式
+
+如果要把内部观测接到 OpenTelemetry，更自然的方式是在现有链路里增加 entry，而不是新建一个并列的 `openobserver` 插件类型：
+
+- `history.entries` 可以增加一个 OTel entry，把资源操作历史转换成 logs/events。
+- `discoverEvent.entries` 可以增加一个 OTel entry，把发现事件转换成 events。
+- `statis.entries` 可以增加一个 OTel entry，把聚合统计转换成 metrics。
+
+这样可以保留现有插件职责，同时让 OTLP 后端成为可替换的输出目的地。
+
+## 设计边界
+
+- `history`、`discoverEvent`、`statis` 是 Pole 内部观测语义，不等同于 OTel logs/metrics/traces。
+- `pkg/common/otel` 是 SDK 和导出层，不能替代业务侧的观测事件建模。
+- 缓存更新耗时已经通过 `metrics.RecordCacheUpdateCost` 接入 OTel 指标。
+- 发现缓存命中率目前通过 `statis.ReportCallMetrics` 汇总，后续可在 statis entry 中桥接到 OTel metrics。

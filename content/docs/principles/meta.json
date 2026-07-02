@@ -1,4 +1,11 @@
 {
   "title": "原理",
-  "pages": ["architecture", "cache-eventhub", "governance-release", "auth-protocols"]
+  "pages": [
+    "architecture",
+    "cache-eventhub",
+    "governance-release",
+    "auth-protocols",
+    "ai-registry",
+    "observability-chain"
+  ]
 }

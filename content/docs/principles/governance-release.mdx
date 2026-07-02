@@ -1,34 +1,160 @@
 ---
-title: 治理规则灰度发布
-description: 治理规则版本化、灰度下发和多协议客户端兼容的实现思路。
+title: 治理规则与灰度发布
+description: 治理规则如何从 Console 写入、生成版本、发布 active release，并进入客户端发现视图。
 ---
 
-治理规则灰度发布解决的是“规则变化如何可控生效”的问题。Lattice Hub 的目标是让路由、限流、熔断、故障探测等规则支持版本控制和灰度下发。
+`pole-control-plane` 的治理规则不是简单的“规则表 + 查询接口”。真实实现把控制台管理视图和客户端生效视图区分开：规则本体用于 Console 管理，release 表示一个可发布、可激活、可回滚或可停止灰度的客户端版本。
 
-## 版本化
+核心实现入口：
 
-规则发布需要区分草稿、已发布版本和回滚目标。版本化可以让控制面保留发布历史，并为客户端提供可追踪的配置视图。
+- `pkg/goverrule/default.go`：治理规则 Server 初始化与 interceptor 链。
+- `pkg/goverrule/traffic_governance.go`：traffic security、traffic mirror、traffic mock 的统一业务模板。
+- `pkg/goverrule/interceptor/auth/release.go`：发布、查询版本、删除版本、回滚、停止灰度的鉴权入口。
+- `plugin/store/mysql/traffic_governance.go` 与 `governance_rule_base.go`：统一规则存储、release 查询和 active 状态切换。
+- `pkg/cache/rules/*`：console 视图与 client active 视图的增量缓存。
 
-## 灰度下发
+## 两类视图
 
-灰度能力需要结合标签、命名空间、服务、实例和客户端类型。现有目标包括让 Apollo/Nacos/Polaris 客户端支持标签灰度下发。
+治理规则缓存通常维护两类数据：
 
-## 多协议兼容
+- Console 视图：规则本体，用于列表、详情、编辑、删除。
+- Client 视图：active release，用于 SDK、xDS、协议适配层向客户端下发生效版本。
 
-不同协议入口的资源模型不同，但控制面的治理语义应保持一致。实现上需要将统一治理模型映射到 HTTP、gRPC、xDS、Nacos、Apollo 等协议响应。
+例如 `TrafficGovernanceCache` 内部有两个 map：
 
-## 七类治理规则的统一拓扑
+- `ids`: `ruleID -> TrafficGovernanceRule`，对应 Console 管理视图。
+- `rules`: `ActiveKey -> TrafficGovernanceRuleRelease`，对应客户端可见 active release。
 
-官网首页用同一个 `client → 控制面 → 上游` 拓扑解释七类治理规则。这样做的目的不是把规则简化成白板流程图，而是让用户看到所有规则都在同一条流量链路上改写路径。
+`realUpdate` 会分别调用 `loadRules` 和 `loadRelease`，再执行 `setRulesConsole` 与 `setRulesClient`。release 如果不是 active，或者已经被删除，就会从客户端视图移除。
 
-| 规则 | 拓扑表达 |
-| --- | --- |
-| 路由 | 控制面按权重分两条边：`stable 80%` 粗线、`canary 20%` 细线。 |
-| 泳道 | 请求带 `x-env: gray` 标签，控制面高亮灰度泳道上游。 |
-| 限流 | `client → 控制面` 边标 `≤1000 rps`，溢出分出虚线到 `429` 闸门。 |
-| 熔断 | `svc-A` 边断开，流量改道到 `svc-B` 接管。 |
-| 镜像 | 主链路保持实线，同时以 `copy` 虚线旁路到影子集群。 |
-| Mock | 控制面直接回流 `200 JSON` 给 client，上游边灰显 bypass。 |
-| 鉴权 | 策略门后分允许放行与拒绝阻断两条边。 |
+```mermaid
+flowchart TB
+  RuleStore["规则表 / rule"] --> ConsoleCache["Console cache: ruleID -> rule"]
+  ReleaseStore["发布表 / release"] --> ClientCache["Client cache: ActiveKey -> active release"]
+  ConsoleCache --> Console["Console 列表 / 详情 / 编辑"]
+  ClientCache --> SDK["SDK / xDS / Nacos / HTTP Discover"]
+```
 
-这个表达方式应与实际规则发布文档保持一致：拓扑只负责说明路径变化，正式规则仍需要版本号、作用范围、标签匹配、灰度策略和回滚机制。
+## 创建与更新
+
+`pkg/goverrule/traffic_governance.go` 把 traffic security、traffic mirror、traffic mock 收敛成 `trafficGovernanceSpec`。业务函数只保留资源差异：
+
+- resource 类型。
+- proto spec 与内部 `TrafficGovernanceRule` 的转换。
+- create/update/delete/get/query store 函数。
+- 展示名和 history 记录。
+
+创建规则时会生成：
+
+- `ID = utils.NewUUID()`
+- `Revision = revision.NewRevision()`
+
+更新规则时会先通过 `getOne` 确认旧规则存在，再生成新的 `Revision`。创建、更新、删除都会调用 `RecordHistory` 记录操作历史。
+
+```mermaid
+sequenceDiagram
+  participant Console
+  participant HTTP as api-http
+  participant Auth as goverrule auth proxy
+  participant Param as paramcheck proxy
+  participant Rule as goverrule.Server
+  participant Store as MySQL store
+  participant History as history chain
+
+  Console->>HTTP: Create / Update rule
+  HTTP->>Auth: 调用 GoverRuleServer
+  Auth->>Auth: CheckConsolePermission
+  Auth->>Param: 通过后进入参数校验
+  Param->>Rule: 调用真实 Server
+  Rule->>Rule: 生成 ID / Revision
+  Rule->>Store: CreateRule / UpdateRule
+  Store-->>Rule: success
+  Rule->>History: RecordHistory
+  Rule-->>Console: BatchWriteResponse
+```
+
+## 发布 active release
+
+发布链路由 `PublishGovernanceRules` 接收 `RuleRelease`。auth interceptor 会根据 `resource` 分派到具体权限点：
+
+- `PublishRouteRules`
+- `PublishRateLimitRules`
+- `PublishCircuitBreakerRules`
+- `PublishFaultDetectRules`
+- `PublishLaneGroups`
+- `PublishLosslessRules`
+- `PublishTrafficSecurityRules`
+- `PublishTrafficMirrorRules`
+- `PublishTrafficMockRules`
+
+`collectRuleReleases` 会按 `RuleRelease.Resource` 到对应 cache 里找规则，并把规则 ID、资源类型和 metadata 放进 `AcquireContext`。权限通过后才调用真实 Server。
+
+存储层的 release 语义由统一表结构表达：
+
+- `id`
+- `name`
+- `rule_id`
+- `rule_name`
+- `active`
+- `version`
+- `description`
+- `release_type`
+- `ctime`
+- `mtime`
+
+`governance_rule_base.go` 中的 `ExecInactiveRelease` 会把同一规则或同一发布条件下旧 release 置为 inactive。`ExecuteActiveRule` 会在 inactive 后写入新 active 版本，并将 `version` 设置为当前最大版本加一。
+
+```mermaid
+flowchart TB
+  Publish["PublishGovernanceRules"] --> Auth["collectRuleReleases + CheckConsolePermission"]
+  Auth --> Tx["Store transaction"]
+  Tx --> Inactive["旧 release active = 0"]
+  Inactive --> Insert["写入新 release"]
+  Insert --> Version["version = max + 1"]
+  Version --> CachePoll["治理 cache 增量更新"]
+  CachePoll --> ActiveView["Client active release 视图"]
+```
+
+## 回滚与停止灰度
+
+回滚和停止灰度不是新的规则类型，而是 release 生命周期操作：
+
+- `RollbackGovernanceRules`：把目标版本重新置为客户端 active 视图。
+- `StopbetaGovernanceRules`：停止灰度发布版本。
+- `DeleteGovernanceRules`：删除发布版本。
+- `GetRuleReleases`：查询某个规则的发布版本列表。
+
+这些接口仍然先经过 `checkGovernanceRules`，也就是按资源类型、操作类型和方法名进行权限检查。
+
+## 七类流量规则如何放到同一拓扑
+
+官网首页用 `client -> control plane -> upstream` 解释七类规则，这个表达对应的是规则生效位置，而不是存储结构。真实实现里各规则可以分成三组：
+
+| 规则 | 主要实现入口 | 生效视图 |
+| --- | --- | --- |
+| 路由 | `pkg/goverrule/router_rule.go`、`pkg/cache/rules/router_rule.go` | active router release |
+| 限流 | `pkg/goverrule/ratelimit.go`、`pkg/cache/rules/ratelimit_config.go` | active rate limit release |
+| 熔断 | `pkg/goverrule/circuitbreaker.go`、`pkg/cache/rules/circuitbreaker.go` | active circuit breaker release |
+| 主动探测 | `pkg/goverrule/faultdetect.go`、`pkg/cache/rules/faultdetect.go` | active fault detector release |
+| 泳道 | `pkg/goverrule/lane_rule.go`、`pkg/cache/rules/lane.go` | active lane group release |
+| 无损上下线 | `pkg/goverrule/lossless.go`、`pkg/cache/rules/lossless.go` | active lossless release |
+| 安全 / 镜像 / Mock | `pkg/goverrule/traffic_governance.go`、`pkg/cache/rules/traffic_governance.go` | active traffic governance release |
+
+在客户端视角，所有规则最终都变成“当前服务或调用关系下应该下发的 active 配置”。在控制台视角，它们仍保留各自的编辑模型、过滤条件、权限点和发布历史。
+
+## 和缓存更新的关系
+
+治理规则的发布不会要求客户端直接查数据库。发布写入 store 后，由缓存层通过两种路径追平：
+
+1. 常规 cache 的 `realUpdate` 按 `LastFetchTime` 拉取规则和 release。
+2. 统一治理规则更新器 `governanceRuleUpdateCache` 一次拉取 `GovernanceRuleUpdates` 和 `GovernanceRuleReleaseUpdates`，再分发给所有 watcher。
+
+这让发布链路保持事务语义，让读路径保持低延迟。
+
+## 设计边界
+
+- Rule 是管理态对象，Release 是客户端生效态对象。
+- active release 是客户端读路径的核心，不应只看规则本体。
+- 版本号由存储层 release 操作推进，规则本体的 `Revision` 用于资源变化识别。
+- 鉴权在发布、回滚、删除、停止灰度这些 release 操作上同样生效。
+- 新增治理规则类型时，至少要补齐业务 Server、store、cache、release、auth resource mapping 和 policy detail 回显。
