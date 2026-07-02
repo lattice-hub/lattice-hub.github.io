@@ -15,7 +15,7 @@
 - [x] 将文档、博客、报告接入 `DocsLayout` 的 `tabs` / sidebar dropdown。
 - [x] 按当前分区过滤左侧目录树，避免博客和报告混在文档目录里。
 - [x] 用测试、lint、build、静态导出和浏览器截图验证分区切换。
-- [ ] 提交、推送并确认 GitHub Pages 部署。
+- [ ] 提交、推送并确认 GitHub Pages 部署；首次部署 run `28605021504` 的 build 成功，但 Pages deployment 长时间停在 `deployment_queued` 后被默认 10 分钟超时取消，已增加 deploy timeout 后重试。
 
 - [x] 定位 Fumadocs 文档 light/dark 文字与格式异常的样式覆盖源。
 - [x] 将官网首页视觉变量和 `article img` 等规则限制在首页作用域，避免污染 docs。
