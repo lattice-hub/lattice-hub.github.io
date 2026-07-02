@@ -15,7 +15,7 @@
 - [x] 将官网首页视觉变量和 `article img` 等规则限制在首页作用域，避免污染 docs。
 - [x] 为 Fumadocs 文档补齐 light/dark token 映射，恢复默认文档质感。
 - [x] 用测试、lint、build、静态导出和浏览器截图验证 docs light/dark。
-- [ ] 提交、推送并确认 GitHub Pages 部署。
+- [x] 提交、推送并确认 GitHub Pages 部署。
 
 - [x] 定位 `/docs` 图片显示为 `[object Object]` 的根因。
 - [x] 为结构化 image `src` 解包增加 RED/GREEN 测试。
@@ -112,3 +112,4 @@
 - 根据用户指出 Fumadocs 文档 light/dark 文字和格式异常，已定位到官网全局样式污染文档主题：`:root` 覆盖了 Fumadocs 使用的 `--radius-lg`，`body` 覆盖了 Fumadocs 背景/文字变量，裸 `article img` 覆盖了文档 prose 图片样式。
 - 本轮修复将首页视觉 token 收敛到 `.site-shell`，`body` 改回 `--color-fd-background / --color-fd-foreground`，并将文档图片补充规则限定到 `#nd-docs-layout article img`；新增测试防止再次覆盖 Fumadocs 主题变量。
 - 本轮本地验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；Playwright 截图验证 `/docs/reports/performance` light/dark 文字、表格、侧栏均正常，首页首屏未被作用域调整破坏。
+- 本轮部署：提交 `d82e61a fix: isolate fumadocs document theme` 并推送到 `origin/main`；GitHub Actions Pages run `28590223259` 成功；线上 `/docs/reports/performance/` 返回 200，light/dark 截图均显示 Fumadocs 文档文字、表格和侧栏正常。
