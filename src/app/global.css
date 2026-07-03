@@ -963,16 +963,11 @@ nextjs-portal,
   border-top: 1px solid var(--border);
 }
 
-.home-line-grid,
 .component-grid,
 .content-grid,
 .facts {
   display: grid;
   gap: 14px;
-}
-
-.home-line-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .content-grid {
@@ -1005,12 +1000,209 @@ nextjs-portal,
   line-height: 1.7;
 }
 
-.home-line,
 .component-card,
 .content-card,
 .fact {
   min-height: 100%;
   padding: 1.05rem;
+}
+
+.function-architecture {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(.85rem, 1.8vw, 1.2rem);
+  border: 1px solid var(--glass-border);
+  background:
+    linear-gradient(var(--border-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-soft) 1px, transparent 1px),
+    linear-gradient(135deg, color-mix(in oklch, var(--surface) 74%, transparent), color-mix(in oklch, var(--accent) 8%, var(--surface)));
+  background-size: 56px 56px, 56px 56px, auto;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+.function-architecture::before {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 74% 0, color-mix(in oklch, var(--accent) 17%, transparent), transparent 38%);
+  content: "";
+  pointer-events: none;
+}
+
+.control-capabilities {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.08fr 1.08fr .86fr 1.08fr;
+  gap: 14px;
+}
+
+.capability-domain {
+  min-height: 12.8rem;
+  padding: .9rem;
+  border: 1px solid var(--glass-border);
+  background: color-mix(in oklch, var(--surface) 74%, transparent);
+}
+
+.capability-domain h3,
+.runtime-block h3 {
+  margin: 0;
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+}
+
+.capability-domain p {
+  min-height: 4.1rem;
+  margin: .58rem 0 .82rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.capability-chips,
+.runtime-chips {
+  display: grid;
+  gap: 8px;
+}
+
+.capability-chips {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.capability-chips span,
+.runtime-chips span {
+  display: grid;
+  min-height: 30px;
+  place-items: center;
+  border: 1px solid var(--border);
+  background: color-mix(in oklch, var(--surface) 86%, transparent);
+  color: color-mix(in oklch, var(--fg) 74%, var(--accent));
+  font-size: .78rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.control-plane-bar {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: 4.6rem;
+  place-items: center;
+  margin: 1rem 0 2.25rem;
+  border: 1px solid color-mix(in oklch, var(--accent) 25%, var(--glass-border));
+  background: color-mix(in oklch, var(--accent) 10%, var(--surface));
+  color: color-mix(in oklch, var(--fg) 66%, var(--accent));
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+  font-weight: 700;
+}
+
+.control-plane-bar::after {
+  position: absolute;
+  bottom: -2.25rem;
+  left: 50%;
+  width: 2px;
+  height: 2.25rem;
+  background: color-mix(in oklch, var(--accent) 27%, transparent);
+  content: "";
+}
+
+.runtime-topology {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: .86fr 2.3fr .86fr;
+  gap: clamp(1rem, 2vw, 1.6rem);
+  padding-top: 2.25rem;
+}
+
+.runtime-topology::before {
+  position: absolute;
+  top: 1.35rem;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: color-mix(in oklch, var(--accent) 24%, transparent);
+  content: "";
+}
+
+.runtime-service {
+  position: relative;
+  display: flex;
+  min-height: 17.2rem;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: .95rem;
+  border: 1px solid var(--border);
+  background: color-mix(in oklch, var(--surface-2) 84%, transparent);
+}
+
+.runtime-service::before {
+  position: absolute;
+  top: -2.25rem;
+  left: 50%;
+  width: 2px;
+  height: 2.25rem;
+  background: color-mix(in oklch, var(--accent) 24%, transparent);
+  content: "";
+}
+
+.runtime-service-primary {
+  background: color-mix(in oklch, var(--surface) 78%, #eaf1ff);
+}
+
+.runtime-service-body {
+  display: grid;
+  gap: .9rem;
+}
+
+.runtime-service-primary .runtime-service-body {
+  grid-template-columns: 1fr .74fr 1fr;
+}
+
+.runtime-service-primary .runtime-block:last-child {
+  grid-column: 1 / -1;
+}
+
+.runtime-block {
+  display: grid;
+  align-content: start;
+  gap: .8rem;
+  min-height: 6.3rem;
+  padding: .82rem;
+  border: 1px solid var(--glass-border);
+  background: color-mix(in oklch, var(--surface) 86%, transparent);
+}
+
+.runtime-service:not(.runtime-service-primary) .runtime-block {
+  min-height: 6.8rem;
+  place-content: center;
+  text-align: center;
+}
+
+.runtime-service:not(.runtime-service-primary) .runtime-chips {
+  display: none;
+}
+
+.runtime-service footer {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  color: var(--muted);
+}
+
+.runtime-service strong {
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+
+.runtime-service footer span {
+  font-size: .82rem;
+  text-align: right;
 }
 
 .card-icon {
@@ -1025,7 +1217,6 @@ nextjs-portal,
   color: var(--accent);
 }
 
-.home-line h3,
 .component-card h2,
 .content-card h3 {
   margin: 0 0 .65rem;
@@ -1034,7 +1225,6 @@ nextjs-portal,
   font-size: 1.06rem;
 }
 
-.home-line p,
 .component-card p,
 .content-card p {
   margin: 0;
@@ -1202,9 +1392,28 @@ nextjs-portal,
     min-height: auto;
   }
 
-  .home-line-grid,
   .facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .control-capabilities,
+  .runtime-topology {
+    grid-template-columns: 1fr;
+  }
+
+  .control-plane-bar {
+    margin-top: 1rem;
+  }
+
+  .runtime-topology::before {
+    left: 50%;
+    right: auto;
+    width: 2px;
+    height: calc(100% - 2.7rem);
+  }
+
+  .runtime-service-primary .runtime-service-body {
+    grid-template-columns: 1fr;
   }
 
   .content-grid,
@@ -1269,9 +1478,37 @@ nextjs-portal,
 
   .content-grid,
   .component-grid,
-  .home-line-grid,
   .facts {
     grid-template-columns: 1fr;
+  }
+
+  .function-architecture {
+    padding: .8rem;
+  }
+
+  .capability-domain {
+    min-height: auto;
+  }
+
+  .capability-domain p {
+    min-height: 0;
+  }
+
+  .capability-chips {
+    grid-template-columns: 1fr;
+  }
+
+  .runtime-service {
+    min-height: auto;
+  }
+
+  .runtime-service footer {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .runtime-service footer span {
+    text-align: left;
   }
 }
 

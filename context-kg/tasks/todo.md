@@ -11,6 +11,12 @@
 
 ## 计划
 
+- [x] 将首页 “Two operating lines” 区块改为功能架构图布局。
+- [x] 在控制面能力域下补充服务管理、流量治理、故障容错、配置治理等子能力。
+- [x] 让架构图表达控制面覆盖服务 A/B/C、SDK/Sidecar/K8s 等运行时接入关系。
+- [x] 增加测试，防止首页能力区再次退回普通卡片网格。
+- [ ] 运行测试、lint、build、浏览器截图并部署 GitHub Pages。
+
 - [x] 将文档分区左侧目录重组为“是什么 / 使用指南 / 最佳实践”的产品阅读路径。
 - [x] 补齐截图式目录需要的功能特性、接入方式、安装和实践入口页。
 - [x] 增加测试，约束文档分区目录不再回退到技术模块堆叠。
@@ -88,6 +94,9 @@
 
 ## Review
 
+- 根据用户截图，将首页 `Two operating lines` 区块从四张能力卡改成完整功能架构图：上层是 Registry 扩展、多协议控制面、灰度与版本治理、云原生接入，中心是 Lattice Hub 控制面，下层是服务 A/B/C 运行时接入关系。
+- 新架构图明确表达服务作为被调、公共能力、服务作为主调三类链路，并补充服务注册、心跳、限流、鉴权、配置、监控、发现、路由、负载均衡和熔断等子能力。
+- 本轮已验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；Playwright 桌面截图确认架构图无遮挡，桌面 `scrollWidth=clientWidth=1920`，移动端 `scrollWidth=clientWidth=390`；同时复用现有 logo 配置了页面图标，避免首页 favicon 404。
 - 根据用户截图，将文档分区左侧目录从技术模块堆叠改为产品阅读路径：Lattice Hub 是什么、使用指南、最佳实践、原理细节；文档、博客、报告仍通过 Fumadocs tabs 在左侧顶部切换。
 - 新增 `what-is`、`guides`、`practices` 入口页，Rust SDK、K8s Controller、Sidecar、Specification 等技术模块保留为使用指南下的落地页面。
 - 本轮已验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；Playwright 截图确认 `/docs` 侧栏已按产品路径展示；GitHub Pages run `28637556766` 成功，线上 `/docs/` 返回 200 且 `last-modified: Fri, 03 Jul 2026 04:03:31 GMT`。

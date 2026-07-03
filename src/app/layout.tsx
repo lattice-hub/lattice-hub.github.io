@@ -9,6 +9,9 @@ export const metadata: Metadata = {
     template: '%s | Lattice Hub',
   },
   description: '云原生、AI Native 的服务治理生态官网与文档中心。',
+  icons: {
+    icon: '/lattice-hub-logo.png',
+  },
 };
 
 export default function RootLayout({

@@ -3,10 +3,12 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import {
   blogPosts,
+  capabilityHighlights,
   componentGroups,
   docsSections,
   governanceRules,
   principles,
+  runtimeServices,
   siteNav,
 } from '../src/lib/site-content';
 import { docsLayoutTabs, getDocsSectionTree } from '../src/lib/docs-navigation';
@@ -38,6 +40,29 @@ test('docs routing exposes the five PRD landing destinations', () => {
     docsSections.map((section) => section.href),
     ['/docs', '/docs/principles/architecture', '/components', '/docs/blog', '/docs/reports'],
   );
+});
+
+test('homepage capability section is a function architecture diagram', () => {
+  const homepage = readFileSync('src/app/page.tsx', 'utf8');
+  const globalCss = readFileSync('src/app/global.css', 'utf8');
+
+  assert.match(homepage, /function-architecture/);
+  assert.match(homepage, /control-plane-bar/);
+  assert.match(homepage, /runtime-topology/);
+  assert.doesNotMatch(homepage, /home-line-grid/);
+  assert.match(globalCss, /\.runtime-topology::before/);
+  assert.match(globalCss, /\.runtime-service-primary \.runtime-service-body/);
+
+  assert.deepEqual(
+    capabilityHighlights.map((item) => item.title),
+    ['Registry 扩展', '多协议控制面', '灰度与版本治理', '云原生接入'],
+  );
+  assert.ok(capabilityHighlights.every((item) => item.features.length >= 4));
+  assert.deepEqual(
+    runtimeServices.map((service) => service.name),
+    ['服务 A', '服务 B', '服务 C'],
+  );
+  assert.ok(runtimeServices.some((service) => service.emphasis && service.blocks.length >= 4));
 });
 
 test('governance carousel keeps seven unified topology rules', () => {

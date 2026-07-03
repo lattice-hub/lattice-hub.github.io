@@ -32,6 +32,16 @@ export type ContentEntry = {
   summary: string;
 };
 
+export type RuntimeService = {
+  name: string;
+  role: string;
+  emphasis?: boolean;
+  blocks: {
+    title: string;
+    items: string[];
+  }[];
+};
+
 export type AgentCapability = {
   name: string;
   protocol: string;
@@ -230,22 +240,56 @@ export const capabilityHighlights = [
   {
     title: 'Registry 扩展',
     summary: '在服务目录和治理资源之上扩展 MCP/A2A Registry，让自动化系统按权限理解资源。',
+    features: ['服务发现', '服务注册', 'MCP/A2A Registry', '权限资源'],
     icon: Bot,
   },
   {
     title: '多协议控制面',
     summary: '统一承载 HTTP、gRPC、xDS、Nacos、Apollo、Eureka 等接入协议。',
+    features: ['HTTP / gRPC', 'xDS', 'Nacos / Eureka', 'Apollo 配置'],
     icon: Route,
   },
   {
     title: '灰度与版本治理',
     summary: '治理规则和资源支持版本控制、灰度下发与细粒度鉴权。',
+    features: ['配置变更', '版本管理', '灰度发布', '鉴权策略'],
     icon: GitBranch,
   },
   {
     title: '云原生接入',
     summary: 'Kubernetes Service 同步、Sidecar 注入与 Proxyless SDK 并行覆盖不同接入路径。',
+    features: ['K8s Service', 'Sidecar 注入', 'Proxyless SDK', 'Controller 同步'],
     icon: Radar,
+  },
+];
+
+export const runtimeServices: RuntimeService[] = [
+  {
+    name: '服务 A',
+    role: '外部调用方',
+    blocks: [
+      { title: '数据面', items: ['SDK 调用', 'Sidecar 出口'] },
+      { title: '业务逻辑', items: ['发起请求'] },
+    ],
+  },
+  {
+    name: '服务 B',
+    role: '被调与主调并存',
+    emphasis: true,
+    blocks: [
+      { title: '服务作为被调', items: ['服务注册', '上报心跳', '访问限流', '访问鉴权'] },
+      { title: '公共能力', items: ['获取配置', '上报监控'] },
+      { title: '服务作为主调', items: ['服务发现', '动态路由', '负载均衡', '熔断'] },
+      { title: '业务逻辑', items: ['承载业务请求'] },
+    ],
+  },
+  {
+    name: '服务 C',
+    role: '下游服务',
+    blocks: [
+      { title: '数据面', items: ['Sidecar 入口', 'Proxyless SDK'] },
+      { title: '业务逻辑', items: ['处理请求'] },
+    ],
   },
 ];
 
