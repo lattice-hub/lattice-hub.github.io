@@ -1,0 +1,30 @@
+---
+title: 服务端安装
+description: Lattice Hub Control Plane 的服务端部署入口与最小检查项。
+---
+
+服务端安装的目标是拉起 Control Plane、存储依赖和控制台入口，让服务发现、配置中心、治理规则和 AI Registry 都能进入同一个控制面。
+
+## 最小组成
+
+- Control Plane：提供 HTTP、gRPC、xDS、Nacos、Apollo、Eureka 等入口。
+- Store：当前文档以 MySQL 配置事实为主，控制面缓存从 store 增量刷新。
+- Console：平台团队的可视化管理入口。
+- CacheManager：后台刷新服务、实例、规则、配置和 AI Registry 等缓存对象。
+
+## 安装检查
+
+| 检查项 | 目标 |
+| --- | --- |
+| API Server | HTTP / gRPC 入口可访问，控制面能完成初始化。 |
+| Store | 数据库连接池配置生效，初始化表结构可读写。 |
+| Cache | 后台缓存刷新协程启动，增量查询时间窗正常。 |
+| Console | 能登录并进入服务、配置、治理和权限页面。 |
+| 观测 | History、DiscoverEvent、Statis 或 OTel 边界按需开启。 |
+
+## 下一步
+
+- 看 [控制面装配架构](../principles/architecture) 理解启动链路。
+- 看 [Control Plane](../components/control-plane) 理解核心职责。
+- 看 [性能数据报告](../reports/performance) 理解当前已确认配置事实。
+

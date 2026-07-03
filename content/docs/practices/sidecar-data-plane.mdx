@@ -1,0 +1,19 @@
+---
+title: Sidecar 数据面
+description: Pingora Sidecar 承载轻量路由、负载均衡和治理拦截器的实践入口。
+---
+
+Sidecar 适合在业务语言、SDK 接入成本或跨协议治理复杂度较高时使用。Lattice Hub 的 Sidecar 路线把运行时治理能力放在独立数据面中，同时继续从控制面消费服务发现、路由和配置视图。
+
+## 实践要点
+
+- 数据面只消费控制面结果，不重新定义服务治理事实。
+- 路由、负载均衡和拦截器应围绕 active 配置工作。
+- HTTP/1.1、HTTP/2 和 gRPC-h2c 的转发路径要分别观测吞吐和尾延迟。
+- Sidecar 与 SDK 不互斥，应按服务语言、部署形态和治理深度选择。
+
+## 深入阅读
+
+- [Pingora Sidecar](../components/pingora-sidecar)
+- [Pingora Sidecar 的轻量数据面路线](../blog/pingora-sidecar)
+

@@ -1,0 +1,19 @@
+---
+title: Agent 能力发现
+description: MCP/A2A Registry 如何进入服务治理控制面，并被 Agent 发现。
+---
+
+Agent 能力发现不是把服务列表包装成提示词，而是把 MCP Server、Tool、A2A Agent 和 Skill 作为控制面资源处理。这样 Agent 发现能力时，可以复用服务治理的注册、缓存、权限和审计链路。
+
+## 实践要点
+
+- MCP/A2A 资源应进入统一 API、store 和 cache。
+- Agent 能力发现需要资源边界和权限边界，不能绕开控制面鉴权。
+- 能力目录要和服务、实例、规则一样具备稳定 revision 或版本语义。
+- 面向 Agent 的入口应复用控制面事实，而不是维护第二份目录。
+
+## 深入阅读
+
+- [AI Registry 实现原理](../principles/ai-registry)
+- [MCP/A2A Registry 如何让服务治理被 Agent 发现](../blog/mcp-a2a-registry)
+

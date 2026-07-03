@@ -1,0 +1,19 @@
+---
+title: K8s 相关实践
+description: Kubernetes Service 同步、按需接入和运行时资源映射的实践入口。
+---
+
+Kubernetes 接入的目标不是复制一套服务治理模型，而是把集群中的 Service、annotation 和运行时上下文同步成控制面可理解的资源。
+
+## 实践要点
+
+- 使用 Controller 承接集群侧事件和服务同步。
+- 通过 annotation 表达同步、别名和接入策略。
+- 将 Kubernetes Service 映射为控制面服务视图，再由 SDK 或 Sidecar 消费。
+- 对全量同步和按需同步分别观察事件处理耗时。
+
+## 深入阅读
+
+- [Kubernetes Controller](../components/kubernetes-controller)
+- [Kubernetes Service 到 Lattice Hub 的同步模型](../blog/kubernetes-service-sync)
+

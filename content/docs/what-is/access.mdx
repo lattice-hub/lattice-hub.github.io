@@ -1,0 +1,25 @@
+---
+title: 接入方式
+description: Lattice Hub 面向控制台、SDK、Kubernetes、Sidecar 和协议层提供多种接入方式。
+---
+
+Lattice Hub 的接入方式按运行位置划分。平台团队通常先部署控制面和 Console，再按业务形态选择 SDK、Kubernetes Controller 或 Sidecar。
+
+## 接入路径
+
+| 场景 | 推荐入口 | 说明 |
+| --- | --- | --- |
+| 平台管理 | [控制台使用](../guides/console-use) | 管理服务、配置、治理规则、用户和权限。 |
+| 控制面部署 | [服务端安装](../guides/server-install) | 部署 Control Plane、存储和必要配置。 |
+| Proxyless 客户端 | [Rust SDK](../components/rust-sdk) | 应用直接消费发现、配置和治理视图。 |
+| Kubernetes 集群 | [Kubernetes Controller](../components/kubernetes-controller) | 同步 Service，并承接注解、服务别名和自动化。 |
+| Sidecar 数据面 | [Pingora Sidecar](../components/pingora-sidecar) | 用独立数据面承载路由、负载均衡和拦截器。 |
+| 协议与网关 | [Specification](../components/specification) | 复用 protobuf 与多协议入口进行系统集成。 |
+
+## 推荐顺序
+
+1. 先阅读 [产品能力总览](../) 和 [功能特性](./features)，确认 Lattice Hub 要统一哪些资源。
+2. 部署控制面和存储，确保 Console、HTTP API 和缓存刷新链路可用。
+3. 选择一种运行时接入：SDK、Kubernetes Controller 或 Sidecar。
+4. 把治理规则和配置发布纳入灰度、回滚和观测流程。
+

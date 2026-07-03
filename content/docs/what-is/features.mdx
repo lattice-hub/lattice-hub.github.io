@@ -1,0 +1,25 @@
+---
+title: 功能特性
+description: 从产品能力视角理解 Lattice Hub 的服务治理、配置、权限、AI Registry 与多运行时接入。
+---
+
+Lattice Hub 的功能不是一组分散 API，而是一套控制面资源视图。服务、实例、配置、治理规则、权限策略和 AI 能力注册都进入同一个控制面，再由 SDK、Sidecar、Controller、Console 和 Agent 消费。
+
+## 能力总览
+
+| 能力 | 说明 | 深入阅读 |
+| --- | --- | --- |
+| 服务注册发现 | 维护命名空间、服务、实例、健康状态和 revision，让客户端稳定拿到运行时视图。 | [Control Plane](../components/control-plane) |
+| 流量治理 | 路由、泳道、限流、熔断、镜像、Mock、鉴权等规则通过 release 生效。 | [治理规则与灰度发布](../principles/governance-release) |
+| 配置中心 | 配置发布、监听、灰度和回滚进入控制面统一链路。 | [配置灰度实践](../practices/gray-release) |
+| 权限审计 | 用户、角色、策略和资源映射约束控制面操作，并记录操作历史。 | [鉴权链与资源映射](../principles/auth-protocols) |
+| AI Registry | MCP Server 与 A2A Agent 作为控制面资源进入 API、缓存和存储链路。 | [AI Registry 实现原理](../principles/ai-registry) |
+| 多运行时接入 | Console、SDK、Kubernetes Controller、Sidecar 和协议适配层复用同一资源视图。 | [接入方式](./access) |
+
+## 设计原则
+
+- 先统一控制面资源，再谈客户端和数据面形态。
+- 管理态对象和运行态视图分离，发布版本通过 active release 生效。
+- 缓存与事件流服务读路径，存储层承担事实来源。
+- AI 能力注册不是旁路系统，而是进入服务治理的资源模型。
+

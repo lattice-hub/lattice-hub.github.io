@@ -121,8 +121,49 @@ test('docs layout uses fumadocs section switcher for docs blog and reports', () 
       { type: 'page', name: '产品能力总览', url: '/docs' },
       {
         type: 'folder',
+        name: 'Lattice Hub 是什么',
+        children: [
+          { type: 'page', name: '功能特性', url: '/docs/what-is/features' },
+          { type: 'page', name: '接入方式', url: '/docs/what-is/access' },
+        ],
+      },
+      {
+        type: 'folder',
+        name: '使用指南',
+        children: [
+          { type: 'page', name: '服务端安装', url: '/docs/guides/server-install' },
+          { type: 'page', name: '控制台使用', url: '/docs/guides/console-use' },
+        ],
+      },
+      {
+        type: 'folder',
         name: '原理',
-        children: [{ type: 'page', name: '架构', url: '/docs/principles/architecture' }],
+        children: [
+          { type: 'page', name: '架构', url: '/docs/principles/architecture' },
+          { type: 'page', name: '缓存', url: '/docs/principles/cache-eventhub' },
+          { type: 'page', name: '鉴权', url: '/docs/principles/auth-protocols' },
+          { type: 'page', name: '观测', url: '/docs/principles/observability-chain' },
+        ],
+      },
+      {
+        type: 'folder',
+        name: '组件',
+        children: [
+          { type: 'page', name: 'Rust SDK', url: '/docs/components/rust-sdk' },
+          { type: 'page', name: 'Kubernetes Controller', url: '/docs/components/kubernetes-controller' },
+          { type: 'page', name: 'Pingora Sidecar', url: '/docs/components/pingora-sidecar' },
+          { type: 'page', name: 'Specification', url: '/docs/components/specification' },
+        ],
+      },
+      {
+        type: 'folder',
+        name: '最佳实践',
+        children: [
+          { type: 'page', name: '灰度', url: '/docs/practices/gray-release' },
+          { type: 'page', name: 'K8s', url: '/docs/practices/kubernetes-sync' },
+          { type: 'page', name: 'Agent', url: '/docs/practices/agent-discovery' },
+          { type: 'page', name: 'Sidecar', url: '/docs/practices/sidecar-data-plane' },
+        ],
       },
       {
         type: 'folder',
@@ -149,6 +190,30 @@ test('docs layout uses fumadocs section switcher for docs blog and reports', () 
   );
   assert.deepEqual(
     getDocsSectionTree(tree, ['principles', 'architecture']).children.map((node) => node.name),
-    ['产品能力总览', '原理'],
+    ['Lattice Hub 是什么', '使用指南', '最佳实践', '原理细节'],
+  );
+  assert.deepEqual(
+    getDocsSectionTree(tree, []).children
+      .filter((node) => node.type === 'folder')
+      .flatMap((node) => node.children.map((child) => child.name)),
+    [
+      '简介',
+      '功能特性',
+      '接入方式',
+      '服务端安装',
+      '控制台使用',
+      'Rust SDK 接入',
+      'K8s 和 Controller',
+      'Sidecar 和网格代理',
+      '协议与网关',
+      '灰度发布',
+      'K8s 相关实践',
+      'Agent 能力发现',
+      'Sidecar 数据面',
+      '控制面装配架构',
+      '增量缓存与事件流',
+      '鉴权链与资源映射',
+      '观测链路',
+    ],
   );
 });

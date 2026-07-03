@@ -1341,3 +1341,15 @@ nextjs-portal,
   width: 100%;
   height: auto;
 }
+
+#nd-sidebar [data-radix-scroll-area-viewport] button[data-state] {
+  margin-top: .55rem;
+  color: var(--color-fd-foreground);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+#nd-sidebar [data-radix-scroll-area-viewport] a[href] {
+  color: var(--color-fd-foreground);
+  font-size: .94rem;
+}
