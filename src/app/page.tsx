@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { HomeHero } from '@/components/site/HomeHero';
 import { HomeInteractions } from '@/components/site/HomeInteractions';
 import { SiteHeader } from '@/components/site/SiteHeader';
-import { architectureFacts, capabilityHighlights, docsSections, runtimeServices } from '@/lib/site-content';
+import { architectureFacts, docsSections } from '@/lib/site-content';
 
 export default function HomePage() {
   return (
@@ -16,57 +17,15 @@ export default function HomePage() {
           <p className="eyebrow">Two operating lines</p>
           <h2 id="home-lines-title">同一个控制面，覆盖治理链路与 Agent 能力目录</h2>
         </div>
-        <div className="function-architecture" data-spotlight>
-          <div className="control-capabilities" aria-label="Lattice Hub 控制面能力域">
-            {capabilityHighlights.map((item) => {
-              const Icon = item.icon;
-              return (
-                <article className="capability-domain" key={item.title}>
-                  <span className="card-icon">
-                    <Icon size={18} />
-                  </span>
-                  <h3>{item.title}</h3>
-                  <p>{item.summary}</p>
-                  <div className="capability-chips" aria-label={`${item.title} 子能力`}>
-                    {item.features.map((feature) => (
-                      <span key={feature}>{feature}</span>
-                    ))}
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-
-          <div className="control-plane-bar">
-            <span>Lattice Hub 控制面</span>
-          </div>
-
-          <div className="runtime-topology" aria-label="控制面覆盖业务运行时">
-            {runtimeServices.map((service) => (
-              <article
-                className={service.emphasis ? 'runtime-service runtime-service-primary' : 'runtime-service'}
-                key={service.name}
-              >
-                <div className="runtime-service-body">
-                  {service.blocks.map((block) => (
-                    <section className="runtime-block" key={block.title}>
-                      <h3>{block.title}</h3>
-                      <div className="runtime-chips">
-                        {block.items.map((item) => (
-                          <span key={item}>{item}</span>
-                        ))}
-                      </div>
-                    </section>
-                  ))}
-                </div>
-                <footer>
-                  <strong>{service.name}</strong>
-                  <span>{service.role}</span>
-                </footer>
-              </article>
-            ))}
-          </div>
-        </div>
+        <figure className="work-architecture-figure" data-spotlight>
+          <Image
+            className="work-architecture-image"
+            src="/diagrams/lattice-hub-work-architecture.svg"
+            width={1280}
+            height={560}
+            alt="Lattice Hub 工作架构：入口与变更源进入控制面，控制面产出治理视图，客户端通过 Thin SDK、Local Proxy、Sidecar、Proxy Mesh 和 Agent Client 轻量消费这些视图。"
+          />
+        </figure>
       </section>
 
       <section className="page-hub" aria-labelledby="docs-routing-title">

@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560" role="img" aria-labelledby="title desc">
+<title id="title">Lattice Hub 首页工作架构</title>
+<desc id="desc">三列结构展示变更入口、Lattice Hub 控制面，以及 thin SDK、local proxy 和 proxy mesh 组成的轻量运行时接入层。</desc>
+<defs>
+<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#dbe5f7" stroke-width="1" opacity="0.52"/></pattern>
+<linearGradient id="blue" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2457ff"/><stop offset="1" stop-color="#66a2ff"/></linearGradient>
+<marker id="arrow-head" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#2563eb"/></marker>
+<marker id="event-head" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#64748b"/></marker>
+<marker id="catalog-head" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#7c3aed"/></marker>
+</defs>
+<style>
+text{font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;letter-spacing:0}.bg{fill:#f7faff}.grid{fill:url(#grid)}.title{fill:#0b1020;font-size:25px;font-weight:820}.caption{fill:#5f6b7d;font-size:13px}.col-title{fill:#0b1020;font-size:17px;font-weight:780}.col-sub{fill:#64748b;font-size:12px}.node{fill:#ffffff;stroke:#d7e2f3;stroke-width:1.2}.node-strong{fill:#eef5ff;stroke:#9cbcff;stroke-width:1.4}.node-title{fill:#0b1020;font-size:14px;font-weight:760}.node-sub{fill:#65748a;font-size:12px}.control{fill:#f8fbff;stroke:#adc4f8;stroke-width:1.5}.control-head{fill:url(#blue)}.control-title{fill:#ffffff;font-size:19px;font-weight:820}.lane{fill:#ffffff;stroke:#d7e2f3;stroke-width:1.1}.lane-title{fill:#0b1020;font-size:15px;font-weight:760}.tag{fill:#f5f8ff;stroke:#cddbf4;stroke-width:1}.tag-text{fill:#18305f;font-size:12px;font-weight:680}.arrow{fill:none;stroke:#2563eb;stroke-width:2.2}.event{fill:none;stroke:#64748b;stroke-width:1.8;stroke-dasharray:6 5}.catalog{fill:none;stroke:#7c3aed;stroke-width:2}.label-bg{fill:#f7faff;stroke:#dbe5f7;stroke-width:1}.arrow-label{fill:#334155;font-size:12px;font-weight:680}.hub-label{fill:#3156a7;font-size:12px;font-weight:760}</style>
+<rect class="bg" width="1280" height="560"/>
+<rect class="grid" width="1280" height="560"/>
+<circle cx="1048" cy="62" r="188" fill="#dbe7ff" opacity="0.58"/>
+<text x="48" y="48" class="title" text-anchor="start">Lattice Hub 工作架构</text>
+<text x="48" y="73" class="caption" text-anchor="start">控制面生成治理视图，客户端保持轻量；执行层由 SDK + proxy / sidecar / proxy mesh 承担。</text>
+<text x="70" y="125" class="col-title" text-anchor="start">入口与变更源</text>
+<text x="70" y="148" class="col-sub" text-anchor="start">事实写入与外部同步</text>
+<text x="1000" y="125" class="col-title" text-anchor="start">客户端轻量接入层</text>
+<text x="1000" y="148" class="col-sub" text-anchor="start">thin SDK + proxy / mesh 执行治理</text>
+<rect x="70" y="178" width="230" height="70" rx="0" class="node"/>
+<text x="88" y="208" class="node-title" text-anchor="start">Console / API</text>
+<text x="88" y="233" class="node-sub" text-anchor="start">服务、配置、治理发布</text>
+<rect x="70" y="278" width="230" height="70" rx="0" class="node"/>
+<text x="88" y="308" class="node-title" text-anchor="start">Kubernetes Controller</text>
+<text x="88" y="333" class="node-sub" text-anchor="start">Service 同步、Sidecar 注入</text>
+<rect x="70" y="378" width="230" height="70" rx="0" class="node"/>
+<text x="88" y="408" class="node-title" text-anchor="start">MCP / A2A 注册</text>
+<text x="88" y="433" class="node-sub" text-anchor="start">Server、Agent、Skill</text>
+<rect x="380" y="112" width="520" height="360" rx="0" class="control"/>
+<rect x="380" y="112" width="520" height="54" rx="0" class="control-head"/>
+<text x="640" y="146" class="control-title" text-anchor="middle">Lattice Hub 控制面</text>
+<text x="640" y="188" class="hub-label" text-anchor="middle">统一资源模型 + 权限边界 + 缓存读模型</text>
+<rect x="412" y="214" width="456" height="74" rx="0" class="lane"/>
+<text x="436" y="244" class="lane-title" text-anchor="start">协议入口层</text>
+<rect x="612" y="232" width="70" height="30" rx="0" class="tag"/>
+<text x="647" y="252" class="tag-text" text-anchor="middle">HTTP</text>
+<rect x="694" y="232" width="70" height="30" rx="0" class="tag"/>
+<text x="729" y="252" class="tag-text" text-anchor="middle">gRPC</text>
+<rect x="776" y="232" width="70" height="30" rx="0" class="tag"/>
+<text x="811" y="252" class="tag-text" text-anchor="middle">xDS</text>
+<rect x="858" y="232" width="70" height="30" rx="0" class="tag"/>
+<text x="893" y="252" class="tag-text" text-anchor="middle">MCP</text>
+<rect x="412" y="302" width="456" height="74" rx="0" class="lane"/>
+<text x="436" y="332" class="lane-title" text-anchor="start">领域服务层</text>
+<rect x="612" y="320" width="70" height="30" rx="0" class="tag"/>
+<text x="647" y="340" class="tag-text" text-anchor="middle">Service</text>
+<rect x="694" y="320" width="70" height="30" rx="0" class="tag"/>
+<text x="729" y="340" class="tag-text" text-anchor="middle">Config</text>
+<rect x="776" y="320" width="70" height="30" rx="0" class="tag"/>
+<text x="811" y="340" class="tag-text" text-anchor="middle">Govern</text>
+<rect x="858" y="320" width="70" height="30" rx="0" class="tag"/>
+<text x="893" y="340" class="tag-text" text-anchor="middle">Auth</text>
+<rect x="412" y="390" width="456" height="74" rx="0" class="lane"/>
+<text x="436" y="420" class="lane-title" text-anchor="start">运行时视图层</text>
+<rect x="612" y="408" width="70" height="30" rx="0" class="tag"/>
+<text x="647" y="428" class="tag-text" text-anchor="middle">Cache</text>
+<rect x="694" y="408" width="70" height="30" rx="0" class="tag"/>
+<text x="729" y="428" class="tag-text" text-anchor="middle">Release</text>
+<rect x="776" y="408" width="70" height="30" rx="0" class="tag"/>
+<text x="811" y="428" class="tag-text" text-anchor="middle">Event</text>
+<rect x="858" y="408" width="70" height="30" rx="0" class="tag"/>
+<text x="893" y="428" class="tag-text" text-anchor="middle">Revision</text>
+<rect x="412" y="486" width="456" height="44" rx="0" class="lane"/>
+<text x="436" y="514" class="lane-title" text-anchor="start">Store / History / Statis / OTel</text>
+<rect x="1000" y="178" width="230" height="70" rx="0" class="node-strong"/>
+<text x="1018" y="208" class="node-title" text-anchor="start">Thin Client SDK</text>
+<text x="1018" y="233" class="node-sub" text-anchor="start">订阅发现、配置、治理视图</text>
+<rect x="1000" y="278" width="230" height="70" rx="0" class="node"/>
+<text x="1018" y="308" class="node-title" text-anchor="start">Local Proxy / Sidecar</text>
+<text x="1018" y="333" class="node-sub" text-anchor="start">本地转发、负载均衡、拦截</text>
+<rect x="1000" y="378" width="230" height="70" rx="0" class="node"/>
+<text x="1018" y="408" class="node-title" text-anchor="start">Proxy Mesh / Gateway</text>
+<text x="1018" y="433" class="node-sub" text-anchor="start">跨服务流量治理执行面</text>
+<rect x="1000" y="462" width="230" height="58" rx="0" class="node"/>
+<text x="1018" y="492" class="node-title" text-anchor="start">Agent / Client</text>
+<text x="1018" y="517" class="node-sub" text-anchor="start">消费 MCP / A2A 能力目录</text>
+<path d="M300,213 C336,213 344,232 380,246" class="arrow" marker-end="url(#arrow-head)"/>
+<rect x="313.0" y="193" width="58" height="22" rx="0" class="label-bg"/>
+<text x="342" y="209" class="arrow-label" text-anchor="middle">管理写入</text>
+<path d="M300,313 C336,313 344,320 380,338" class="arrow" marker-end="url(#arrow-head)"/>
+<rect x="313.0" y="289" width="58" height="22" rx="0" class="label-bg"/>
+<text x="342" y="305" class="arrow-label" text-anchor="middle">集群同步</text>
+<path d="M300,413 C336,413 344,424 380,426" class="catalog" marker-end="url(#catalog-head)"/>
+<rect x="313.0" y="391" width="58" height="22" rx="0" class="label-bg"/>
+<text x="342" y="407" class="arrow-label" text-anchor="middle">能力注册</text>
+<line x1="640" y1="274" x2="640" y2="302" class="event"/>
+<line x1="640" y1="362" x2="640" y2="390" class="event"/>
+<line x1="640" y1="464" x2="640" y2="486" class="event"/>
+<path d="M900,246 C936,246 956,213 1000,213" class="arrow" marker-end="url(#arrow-head)"/>
+<rect x="910.0" y="187" width="84" height="22" rx="0" class="label-bg"/>
+<text x="952" y="203" class="arrow-label" text-anchor="middle">控制面 API</text>
+<path d="M900,426 C940,426 956,313 1000,313" class="arrow" marker-end="url(#arrow-head)"/>
+<rect x="923.0" y="311" width="58" height="22" rx="0" class="label-bg"/>
+<text x="952" y="327" class="arrow-label" text-anchor="middle">治理视图</text>
+<path d="M900,426 C940,426 956,413 1000,413" class="arrow" marker-end="url(#arrow-head)"/>
+<rect x="910.0" y="421" width="84" height="22" rx="0" class="label-bg"/>
+<text x="952" y="437" class="arrow-label" text-anchor="middle">mesh 配置</text>
+<path d="M900,426 C940,426 956,491 1000,491" class="catalog" marker-end="url(#catalog-head)"/>
+<rect x="923.0" y="464" width="58" height="22" rx="0" class="label-bg"/>
+<text x="952" y="480" class="arrow-label" text-anchor="middle">能力目录</text>
+<path d="M868,508 C936,508 948,348 1000,348" class="event" marker-end="url(#event-head)"/>
+<rect x="907.0" y="466" width="58" height="22" rx="0" class="label-bg"/>
+<text x="936" y="482" class="arrow-label" text-anchor="middle">事件观测</text>
+</svg>

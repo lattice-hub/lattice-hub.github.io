@@ -83,3 +83,15 @@
 - 用户纠正：首页 “同一个控制面” 这一段不应只是横向卡片列表，应参考控制面覆盖数据面与业务服务的功能架构图。
 - 后续规则：当首页解释控制面能力时，优先用“控制面能力域 + 运行时接入 + 业务服务”的结构关系表达；卡片只能作为局部能力域，不应替代架构图。
 - 设计落实：Two operating lines 区块应呈现 Lattice Hub 控制面承载服务管理、流量治理、故障容错、配置治理，并向 SDK、Sidecar、K8s Controller 和业务服务下发治理能力。
+
+## 首页架构图不能照搬参考图
+
+- 用户纠正：首页功能架构图不能直接照搬 image-2 的盒子结构，需要先充分理解项目能力和工作架构，再生成适合 Lattice Hub 的图。
+- 后续规则：参考图只用于理解“用架构图替代卡片”的表达方式；最终图必须基于真实能力抽象，包括多协议入口、领域 Server、缓存/事件读模型、Store、K8s Controller、SDK/Sidecar 和 MCP/A2A Registry。
+- 设计落实：首页应使用独立生成的工作架构 SVG/PNG，而不是把参考图中的服务 A/B/C、蓝色模块和布局关系直接搬入页面。
+
+## 首页运行时主线是 proxy mesh 与轻量客户端
+
+- 用户纠正：Lattice Hub 整体风格是 proxy mesh，或者客户端一层轻薄的 SDK + proxy，而不是把业务服务盒子作为视觉中心。
+- 后续规则：首页架构图右侧应表达“控制面产出治理视图，客户端薄 SDK 订阅视图，local proxy / sidecar / proxy mesh 执行治理”的运行时结构；Agent 能力目录可以作为附加消费面，但不能替代 proxy/mesh 主线。
+- 设计落实：运行时消费面优先使用 Thin SDK、Local Proxy/Sidecar、Proxy Mesh/Gateway 等节点表达，避免服务 A/B/C 或业务逻辑盒子。

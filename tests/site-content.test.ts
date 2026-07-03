@@ -3,12 +3,10 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import {
   blogPosts,
-  capabilityHighlights,
   componentGroups,
   docsSections,
   governanceRules,
   principles,
-  runtimeServices,
   siteNav,
 } from '../src/lib/site-content';
 import { docsLayoutTabs, getDocsSectionTree } from '../src/lib/docs-navigation';
@@ -42,27 +40,32 @@ test('docs routing exposes the five PRD landing destinations', () => {
   );
 });
 
-test('homepage capability section is a function architecture diagram', () => {
+test('homepage capability section uses generated work architecture diagram', () => {
   const homepage = readFileSync('src/app/page.tsx', 'utf8');
   const globalCss = readFileSync('src/app/global.css', 'utf8');
+  const diagram = readFileSync('public/diagrams/lattice-hub-work-architecture.svg', 'utf8');
 
-  assert.match(homepage, /function-architecture/);
-  assert.match(homepage, /control-plane-bar/);
-  assert.match(homepage, /runtime-topology/);
+  assert.match(homepage, /work-architecture-figure/);
+  assert.match(homepage, /\/diagrams\/lattice-hub-work-architecture\.svg/);
   assert.doesNotMatch(homepage, /home-line-grid/);
-  assert.match(globalCss, /\.runtime-topology::before/);
-  assert.match(globalCss, /\.runtime-service-primary \.runtime-service-body/);
+  assert.doesNotMatch(homepage, /服务 A|服务 B|服务 C/);
+  assert.doesNotMatch(globalCss, /runtime-service|capability-domain|function-architecture/);
 
-  assert.deepEqual(
-    capabilityHighlights.map((item) => item.title),
-    ['Registry 扩展', '多协议控制面', '灰度与版本治理', '云原生接入'],
-  );
-  assert.ok(capabilityHighlights.every((item) => item.features.length >= 4));
-  assert.deepEqual(
-    runtimeServices.map((service) => service.name),
-    ['服务 A', '服务 B', '服务 C'],
-  );
-  assert.ok(runtimeServices.some((service) => service.emphasis && service.blocks.length >= 4));
+  for (const keyword of [
+    '入口与变更源',
+    'Lattice Hub 控制面',
+    '协议入口层',
+    '领域服务层',
+    '运行时视图层',
+    '客户端轻量接入层',
+    'Thin Client SDK',
+    'Local Proxy / Sidecar',
+    'Proxy Mesh / Gateway',
+    'Agent / Client',
+  ]) {
+    assert.match(diagram, new RegExp(keyword));
+  }
+  assert.doesNotMatch(diagram, /服务 A|服务 B|服务 C/);
 });
 
 test('governance carousel keeps seven unified topology rules', () => {
