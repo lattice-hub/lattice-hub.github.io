@@ -15,7 +15,7 @@
 - [x] 生成新的首页工作架构 SVG/PNG，避免照搬 image-2 的服务 A/B/C 盒子布局。
 - [x] 用新架构图替换首页当前 HTML 盒子图，并清理不再需要的数据和样式。
 - [x] 更新测试，约束首页使用项目工作架构图而非手写盒子复刻。
-- [ ] 运行测试、lint、build、截图验证并部署 GitHub Pages。
+- [x] 运行测试、lint、build、截图验证并部署 GitHub Pages。
 
 - [x] 将首页 “Two operating lines” 区块改为功能架构图布局。
 - [x] 在控制面能力域下补充服务管理、流量治理、故障容错、配置治理等子能力。
@@ -103,6 +103,7 @@
 - 根据用户纠正，首页架构图不再沿用 image-2 的服务 A/B/C 盒子结构，改为基于真实项目抽象的三列主链路：入口与变更源、Lattice Hub 控制面、客户端轻量接入层。
 - 新图强调 Lattice Hub 运行时风格是 thin SDK + local proxy / sidecar / proxy mesh：控制面生成服务、配置、治理和能力目录视图，客户端保持轻量，治理执行落在 SDK + proxy / mesh 层。
 - 新增 `public/diagrams/lattice-hub-work-architecture.svg` 与 PNG 自检产物；首页改为引用生成 SVG，并删除上一版 `capabilityHighlights` / `runtimeServices` 服务 A/B/C 数据模型和对应 CSS。
+- 本轮已验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；Playwright 桌面截图确认首页架构图区块无页面横向溢出，移动端图只在 figure 内横向滚动；GitHub Pages run `28679842150` 成功。
 - 根据用户截图，将文档分区左侧目录从技术模块堆叠改为产品阅读路径：Lattice Hub 是什么、使用指南、最佳实践、原理细节；文档、博客、报告仍通过 Fumadocs tabs 在左侧顶部切换。
 - 新增 `what-is`、`guides`、`practices` 入口页，Rust SDK、K8s Controller、Sidecar、Specification 等技术模块保留为使用指南下的落地页面。
 - 本轮已验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；Playwright 截图确认 `/docs` 侧栏已按产品路径展示；GitHub Pages run `28637556766` 成功，线上 `/docs/` 返回 200 且 `last-modified: Fri, 03 Jul 2026 04:03:31 GMT`。
