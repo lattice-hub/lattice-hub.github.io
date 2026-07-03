@@ -15,7 +15,7 @@
 - [x] 补齐截图式目录需要的功能特性、接入方式、安装和实践入口页。
 - [x] 增加测试，约束文档分区目录不再回退到技术模块堆叠。
 - [x] 运行测试、lint、build、静态导出和浏览器截图验证。
-- [ ] 提交、推送并确认 GitHub Pages 部署。
+- [x] 提交、推送并确认 GitHub Pages 部署。
 
 - [x] 按 Fumadocs 官方布局能力确认左侧分区切换实现方式。
 - [x] 将文档、博客、报告接入 `DocsLayout` 的 `tabs` / sidebar dropdown。
@@ -88,6 +88,9 @@
 
 ## Review
 
+- 根据用户截图，将文档分区左侧目录从技术模块堆叠改为产品阅读路径：Lattice Hub 是什么、使用指南、最佳实践、原理细节；文档、博客、报告仍通过 Fumadocs tabs 在左侧顶部切换。
+- 新增 `what-is`、`guides`、`practices` 入口页，Rust SDK、K8s Controller、Sidecar、Specification 等技术模块保留为使用指南下的落地页面。
+- 本轮已验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；Playwright 截图确认 `/docs` 侧栏已按产品路径展示；GitHub Pages run `28637556766` 成功，线上 `/docs/` 返回 200 且 `last-modified: Fri, 03 Jul 2026 04:03:31 GMT`。
 - 已创建 Next.js 16 + Fumadocs MDX 项目，文档内容维护在 `content/docs`，首页内容元数据维护在 `src/lib/site-content.ts`。
 - 首页采用深色基础设施视觉和组件网络示意，突出 MCP/A2A Registry、Agent 可发现性、多协议治理、Proxyless + Sidecar 与 Kubernetes 原生接入。
 - 文档系统包含组件说明、性能数据报告、原理文章和博客种子内容。性能报告只记录已确认配置事实和待实测指标，没有编造压测数字。
