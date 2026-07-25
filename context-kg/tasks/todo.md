@@ -359,8 +359,8 @@
 - [x] 更新回归测试并运行 test、lint、构建与静态导出。
 - [x] 使用真实浏览器验证桌面、390px 移动端、双帧与 reduced-motion。
 - [x] 完成视觉、事实、无障碍与性能终审。
-- [ ] 提交、发布并验证线上版本。
-- [ ] 在本节记录实现与发布 Review。
+- [x] 提交、发布并验证线上版本。
+- [x] 在本节记录实现与发布 Review。
 
 ### 本地实现 Review
 
@@ -371,6 +371,13 @@
 - 所有路径改为独立走廊，箭头只出现在终点；Limiter 绕开 Sidecar，治理帧使用主干与上下分支，不再让连线穿节点、标签或分区标题。实线与虚线仍严格表达当前协作和契约/可选/演进接入。
 - 移动端使用 `360 × 780` 独立纵向全景图，管理、控制、运行时依次排列；390px 浏览器指标为 `innerWidth=390`、`scrollWidth=390`，桌面 SVG 隐藏、移动 SVG 显示。
 - `prefers-reduced-motion` 下运行中动画为 0，数据包全部隐藏；图形仍显示完整终态。15 项测试、lint、`git diff --check` 与带 `/website` base path 的静态导出全部通过。
+
+### 发布 Review
+
+- 实现提交：`1fea745 feat: make architecture panorama immersive`，已推送到 `origin/main`。
+- GitHub Pages workflow run `30155857493` 的 build 与 deploy 均成功；workflow 内 15 项测试、lint、静态导出、Pages artifact 上传与生产部署全部通过。
+- 线上 `https://lattice-hub.github.io/` 与 `/architecture/` 均返回 200；首页标题已更新为“组件全景协作”，架构 figure 的圆角为 `0px`，不再存在外层卡片视觉。
+- 公网 1440px 截图确认管理面、控制面与运行时横向展开，所有区域名水平显示，Limiter 使用独立下方走廊；390px 公网设备指标为 `innerWidth=390`、`scrollWidth=390`，桌面图隐藏、移动全景图显示。
 
 ## 首页组件协作轮播与架构子页面（2026-07-25）
 
