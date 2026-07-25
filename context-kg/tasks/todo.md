@@ -374,3 +374,11 @@
 - 动画为 8.4 秒一次性叙事，完成后停留在全量视图并支持暂停、继续与重播；页面离屏、标签页隐藏时自动暂停。`prefers-reduced-motion` 和禁用 JavaScript 时直接显示完整静态架构，SSR 仍保留完整语义列表。
 - 本地验证：14 项测试、lint、普通生产构建、`/website` 静态导出与 `git diff --check` 均通过。真实 Chrome 覆盖桌面、320 / 768 / 820 / 821px 与 390px 移动端，无横向溢出；暂停状态保持冻结，桌面和移动端完成后均显示重播；操作按钮为 88×44px。
 - 事实、视觉与无障碍 / 性能终审均已通过，未留下 blocker 或 important 问题。
+
+### 发布 Review
+
+- 实现提交：`9c06ce3 feat: add homepage architecture motion graphic`，已推送到 `origin/main`。
+- GitHub Pages workflow run `30151760638` 的 build 与 deploy 均成功；workflow 内 14 项测试、lint、静态导出、Pages artifact 上传与生产部署全部通过。
+- 线上 `https://lattice-hub.github.io/` 返回 200；桌面与 390px 移动端均渲染五个阶段、无横向溢出，浏览器未捕获 4xx / 5xx、控制台错误或页面异常。
+- 线上桌面动画完成后停留在终帧并显示“重新播放”；移动端滚动进入架构图后进入播放态；系统 reduced-motion 下直接进入静态终帧。
+- Workflow 仍有官方 action 从 Node.js 20 被平台强制运行到 Node.js 24，以及 `deploy-pages` timeout 上限的非阻塞提示；本次构建和部署结果不受影响。
