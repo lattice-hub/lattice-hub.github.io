@@ -1,8 +1,6 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import { ArchitectureFlow } from './ArchitectureFlow';
 import styles from './HomePage.module.css';
-
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
 export function HomeHero() {
   return (
@@ -33,20 +31,7 @@ export function HomeHero() {
       </div>
 
       <div className={styles.heroVisual}>
-        <span className={styles.visualLabel}>REAL PRODUCT / PLATFORM METRICS</span>
-        <div className={styles.productFrame}>
-          <Image
-            alt="Lattice.Hub Console 平台监控真实界面，展示系统监控图表与服务状态分布"
-            height={1000}
-            priority
-            sizes="(max-width: 1200px) 100vw, 58vw"
-            src={`${basePath}/product/console-platform-metrics.webp`}
-            width={1600}
-          />
-        </div>
-        <p className={styles.visualNote}>
-          来自当前 Console 的真实界面。状态、事件与变化在同一个控制面中可见。
-        </p>
+        <ArchitectureFlow />
       </div>
     </section>
   );

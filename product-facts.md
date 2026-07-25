@@ -7,6 +7,7 @@
 
 - 官方公开仓库：`https://github.com/lattice-hub/pole-control-plane`
 - 当前实现与知识库：`../pole-control-plane`
+- 本轮架构复核基线：本地 `../pole-control-plane` 提交 `5d6e37c09dbfdd83f94ae70c16ad0268c9afcbf7`，并核对当前工作树中的知识库与 Console 实现。
 - 当前 Console：`../pole-control-plane/console/web`
 - 当前官网：`https://lattice-hub.github.io/`
 
@@ -38,3 +39,11 @@
 2. 变更先形成版本，再由确定性发布流程进入运行时。
 3. SDK、Sidecar、Proxy Mesh、Kubernetes Controller 与 Agent 消费同一份治理语义。
 4. Agent 可以准备变更，但发布权仍在人。
+
+## 首页架构动态图事实模型
+
+1. 变化入口包括 Console / API、Kubernetes Controller 同步与 Pole Agent 提案；Pole Agent 不是发布执行者。
+2. 多协议入口覆盖 Polaris gRPC / REST、Nacos v1 / v2、Apollo、Eureka 与 Envoy xDS v3。
+3. 控制面统一承载 Namespace、Service、Config、Governance、MCP Registry 与 A2A Agent Registry 等资源视图。
+4. 只有配置与治理变化在首页图中进入“草稿 → 版本 → Active”发布链；服务与 Registry 不应被错误画成同一发布生命周期。
+5. 运行时消费者以 Thin SDK、Local Proxy / Sidecar、Proxy Mesh / Gateway 为主线；动态图只表达结构关系，不表达实时遥测状态。

@@ -103,13 +103,16 @@ test('docs routing exposes the five PRD landing destinations', () => {
 test('homepage uses the selected B+A direction and real product evidence', () => {
   const homepage = readFileSync('src/app/page.tsx', 'utf8');
   const hero = readFileSync('src/components/site/HomeHero.tsx', 'utf8');
+  const architectureFlow = readFileSync('src/components/site/ArchitectureFlow.tsx', 'utf8');
+  const architectureCss = readFileSync('src/components/site/ArchitectureFlow.module.css', 'utf8');
   const homeCss = readFileSync('src/components/site/HomePage.module.css', 'utf8');
   const globalCss = readFileSync('src/app/global.css', 'utf8');
 
   assert.match(hero, /把服务变化/);
   assert.match(hero, /收进一个控制面/);
-  assert.match(hero, /next\/image/);
-  assert.match(hero, /console-platform-metrics\.webp/);
+  assert.match(hero, /<ArchitectureFlow \/>/);
+  assert.doesNotMatch(hero, /console-platform-metrics\.webp/);
+  assert.match(homepage, /console-platform-metrics\.webp/);
   assert.match(homepage, /console-governance-scope\.webp/);
   assert.match(homepage, /变更不是保存/);
   assert.match(homepage, /Agent 准备变更/);
@@ -120,6 +123,28 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.doesNotMatch(homepage, /负载均衡、超时、重试、节点熔断、故障转移/);
   assert.doesNotMatch(homeCss, /:root\s*{/);
   assert.doesNotMatch(globalCss, /aurora|glass-card|backdrop-filter|radial-gradient/);
+
+  for (const keyword of [
+    'Polaris · Nacos · Apollo · Eureka · xDS v3',
+    'MCP + A2A',
+    'REGISTER & DISCOVER ONLY',
+    'PROPOSAL CONFIRM → DRAFT / RELEASE GATE → VERSION',
+    'MySQL 是事实来源',
+    'Pole Agent 只通过 Pole MCP 白名单读取',
+    'SDK / 协议客户端',
+    'Envoy / Gateway / Mesh',
+  ]) {
+    assert.ok(architectureFlow.includes(keyword), `missing architecture flow fact: ${keyword}`);
+  }
+
+  assert.match(architectureCss, /prefers-reduced-motion: reduce/);
+  assert.match(architectureCss, /scripting: none/);
+  assert.match(architectureFlow, /IntersectionObserver/);
+  assert.match(architectureFlow, /visibilitychange/);
+  assert.match(architectureFlow, /aria-controls="architecture-flow-canvas"/);
+  assert.match(architectureFlow, /accessibleSteps/);
+  assert.match(architectureFlow, /架构流程示意，不代表实时遥测/);
+  assert.doesNotMatch(architectureFlow, /setInterval|Math\.random|requests per second|latency|uptime/);
 });
 
 test('website product screenshots are checked-in optimized assets', () => {
