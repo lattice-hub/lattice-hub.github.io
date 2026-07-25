@@ -1,6 +1,5 @@
 import {
   Activity,
-  Bot,
   Boxes,
   Braces,
   Cpu,
@@ -73,7 +72,7 @@ export const productTopics: Array<SiteNavItem & { labelEn: string; summary: stri
 ];
 
 export function isSiteNavActive(pathname: string, href: string): boolean {
-  const productAliases = ['/governance', '/agent'];
+  const productAliases = ['/architecture', '/governance', '/agent'];
   const isProductTopic = productAliases.some(
     (topic) => pathname === topic || pathname.startsWith(`${topic}/`),
   );
@@ -172,7 +171,7 @@ export const componentGroups: ComponentGroup[] = [
     name: 'Control Plane',
     href: '/docs/components/control-plane',
     summary: '统一服务发现、配置、治理、身份、Registry 与多协议接入。',
-    details: ['插件化四层架构', '增量缓存与版本化发布'],
+    details: ['管理 API 与多协议入口', '向接入组件提供统一视图'],
     icon: ServerCog,
   },
   {
@@ -183,45 +182,38 @@ export const componentGroups: ComponentGroup[] = [
     icon: Boxes,
   },
   {
-    name: 'Pole Agent',
-    href: '/docs/principles/ai-registry',
-    summary: 'Console 内的一等对话工作模式，通过白名单 MCP 工具安全读取资源和准备变更。',
-    details: ['真实 LLM / MCP 最小闭环', '预览、确认、草稿、人工发布'],
-    icon: Bot,
-  },
-  {
     name: 'Rust SDK',
     href: '/docs/components/rust-sdk',
-    summary: 'Proxyless Service Governance 的 Rust 接入，覆盖注册发现、配置与治理验证。',
+    summary: '面向 Rust 应用的轻量 Proxyless Service Governance 接入。',
     details: ['crate: pole_rust = "0.2.0"', 'Rust >= 1.63.0'],
     icon: Braces,
   },
   {
     name: 'Kubernetes Controller',
     href: '/docs/components/kubernetes-controller',
-    summary: '连接 Kubernetes 与控制面，支持 Service 同步和 Sidecar 自动注入。',
-    details: ['全量 / 按需同步', 'Gateway 与本地部署链路'],
+    summary: '连接 Kubernetes 与控制面，同步 Service、Endpoints、Namespace 与 ConfigMap。',
+    details: ['全量 / 按需与配置双向同步', 'Sidecar、Java Agent 与 Envoy 注入'],
     icon: Workflow,
   },
   {
     name: 'Pingora Sidecar',
     href: '/docs/components/pingora-sidecar',
-    summary: '基于 Pingora 的轻量数据面，为 HTTP、HTTP/2 与 gRPC-h2c 提供治理执行点。',
-    details: ['前缀路由与轮询负载均衡', 'ACL、限流、熔断与指标扩展'],
+    summary: '基于 Pingora 的轻量数据面骨架，支持 HTTP、HTTP/2 与 gRPC-h2c 转发。',
+    details: ['前缀路由与轮询负载均衡', '动态治理接入仍按路线演进'],
     icon: Network,
   },
   {
-    name: 'Observability',
-    href: '/docs/principles/observability-chain',
-    summary: '以 OpenTelemetry、Collector 与共享 GreptimeDB 承载控制面指标和平台概览。',
-    details: ['标准语义与 Pole 领域指标', 'Kubernetes 观测部署闭环'],
+    name: 'Limiter Server',
+    href: 'https://github.com/lattice-hub/pole-limiter-server',
+    summary: '分布式限流专用运行时，缓存并分配全局 Token，承接客户端配额获取与上报。',
+    details: ['全局 Token 分配', '注册中心自注册'],
     icon: Activity,
   },
   {
     name: 'Specification',
     href: '/docs/components/specification',
-    summary: '开放的服务治理与 protobuf 协议定义，覆盖治理、安全和 AI Registry。',
-    details: ['Java / Go / Rust 生成入口', 'MCP / A2A 契约边界'],
+    summary: '开放的服务治理与 protobuf 协议定义，覆盖治理、安全与 MCP。',
+    details: ['Java / Go / Rust 生成入口', '跨组件共享协议契约'],
     icon: Cpu,
   },
 ];

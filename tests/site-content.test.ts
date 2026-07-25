@@ -34,6 +34,7 @@ test('site navigation exposes real site-level destinations', () => {
   assert.equal(isSiteNavActive('/governance', '/product'), true);
   assert.equal(isSiteNavActive('/governance/', '/product'), true);
   assert.equal(isSiteNavActive('/agent', '/product'), true);
+  assert.equal(isSiteNavActive('/architecture', '/product'), true);
   assert.equal(isSiteNavActive('/components', '/product'), false);
   assert.equal(isSiteNavActive('/product', 'https://github.com/lattice-hub/pole-control-plane'), false);
 });
@@ -84,11 +85,10 @@ test('component matrix covers the Lattice Hub ecosystem', () => {
   assert.deepEqual(componentNames, [
     'Control Plane',
     'Console',
-    'Pole Agent',
     'Rust SDK',
     'Kubernetes Controller',
     'Pingora Sidecar',
-    'Observability',
+    'Limiter Server',
     'Specification',
   ]);
 });
@@ -104,6 +104,7 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   const homepage = readFileSync('src/app/page.tsx', 'utf8');
   const hero = readFileSync('src/components/site/HomeHero.tsx', 'utf8');
   const architectureFlow = readFileSync('src/components/site/ArchitectureFlow.tsx', 'utf8');
+  const architectureDiagrams = readFileSync('src/components/site/ArchitectureDiagrams.tsx', 'utf8');
   const architectureCss = readFileSync('src/components/site/ArchitectureFlow.module.css', 'utf8');
   const homeCss = readFileSync('src/components/site/HomePage.module.css', 'utf8');
   const globalCss = readFileSync('src/app/global.css', 'utf8');
@@ -124,32 +125,55 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.doesNotMatch(homeCss, /:root\s*{/);
   assert.doesNotMatch(globalCss, /aurora|glass-card|backdrop-filter|radial-gradient/);
 
-  for (const keyword of [
-    'Polaris、Nacos、Apollo、Eureka 与 xDS v3',
-    'MCP / A2A Registry',
-    'REGISTER · DISCOVER',
-    'CONFIG + GOVERNANCE ONLY',
-    'MySQL 是事实来源',
-    'Pole Agent 的已有配置更新提案',
-    'SDK、协议客户端、Sidecar 与 Envoy / Gateway / Mesh',
-    'Active 与 History 分离',
-  ]) {
-    assert.ok(architectureFlow.includes(keyword), `missing architecture flow fact: ${keyword}`);
+  for (const keyword of ['组件协作', '治理生效', '查看完整架构', 'ArchitectureDiagrams']) {
+    assert.ok(architectureFlow.includes(keyword), `missing architecture carousel fact: ${keyword}`);
   }
 
-  assert.match(architectureFlow, /<DesktopTopology \/>/);
-  assert.match(architectureFlow, /<MobileTopology \/>/);
-  assert.match(architectureFlow, /<svg/);
-  assert.match(architectureFlow, /<FlowPath/);
-  assert.match(architectureFlow, /<IsoNode/);
+  for (const keyword of [
+    'Console',
+    'Kubernetes Controller',
+    'Control Plane',
+    'Thin SDK',
+    'Pingora Sidecar',
+    'Envoy / Gateway',
+    'Specification',
+    'SERVICE CALL',
+  ]) {
+    assert.ok(architectureDiagrams.includes(keyword), `missing component architecture fact: ${keyword}`);
+  }
+
+  assert.match(architectureFlow, /aria-pressed/);
+  assert.match(architectureFlow, /aria-controls="architecture-flow-canvas"/);
+  assert.match(architectureFlow, /ComponentCollaborationDiagram/);
+  assert.match(architectureFlow, /GovernanceExecutionDiagram/);
+  assert.match(architectureDiagrams, /<svg/);
+  assert.match(architectureDiagrams, /<FlowArrow/);
   assert.match(architectureCss, /prefers-reduced-motion: reduce/);
   assert.match(architectureCss, /scripting: none/);
-  assert.match(architectureFlow, /IntersectionObserver/);
-  assert.match(architectureFlow, /visibilitychange/);
-  assert.match(architectureFlow, /aria-controls="architecture-flow-canvas"/);
-  assert.match(architectureFlow, /accessibleSteps/);
-  assert.match(architectureFlow, /架构流程示意，不代表实时遥测/);
-  assert.doesNotMatch(architectureFlow, /setInterval|Math\.random|requests per second|latency|uptime/);
+  assert.doesNotMatch(
+    `${architectureFlow}\n${architectureDiagrams}`,
+    /MySQL|CacheManager|EventHub|CONFIG \+ GOVERNANCE ONLY|setInterval|Math\.random|requests per second|latency|uptime/,
+  );
+});
+
+test('architecture page explains organization components without control-plane internals', () => {
+  const architecturePage = readFileSync('src/app/architecture/page.tsx', 'utf8');
+  const architectureCss = readFileSync(
+    'src/app/architecture/ArchitecturePage.module.css',
+    'utf8',
+  );
+
+  assert.match(architecturePage, /ORGANIZATION ARCHITECTURE/);
+  assert.match(architecturePage, /多个组件/);
+  assert.match(architecturePage, /治理能力如何生效/);
+  assert.match(architecturePage, /ComponentCollaborationDiagram/);
+  assert.match(architecturePage, /GovernanceExecutionDiagram/);
+  assert.match(architecturePage, /Limiter Server/);
+  assert.match(architecturePage, /当前是支持 HTTP、HTTP\/2、gRPC-h2c/);
+  assert.match(architecturePage, /不进入每一次业务请求的同步热路径/);
+  assert.match(architecturePage, /自身当前支持的能力/);
+  assert.doesNotMatch(architecturePage, /MySQL|CacheManager|EventHub|内部存储层|增量缓存/);
+  assert.match(architectureCss, /prefers-reduced-motion: reduce/);
 });
 
 test('website product screenshots are checked-in optimized assets', () => {

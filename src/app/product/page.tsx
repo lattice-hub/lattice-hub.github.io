@@ -72,7 +72,7 @@ export default function ProductPage() {
         ]}
         lede="Lattice.Hub 将运行环境、服务发现、配置、治理、身份与 AI 能力目录收进同一个控制面。现有客户端继续使用熟悉的协议；需要发布的配置与治理变化，则进入可解释、可发布、可回退的版本链。"
         primary={{ href: '/docs', label: '阅读产品文档' }}
-        secondary={{ href: '/docs/principles/architecture', label: '查看系统架构' }}
+        secondary={{ href: '/architecture', label: '查看组件架构' }}
         title="一个控制面，"
       />
 

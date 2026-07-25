@@ -1,0 +1,281 @@
+.section {
+  padding-block: 128px;
+}
+
+.sectionInner {
+  width: min(1180px, calc(100% - 96px));
+  margin-inline: auto;
+}
+
+.diagramCard {
+  overflow: hidden;
+  margin-top: 68px;
+  border: 1px solid #d3d1ca;
+  border-radius: 18px;
+  background: #f7f6f1;
+  box-shadow: 0 28px 70px rgba(35, 38, 39, .09);
+}
+
+.diagramNote {
+  margin: 20px 0 0;
+  color: #72736e;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.componentSection {
+  background: #1d2022;
+  color: #f7f6f1;
+}
+
+.componentSection :global([class*="sectionIndex"]),
+.componentSection :global([class*="sectionLede"]) {
+  color: #aeb4b6;
+}
+
+.componentGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 70px;
+  border-top: 1px solid #454a4d;
+  border-left: 1px solid #454a4d;
+}
+
+.componentCard {
+  display: grid;
+  min-height: 300px;
+  align-content: start;
+  border-right: 1px solid #454a4d;
+  border-bottom: 1px solid #454a4d;
+  padding: 32px;
+  transition: background 180ms ease;
+}
+
+.componentCard:hover {
+  background: #25292c;
+}
+
+.componentCard > span,
+.componentCard small,
+.executionNotes article > span {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 9px;
+  font-weight: 680;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.componentCard > span {
+  color: #7fc2f4;
+}
+
+.componentCard small {
+  margin-top: 26px;
+  color: #aeb4b6;
+}
+
+.componentCard h3 {
+  margin: 10px 0 0;
+  font-size: 28px;
+  font-weight: 520;
+  letter-spacing: -.04em;
+}
+
+.componentCard p {
+  max-width: 450px;
+  margin: 20px 0 0;
+  color: #aeb4b6;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.componentCard strong {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: end;
+  margin-top: 30px;
+  color: #8bc8f3;
+  font-size: 13px;
+  font-weight: 620;
+}
+
+.executionSection {
+  background: #fff;
+}
+
+.executionNotes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 36px;
+  border-top: 1px solid #d8d6cf;
+}
+
+.executionNotes article {
+  min-height: 230px;
+  border-right: 1px solid #d8d6cf;
+  padding: 28px 34px 30px 0;
+}
+
+.executionNotes article + article {
+  padding-left: 34px;
+}
+
+.executionNotes article:last-child {
+  border-right: 0;
+}
+
+.executionNotes article > span {
+  color: #0f6cbd;
+}
+
+.executionNotes h3 {
+  margin: 50px 0 12px;
+  font-size: 22px;
+  font-weight: 540;
+  letter-spacing: -.03em;
+}
+
+.executionNotes p {
+  margin: 0;
+  color: #6e6f6b;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.boundarySection {
+  background: #f2f0ea;
+}
+
+.responsibilityTable {
+  margin-top: 66px;
+  border-top: 1px solid #bdbbb4;
+}
+
+.tableHead,
+.tableRow {
+  display: grid;
+  grid-template-columns: .45fr .9fr 1.65fr;
+  gap: 30px;
+  align-items: center;
+  border-bottom: 1px solid #cfcdc6;
+}
+
+.tableHead {
+  min-height: 52px;
+  color: #777873;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 9px;
+  font-weight: 680;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.tableRow {
+  min-height: 104px;
+}
+
+.tableRow strong {
+  color: #0f6cbd;
+  font-size: 14px;
+}
+
+.tableRow > span {
+  font-size: 15px;
+  font-weight: 620;
+}
+
+.tableRow p {
+  margin: 0;
+  color: #686965;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 36px;
+  margin-top: 42px;
+}
+
+.actions a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #202120;
+  font-size: 14px;
+  font-weight: 620;
+}
+
+.actions a:hover {
+  border-color: #0f6cbd;
+  color: #0f6cbd;
+}
+
+@media (max-width: 900px) {
+  .componentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .executionNotes {
+    grid-template-columns: 1fr;
+  }
+
+  .executionNotes article,
+  .executionNotes article + article {
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid #d8d6cf;
+    padding: 28px 0;
+  }
+
+  .executionNotes h3 {
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 720px) {
+  .section {
+    padding-block: 86px;
+  }
+
+  .sectionInner {
+    width: min(100% - 40px, 1180px);
+  }
+
+  .diagramCard {
+    margin-top: 42px;
+    border-radius: 12px;
+  }
+
+  .componentGrid {
+    margin-top: 46px;
+  }
+
+  .componentCard {
+    min-height: 270px;
+    padding: 26px 22px;
+  }
+
+  .responsibilityTable {
+    margin-top: 44px;
+  }
+
+  .tableHead {
+    display: none;
+  }
+
+  .tableRow {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding-block: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .componentCard {
+    transition: none;
+  }
+}

@@ -129,6 +129,7 @@
 
 .heroCopy,
 .heroVisual {
+  min-width: 0;
   animation: home-enter 720ms cubic-bezier(.2, .65, .25, 1) both;
 }
 
@@ -707,7 +708,7 @@
   }
 
   .hero h1 {
-    font-size: clamp(48px, 14vw, 63px);
+    font-size: clamp(42px, 11vw, 52px);
   }
 
   .heroLede,

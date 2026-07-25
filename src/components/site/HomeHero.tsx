@@ -12,8 +12,8 @@ export function HomeHero() {
           <span>收进一个控制面。</span>
         </h1>
         <p className={styles.heroLede}>
-          Lattice.Hub 统一运行环境、服务发现、配置和治理规则，让 Thin SDK、Local Proxy /
-          Sidecar 与 Proxy Mesh 从同一控制面读取版本化的服务与治理视图。
+          Lattice.Hub 让 Console、Kubernetes Controller、Thin SDK、Pingora Sidecar 与
+          Envoy / Gateway 围绕同一控制面协作；治理规则在控制面发布，由已接入的运行时组件按支持范围执行。
         </p>
         <div className={styles.heroActions}>
           <Link className={`${styles.button} ${styles.buttonPrimary}`} href="/docs">
@@ -22,10 +22,10 @@ export function HomeHero() {
           </Link>
           <Link
             className={`${styles.button} ${styles.buttonSecondary}`}
-            href="https://github.com/lattice-hub/pole-control-plane"
+            href="/architecture"
           >
-            查看 GitHub
-            <span aria-hidden="true">↗</span>
+            查看完整架构
+            <span aria-hidden="true">→</span>
           </Link>
         </div>
       </div>

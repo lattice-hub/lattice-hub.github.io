@@ -310,6 +310,35 @@
 - 线上首页实际点击“产品”后进入 `/product/`；产品、治理和 Agent 页的 H1、Metadata 标题与真实产品证据均为本次发布内容。
 - Workflow 仍有官方 action 从 Node.js 20 被平台强制运行到 Node.js 24，以及 `deploy-pages` timeout 上限的非阻塞提示；本次构建和部署结果不受影响。
 
+## 首页组件协作轮播与架构子页面（2026-07-25）
+
+### 用户纠正
+
+- 当前等距图信息过密且连线混乱；官网不应解释 `pole-control-plane` 的内部存储、缓存、版本等实现细节。
+- 首页应从组织组件维度说明各组件如何协作，以及治理能力如何从控制面进入执行点并生效；完整内容可由独立子页面承载。
+
+### 计划
+
+- [x] 核对组织组件清单、对外职责与协作关系。
+- [x] 定义首页“组件协作 / 治理生效”双主题轮播的信息层级。
+- [x] 定义独立架构页的组件地图、治理执行链与接入方式。
+- [x] 实现共享架构图、首页轮播与独立架构页。
+- [x] 更新内容回归测试与必要的路由测试。
+- [x] 运行 test、lint、生产构建与静态导出。
+- [x] 使用真实浏览器验证桌面、移动端、键盘操作与 reduced-motion。
+- [x] 完成事实、视觉、无障碍与性能终审。
+- [ ] 提交、推送并验证线上发布。
+- [ ] 在本节记录实现与发布 Review。
+
+### 本地实现 Review
+
+- 首页 Hero 原有单张高密度等距拓扑已替换为“组件协作 / 治理生效”手动双帧轮播；每帧只回答一个问题，不自动轮转，不再展示 Control Plane 的存储、缓存、事件、领域服务或版本内部机制。
+- 组件协作帧以 Console、Kubernetes Controller、Control Plane、Thin SDK、Pingora Sidecar、Envoy / Gateway 与 Specification 为一级节点；治理帧收敛为“平台工程师 → Console / API → Control Plane → 运行时执行 → Service Call”。
+- 实线表示当前明确的管理或协议路径，虚线表示同步、注入或仍按组件实现范围演进的接入边界；Pingora Sidecar 明确标注为数据面骨架，Kubernetes Controller 不被误画成治理执行器，Pole Agent 不进入治理发布链。
+- 新增 `/architecture` 组件架构页，完整说明七个组织组件、治理执行三段链与管理/控制/执行边界；顶栏仍严格保持“产品 / 组件 / 文档 / 体验”，架构页归入产品 active 状态。
+- 组件目录同步纠正事实层级：Pole Agent 归回 Console 工作模式，Observability 归回集成能力，新增 Limiter Server；Rust SDK、Controller、Pingora Sidecar 与 Specification 文案按相邻仓库当前事实收敛。
+- 15 项测试、lint、`git diff --check`、普通生产构建与 `/website` 静态导出均通过。真实 Chrome 覆盖首页桌面、390px 两个轮播帧与架构页；移动端 `innerWidth = scrollWidth = 390`、图片完整、切换稳定，reduced-motion 下关闭流动线与帧入场动画。
+
 ## 首页等距架构拓扑动态图返工（2026-07-25）
 
 ### 用户纠正
