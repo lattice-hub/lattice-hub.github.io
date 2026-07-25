@@ -145,18 +145,22 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
     'Pingora Sidecar',
     'Envoy / Gateway',
     'Specification',
-    'SERVICE CALL',
-    'Order Service',
-    'Inventory Service',
-    'Payment Service',
-    'Risk Service',
-    'JAVA',
-    'RUST',
-    'GO',
-    'PY',
+    'Agent Gateway',
+    'Agent Service A',
+    'Agent Service B',
+    'Provider Adapter',
+    'Primary Model',
+    'Fallback Model',
+    'Shadow Eval',
+    'Mock Response',
+    'A/B ROUTE',
+    'RATE LIMIT',
+    'CIRCUIT BREAK',
+    'POLE AGENT PROMPT',
+    'POLE SECRET',
+    'NEVER MODEL CONTEXT',
     'GOVERNANCE VIEW',
     'EXAMPLE',
-    'WHERE SUPPORTED',
   ]) {
     assert.ok(architectureDiagrams.includes(keyword), `missing component architecture fact: ${keyword}`);
   }
@@ -178,6 +182,7 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.match(architectureDiagramCss, /scripting: none/);
   assert.match(architectureDiagramCss, /node-receive/);
   assert.match(architectureDiagramCss, /path-reveal/);
+  assert.match(architectureDiagrams, /A2A REGISTRY · DISCOVERY ONLY · NOT REQUEST PATH/);
   assert.doesNotMatch(architectureCss, /border-radius|box-shadow/);
   assert.doesNotMatch(architectureDiagramCss, /infinite|linear/);
   assert.doesNotMatch(

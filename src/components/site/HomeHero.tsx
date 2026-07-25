@@ -12,9 +12,9 @@ export function HomeHero() {
           <span>收进一个控制面。</span>
         </h1>
         <p className={styles.heroLede}>
-          Lattice.Hub 将治理规则从控制面分发到多语言服务的执行点，让服务通过 SDK
-          或代理在已接入且支持对应能力的调用中执行同一治理意图；Console 与 Kubernetes
-          Controller 负责管理变化。
+          Lattice.Hub 把 AI 服务的路由、限流、熔断、镜像与 Mock 收进同一治理视图；
+          Pole Agent 的 Prompt 可受控发布，模型凭据由 Pole Secret 托管，只在运行时解析，
+          不进入浏览器、日志或模型上下文。
         </p>
         <div className={styles.heroActions}>
           <Link className={`${styles.button} ${styles.buttonPrimary}`} href="/docs">

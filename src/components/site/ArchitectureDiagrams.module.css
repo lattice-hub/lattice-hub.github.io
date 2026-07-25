@@ -45,7 +45,8 @@
 .coreTitle,
 .contractLabel,
 .contractMeta,
-.flowLabel {
+.flowLabel,
+.boundaryLabel {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   pointer-events: none;
 }
@@ -88,6 +89,12 @@
   stroke-width: 1.6;
 }
 
+.connectionShadow {
+  stroke: #777a76;
+  stroke-dasharray: 5 5;
+  stroke-width: 1.45;
+}
+
 .connectionActive {
   stroke: #0f6cbd;
   stroke-dasharray: 1;
@@ -98,6 +105,11 @@
 
 .connectionActiveTraffic {
   stroke: #252827;
+}
+
+.connectionActiveShadow {
+  stroke: #777a76;
+  stroke-dasharray: .08 .06;
 }
 
 .dataPacket {
@@ -112,6 +124,10 @@
   stroke: #252827;
 }
 
+.dataPacketShadow {
+  stroke: #777a76;
+}
+
 .activeArrow {
   fill: #0f6cbd;
 }
@@ -119,6 +135,11 @@
 .trafficArrow,
 .trafficActiveArrow {
   fill: #252827;
+}
+
+.shadowArrow,
+.shadowActiveArrow {
+  fill: #777a76;
 }
 
 .mutedArrow {
@@ -315,6 +336,17 @@
   fill: #353937;
 }
 
+.flowLabelShadow {
+  fill: #777a76;
+}
+
+.boundaryLabel {
+  fill: #777a76;
+  font-size: 8px;
+  font-weight: 680;
+  letter-spacing: .08em;
+}
+
 .legend {
   position: absolute;
   right: 18px;
@@ -339,6 +371,10 @@
 
 .legendTraffic {
   border-top: 2px solid #252827;
+}
+
+.legendShadow {
+  border-top: 2px dashed #777a76;
 }
 
 .legendMuted {

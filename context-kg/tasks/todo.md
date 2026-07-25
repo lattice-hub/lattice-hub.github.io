@@ -453,6 +453,30 @@
 - 线上桌面和移动端完成 8.6 秒单次动画后均显示“重新播放”；reduced-motion 直接进入静态终帧。公网浏览器未捕获 4xx / 5xx、控制台错误或页面异常。
 - Workflow 仍有官方 action 从 Node.js 20 被平台强制运行到 Node.js 24 的非阻塞提示；本次构建和部署结果不受影响。
 
+## 首页 AI Agent 服务治理场景（2026-07-25）
+
+### 用户建议
+
+- 「治理生效」可以使用 AI Agent 服务作为示例，同时表达 A/B 路由、限流、降级、流量镜像、Mock、动态 Prompt 与凭据托管；凭据必须明确不进入模型上下文。
+
+### 计划
+
+- [x] 复核经验记录、设计规范与 `../pole-control-plane` 最新能力边界。
+- [x] 定义 AI Agent 治理场景的信息架构与双路径布局。
+- [x] 重构桌面和移动治理动态图及首页文案。
+- [x] 完成测试、构建、事实与视觉验收。
+- [ ] 提交、发布并验证线上版本。
+- [x] 在本节记录实现与发布 Review。
+
+### 本地实现 Review
+
+- 首页默认首帧改为 AI 服务治理示例：请求进入 Agent Gateway 后按权重分流至两个 Agent Service 版本，经 Provider Adapter 调用主模型，并在已支持的执行路径中切换 Fallback。
+- 治理能力带统一呈现 A/B 路由、限流、熔断、流量镜像与 Mock；蓝色路径表示治理视图，深色路径表示请求流量，灰色虚线表示镜像或旁路，三类语义在图例中分开。
+- 桌面端完整展示 Shadow Eval 与 Mock Response；移动端为保证可读性，保留“请求 → Gateway → A/B Agent Service → Adapter → 主/降级模型”主链，镜像与 Mock 收进治理能力带。
+- 事实边界按 `../pole-control-plane` HEAD `5d6e37c0` 收敛：图中 Agent Service 显式标注为 Pole Service 示例；通用服务治理不等于 A2A task 代理，A2A Registry 在桌面和移动图中都明确为仅注册发现、不在请求路径。
+- Pole Agent 的 Prompt 明确限定为内置 Prompt 与 Operator Instructions 的版本化发布；Pole Secret 只在 Provider Adapter 运行时解析，凭据不进入浏览器、日志或模型上下文。
+- 本地验证：15 项测试、lint、生产构建与 `git diff --check` 均通过；无头 Chrome 复核桌面和 390px 移动端无横向溢出，移动端节点、标签和连线无重叠。
+
 ## 一级导航收敛与产品归属（2026-07-25）
 
 ### 用户纠正

@@ -13,9 +13,9 @@ const slides = [
     id: 'governance',
     index: '01',
     label: '治理生效',
-    title: '规则发布一次，在已接入的跨服务调用点生效。',
+    title: '让已接入的 AI 服务调用路径，遵循同一套治理意图。',
     detail:
-      '以 Java、Rust、Go 与 Python 服务调用为示例：Control Plane 分发统一治理视图，SDK、Sidecar 或 Envoy 在已接入且支持对应能力的执行点落实路由、保护与访问策略。',
+      '以承载 Agent 的 Pole Service 为例：A/B 路由、限流、熔断、镜像与 Mock 由已接入数据面按支持范围执行；Pole Agent 的 Prompt 与模型凭据则独立发布和托管。',
   },
   {
     id: 'collaboration',
