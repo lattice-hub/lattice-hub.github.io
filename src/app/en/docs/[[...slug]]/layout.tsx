@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { DocsLayoutContent } from '../_components/DocsLayoutContent';
+import { DocsLayoutContent } from '@/app/docs/_components/DocsLayoutContent';
 
 export default async function Layout({
   children,
@@ -11,7 +11,7 @@ export default async function Layout({
   const { slug = [] } = await params;
 
   return (
-    <DocsLayoutContent locale="zh-CN" slug={slug}>
+    <DocsLayoutContent locale="en" slug={slug}>
       {children}
     </DocsLayoutContent>
   );

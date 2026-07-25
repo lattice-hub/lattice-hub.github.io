@@ -2,20 +2,20 @@ import {
   DocsPageContent,
   generateDocsMetadata,
   generateDocsStaticParams,
-} from '../_components/DocsPageContent';
+} from '@/app/docs/_components/DocsPageContent';
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
-  return <DocsPageContent locale="zh-CN" params={props.params} />;
+  return <DocsPageContent locale="en" params={props.params} />;
 }
 
 export function generateStaticParams() {
-  return generateDocsStaticParams('zh-CN');
+  return generateDocsStaticParams('en');
 }
 
 export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
-  return generateDocsMetadata('zh-CN', props.params);
+  return generateDocsMetadata('en', props.params);
 }

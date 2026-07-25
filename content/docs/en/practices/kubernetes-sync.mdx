@@ -1,0 +1,18 @@
+---
+title: Kubernetes integration
+description: Synchronize Kubernetes services without duplicating the control-plane domain model.
+---
+
+Kubernetes integration should translate cluster resources into Lattice Hub resources rather than create a second service-governance model.
+
+## Decisions to make first
+
+- Which clusters and namespaces are authoritative?
+- Is synchronization full, selective, or annotation-driven?
+- How are Kubernetes names mapped to logical services and environments?
+- Who owns deletion and conflict resolution?
+- Which runtime, if any, will be injected into application Pods?
+
+Start with a limited namespace and verify create, update, endpoint churn, deletion, and controller restart behavior. Resource synchronization and Pole Sidecar health are separate signals and should be monitored independently.
+
+Read the [Kubernetes Controller](/en/docs/components/kubernetes-controller) component guide for its current boundary.

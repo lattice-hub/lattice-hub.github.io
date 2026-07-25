@@ -1,0 +1,24 @@
+---
+title: Performance report
+description: Confirmed runtime facts, measurement definitions, and the benchmark plan.
+---
+
+No formal benchmark result is published yet. This page therefore records the measurement boundary instead of inventing throughput, latency, or resource numbers.
+
+## Confirmed implementation facts
+
+- The control plane maintains incremental in-memory caches for read-heavy paths.
+- Cache refresh uses a short polling interval and overlap window to reduce missed updates.
+- HTTP, gRPC, xDS, Nacos, Apollo, and Eureka-compatible entry points share domain data.
+- Pole Sidecar currently forwards HTTP/1.1, HTTP/2, and gRPC-h2c traffic.
+
+## Required benchmark dimensions
+
+| Target | Measurements |
+| --- | --- |
+| Control Plane | Read/write throughput, p50/p95/p99 latency, cache convergence, CPU, and memory. |
+| Discovery protocols | Registration, heartbeat, subscription, and large service-list behavior. |
+| Governance release | Publish latency, cache propagation, and runtime visibility. |
+| Pole Sidecar | Throughput and tail latency for HTTP/1.1, HTTP/2, and gRPC-h2c. |
+
+Results will only be added with a reproducible environment, workload definition, commit, duration, and raw evidence.

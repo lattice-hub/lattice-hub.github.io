@@ -1,0 +1,27 @@
+---
+title: Control Plane
+description: The core Lattice Hub component for service discovery, configuration, governance, authorization, and AI Native registries.
+---
+
+The Control Plane owns the shared domain model and exposes it through HTTP, gRPC, xDS, Nacos, Apollo, and Eureka-compatible entry points. It keeps management writes separate from the published views consumed by clients and data planes.
+
+## Responsibilities
+
+- Assemble storage, caches, authorization, namespaces, discovery, configuration, governance, operations, and API servers.
+- Maintain service, instance, configuration, governance release, MCP, and A2A registry resources.
+- Provide incremental in-memory views for low-latency reads.
+- Enforce management permissions before domain operations execute.
+- Publish versioned data for SDKs, controllers, Sidecars, gateways, and compatible clients.
+
+## Internal layers
+
+| Layer | Responsibility |
+| --- | --- |
+| `apis/` | Interfaces and protocol-facing contracts. |
+| `pkg/` | Domain services, caches, validation, and authorization interceptors. |
+| `plugin/` | HTTP/gRPC/xDS servers, storage adapters, and access-control implementations. |
+| `bootstrap/` | Ordered assembly and lifecycle management. |
+
+The Control Plane does not sit in the synchronous path of every application request. Traffic policies execute in connected runtimes according to their supported capability set.
+
+See [control-plane assembly](/en/docs/principles/architecture) and [incremental cache and events](/en/docs/principles/cache-eventhub).

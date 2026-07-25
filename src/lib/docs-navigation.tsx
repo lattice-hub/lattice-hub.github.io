@@ -1,45 +1,111 @@
 import { BarChart3, BookOpen, Newspaper } from 'lucide-react';
 import type { LayoutTab } from 'fumadocs-ui/layouts/shared';
 import type * as PageTree from 'fumadocs-core/page-tree';
+import type { DocsLocale } from '@/lib/source';
 
 type DocsSection = 'docs' | 'blog' | 'reports';
 type DocsPageAlias = {
-  url: string;
+  slugs: string[];
   name: string;
 };
 
-const sectionConfig: Record<DocsSection, { title: string; url: string; description: string }> = {
-  docs: {
-    title: '文档',
-    url: '/docs',
-    description: '产品能力、原理和组件说明',
+const navigationCopy = {
+  'zh-CN': {
+    sections: {
+      docs: { title: '文档', description: '产品能力、原理和组件说明' },
+      blog: { title: '博客', description: '最佳实践和接入经验' },
+      reports: { title: '报告', description: '性能、配置和验证报告' },
+    },
+    folders: {
+      overview: 'Lattice Hub 是什么',
+      guides: '使用指南',
+      practices: '最佳实践',
+      principles: '原理细节',
+    },
+    pages: {
+      intro: '简介',
+      features: '功能特性',
+      access: '接入方式',
+      install: '服务端安装',
+      console: '控制台使用',
+      rustSdk: 'Rust SDK 接入',
+      controller: 'K8s 和 Controller',
+      sidecar: 'Pole Sidecar',
+      specification: '协议与网关',
+      grayRelease: '灰度发布',
+      kubernetes: 'K8s 相关实践',
+      agent: 'Agent 能力发现',
+      sidecarPractice: 'Pole Sidecar 数据面',
+      architecture: '控制面装配架构',
+      cache: '增量缓存与事件流',
+      governance: '治理规则与灰度发布',
+      auth: '鉴权链与资源映射',
+      aiRegistry: 'AI Registry 与 Pole Agent',
+      observability: '观测链路',
+    },
   },
-  blog: {
-    title: '博客',
-    url: '/docs/blog',
-    description: '最佳实践和接入经验',
+  en: {
+    sections: {
+      docs: { title: 'Docs', description: 'Product capabilities, principles, and components' },
+      blog: { title: 'Blog', description: 'Practices and integration notes' },
+      reports: { title: 'Reports', description: 'Performance and verification reports' },
+    },
+    folders: {
+      overview: 'What is Lattice Hub?',
+      guides: 'Guides',
+      practices: 'Best practices',
+      principles: 'Principles',
+    },
+    pages: {
+      intro: 'Introduction',
+      features: 'Features',
+      access: 'Integration options',
+      install: 'Server installation',
+      console: 'Using the Console',
+      rustSdk: 'Rust SDK',
+      controller: 'Kubernetes Controller',
+      sidecar: 'Pole Sidecar',
+      specification: 'Protocols and gateways',
+      grayRelease: 'Progressive delivery',
+      kubernetes: 'Kubernetes integration',
+      agent: 'Agent discovery',
+      sidecarPractice: 'Pole Sidecar data plane',
+      architecture: 'Control-plane assembly',
+      cache: 'Incremental cache and events',
+      governance: 'Governance releases',
+      auth: 'Authorization and resources',
+      aiRegistry: 'AI Registry and Pole Agent',
+      observability: 'Observability pipeline',
+    },
   },
-  reports: {
-    title: '报告',
-    url: '/docs/reports',
-    description: '性能、配置和验证报告',
-  },
-};
+} as const;
 
-export const docsLayoutTabs: LayoutTab[] = [
-  {
-    ...sectionConfig.docs,
-    icon: <BookOpen />,
-  },
-  {
-    ...sectionConfig.blog,
-    icon: <Newspaper />,
-  },
-  {
-    ...sectionConfig.reports,
-    icon: <BarChart3 />,
-  },
-];
+function getLocalizedDocsUrl(locale: DocsLocale, slugs: string[] = []): string {
+  const baseUrl = locale === 'en' ? '/en/docs' : '/docs';
+  return slugs.length > 0 ? `${baseUrl}/${slugs.join('/')}` : baseUrl;
+}
+
+function getSectionConfig(locale: DocsLocale) {
+  const copy = navigationCopy[locale].sections;
+
+  return {
+    docs: { ...copy.docs, url: getLocalizedDocsUrl(locale) },
+    blog: { ...copy.blog, url: getLocalizedDocsUrl(locale, ['blog']) },
+    reports: { ...copy.reports, url: getLocalizedDocsUrl(locale, ['reports']) },
+  } satisfies Record<DocsSection, { title: string; url: string; description: string }>;
+}
+
+export function getDocsLayoutTabs(locale: DocsLocale): LayoutTab[] {
+  const sectionConfig = getSectionConfig(locale);
+
+  return [
+    { ...sectionConfig.docs, icon: <BookOpen /> },
+    { ...sectionConfig.blog, icon: <Newspaper /> },
+    { ...sectionConfig.reports, icon: <BarChart3 /> },
+  ];
+}
+
+export const docsLayoutTabs = getDocsLayoutTabs('zh-CN');
 
 function getDocsSection(slug: string[] = []): DocsSection {
   if (slug[0] === 'blog') {
@@ -68,8 +134,12 @@ function hasUrlPrefix(node: PageTree.Node, prefix: string): boolean {
   return false;
 }
 
-function findSectionFolder(tree: PageTree.Root, section: Exclude<DocsSection, 'docs'>): PageTree.Folder | undefined {
-  const prefix = sectionConfig[section].url;
+function findSectionFolder(
+  tree: PageTree.Root,
+  section: Exclude<DocsSection, 'docs'>,
+  locale: DocsLocale,
+): PageTree.Folder | undefined {
+  const prefix = getSectionConfig(locale)[section].url;
 
   return tree.children.find((node): node is PageTree.Folder => node.type === 'folder' && hasUrlPrefix(node, prefix));
 }
@@ -93,11 +163,12 @@ function findPageByUrl(node: PageTree.Root | PageTree.Node, url: string): PageTr
   return undefined;
 }
 
-function pageAlias(tree: PageTree.Root, alias: DocsPageAlias): PageTree.Item {
-  const page = findPageByUrl(tree, alias.url);
+function pageAlias(tree: PageTree.Root, alias: DocsPageAlias, locale: DocsLocale): PageTree.Item {
+  const url = getLocalizedDocsUrl(locale, alias.slugs);
+  const page = findPageByUrl(tree, url);
 
   if (!page) {
-    throw new Error(`Missing docs page for sidebar alias: ${alias.url}`);
+    throw new Error(`Missing docs page for sidebar alias: ${url}`);
   }
 
   return {
@@ -127,48 +198,55 @@ function treeFromFolder(folder: PageTree.Folder): PageTree.Root {
   };
 }
 
-function getProductDocsTree(tree: PageTree.Root): PageTree.Root {
+function getProductDocsTree(tree: PageTree.Root, locale: DocsLocale): PageTree.Root {
+  const copy = navigationCopy[locale];
+  const alias = (name: string, slugs: string[]) => pageAlias(tree, { name, slugs }, locale);
+
   return {
     ...tree,
     children: [
-      folder('Lattice Hub 是什么', [
-        pageAlias(tree, { name: '简介', url: '/docs' }),
-        pageAlias(tree, { name: '功能特性', url: '/docs/what-is/features' }),
-        pageAlias(tree, { name: '接入方式', url: '/docs/what-is/access' }),
+      folder(copy.folders.overview, [
+        alias(copy.pages.intro, []),
+        alias(copy.pages.features, ['what-is', 'features']),
+        alias(copy.pages.access, ['what-is', 'access']),
       ]),
-      folder('使用指南', [
-        pageAlias(tree, { name: '服务端安装', url: '/docs/guides/server-install' }),
-        pageAlias(tree, { name: '控制台使用', url: '/docs/guides/console-use' }),
-        pageAlias(tree, { name: 'Rust SDK 接入', url: '/docs/components/rust-sdk' }),
-        pageAlias(tree, { name: 'K8s 和 Controller', url: '/docs/components/kubernetes-controller' }),
-        pageAlias(tree, { name: 'Sidecar 和网格代理', url: '/docs/components/pingora-sidecar' }),
-        pageAlias(tree, { name: '协议与网关', url: '/docs/components/specification' }),
+      folder(copy.folders.guides, [
+        alias(copy.pages.install, ['guides', 'server-install']),
+        alias(copy.pages.console, ['guides', 'console-use']),
+        alias(copy.pages.rustSdk, ['components', 'rust-sdk']),
+        alias(copy.pages.controller, ['components', 'kubernetes-controller']),
+        alias(copy.pages.sidecar, ['components', 'pingora-sidecar']),
+        alias(copy.pages.specification, ['components', 'specification']),
       ]),
-      folder('最佳实践', [
-        pageAlias(tree, { name: '灰度发布', url: '/docs/practices/gray-release' }),
-        pageAlias(tree, { name: 'K8s 相关实践', url: '/docs/practices/kubernetes-sync' }),
-        pageAlias(tree, { name: 'Agent 能力发现', url: '/docs/practices/agent-discovery' }),
-        pageAlias(tree, { name: 'Sidecar 数据面', url: '/docs/practices/sidecar-data-plane' }),
+      folder(copy.folders.practices, [
+        alias(copy.pages.grayRelease, ['practices', 'gray-release']),
+        alias(copy.pages.kubernetes, ['practices', 'kubernetes-sync']),
+        alias(copy.pages.agent, ['practices', 'agent-discovery']),
+        alias(copy.pages.sidecarPractice, ['practices', 'sidecar-data-plane']),
       ]),
-      folder('原理细节', [
-        pageAlias(tree, { name: '控制面装配架构', url: '/docs/principles/architecture' }),
-        pageAlias(tree, { name: '增量缓存与事件流', url: '/docs/principles/cache-eventhub' }),
-        pageAlias(tree, { name: '治理规则与灰度发布', url: '/docs/principles/governance-release' }),
-        pageAlias(tree, { name: '鉴权链与资源映射', url: '/docs/principles/auth-protocols' }),
-        pageAlias(tree, { name: 'AI Registry 与 Pole Agent', url: '/docs/principles/ai-registry' }),
-        pageAlias(tree, { name: '观测链路', url: '/docs/principles/observability-chain' }),
+      folder(copy.folders.principles, [
+        alias(copy.pages.architecture, ['principles', 'architecture']),
+        alias(copy.pages.cache, ['principles', 'cache-eventhub']),
+        alias(copy.pages.governance, ['principles', 'governance-release']),
+        alias(copy.pages.auth, ['principles', 'auth-protocols']),
+        alias(copy.pages.aiRegistry, ['principles', 'ai-registry']),
+        alias(copy.pages.observability, ['principles', 'observability-chain']),
       ]),
     ],
   };
 }
 
-export function getDocsSectionTree(tree: PageTree.Root, slug: string[] = []): PageTree.Root {
+export function getDocsSectionTree(
+  tree: PageTree.Root,
+  slug: string[] = [],
+  locale: DocsLocale = 'zh-CN',
+): PageTree.Root {
   const section = getDocsSection(slug);
 
   if (section === 'blog' || section === 'reports') {
-    const folder = findSectionFolder(tree, section);
+    const folder = findSectionFolder(tree, section, locale);
     return folder ? treeFromFolder(folder) : tree;
   }
 
-  return getProductDocsTree(tree);
+  return getProductDocsTree(tree, locale);
 }

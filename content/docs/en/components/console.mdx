@@ -1,0 +1,24 @@
+---
+title: Console
+description: The Fluent UI management surface for resources, governance, Pole Agent, system settings, and platform operations.
+---
+
+Console is the operator-facing component of Lattice Hub. It can run with the server in `all` mode or as a separate `console` process that reaches the Control Plane over the network.
+
+## Workspaces
+
+- Discovery and configuration resource management.
+- Governance scope, rule detail, revisions, releases, progressive delivery, and rollback.
+- Identity, users, policies, and authorization diagnostics.
+- MCP Registry and A2A Agent Registry management.
+- Pole Agent conversations and human-confirmed proposals.
+- System settings, Pole Secret rotation, connection testing, and runtime readiness.
+- Platform history, discovery events, metrics, traces, and operational status.
+
+## Data and security boundary
+
+Console is not allowed to become an alternate domain backend. Its gateway calls typed Control Plane APIs, and separate-process mode does not read core business tables directly.
+
+Pole Agent executes in the Console backend. The browser never receives the model API key or Pole management credential. Configuration changes remain drafts until a user confirms the proposal and follows the normal release workflow.
+
+Read [using the Console](/en/docs/guides/console-use) for operator workflows and [AI Registry and Pole Agent](/en/docs/principles/ai-registry) for the assistant boundary.

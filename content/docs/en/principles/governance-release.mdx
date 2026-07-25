@@ -1,0 +1,39 @@
+---
+title: Governance rules and releases
+description: How a governance draft becomes an immutable active release visible to clients and data planes.
+---
+
+Governance management and runtime execution use different views. A rule record is editable management state; a release is a versioned artifact that can become active, enter progressive rollout, be stopped, or be selected for rollback.
+
+## Management and runtime views
+
+Console reads rule identities, scope, revisions, and draft content. Clients and data planes query active releases indexed for runtime matching.
+
+For unified traffic governance, the cache keeps separate maps for rule IDs and active release keys. This prevents an uncommitted edit from silently changing runtime behavior.
+
+## Create and update
+
+Domain handlers validate service scope and rule-specific content before storage. New rules receive a generated ID and revision. Updates advance the management revision but do not activate a release.
+
+Traffic security, mirroring, and Mock share a business template while retaining their typed specifications and authorization methods.
+
+## Publish an active release
+
+Publish operations exist for routing, rate limiting, circuit breaking, fault detection, lanes, lossless lifecycle, traffic security, mirroring, and Mock.
+
+A release records rule identity, active status, version, description, release type, and timestamps. Activation first makes conflicting older releases inactive, then writes the new active version.
+
+## Rollback and progressive delivery
+
+- `RollbackGovernanceRules` selects a previous version as the runtime view.
+- `StopbetaGovernanceRules` stops a progressive release.
+- `DeleteGovernanceRules` removes a release according to domain rules.
+- `GetRuleReleases` lists the version history for review.
+
+Rollback is a new activation decision; it does not mutate history into pretending the failed release never existed.
+
+## Cache propagation
+
+Storage changes enter the shared governance updater and then fan out to rule-specific caches. Console queries and runtime queries keep their separate indexes throughout this process.
+
+Publication means the control plane has produced an active view. Actual traffic behavior still depends on a connected SDK or data plane that implements the policy.

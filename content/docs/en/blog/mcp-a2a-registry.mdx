@@ -1,0 +1,12 @@
+---
+title: How MCP and A2A registries expose capabilities to agents
+description: Reframe service catalogs, tools, and agent cards as structured control-plane resources.
+---
+
+AI-native discovery needs more than a service list embedded in a system prompt. Agents need typed capability records that can be searched, authorized, cached, and audited.
+
+MCP Registry manages tool and resource endpoints. A2A Agent Registry manages agent cards, skills, and protocol endpoints. They may reference related services, but they serve different discovery contracts.
+
+The control plane stores and indexes registry metadata; it does not become an MCP tool-execution proxy or an A2A task runtime. Actual calls remain in the approved client, gateway, or agent runtime.
+
+This separation lets an organization expose capabilities to agents while preserving the same identity, environment, and management boundaries used for ordinary services.

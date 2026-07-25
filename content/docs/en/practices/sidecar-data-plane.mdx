@@ -1,0 +1,18 @@
+---
+title: Pole Sidecar data plane
+description: Use Pole Sidecar for language-neutral routing and governance extension points.
+---
+
+Pole Sidecar is useful when application-language coverage is uneven, SDK integration is expensive, or traffic policy belongs outside the process. It consumes control-plane views while executing request behavior close to the workload.
+
+## Adoption guidance
+
+- Start with explicit inbound and upstream routes.
+- Verify HTTP/1.1, HTTP/2, and gRPC-h2c behavior independently.
+- Measure the extra proxy hop and failure modes.
+- Roll out governance interceptors one supported capability at a time.
+- Keep the application’s health distinct from Pole Sidecar readiness.
+
+Pole Sidecar and SDK integrations are not mutually exclusive, but ownership must be clear so the same policy is not applied twice.
+
+See [Pole Sidecar](/en/docs/components/pingora-sidecar) and its [implementation roadmap](/en/docs/blog/pingora-sidecar).

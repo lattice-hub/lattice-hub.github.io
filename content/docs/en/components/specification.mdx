@@ -1,0 +1,19 @@
+---
+title: Specification
+description: Shared service-governance standards and protobuf contracts for Lattice Hub components.
+---
+
+The Specification repository defines contracts shared by the Control Plane, SDKs, controllers, Sidecars, gateways, and supporting runtimes. Generated Java, Go, and Rust entry points reduce contract drift across repositories.
+
+## Scope
+
+- Service discovery and configuration protocol messages.
+- Governance rule structures and release metadata.
+- Authentication and managed service-identity contracts.
+- MCP and AI Native resource definitions where they belong in the shared model.
+
+## Design rule
+
+The specification is a compatibility contract, not proof that every runtime implements every field. Each component must document the subset it consumes and its behavior for unknown or unsupported values.
+
+Changes should preserve wire compatibility, regenerate affected language artifacts, and update consumers in a controlled sequence.

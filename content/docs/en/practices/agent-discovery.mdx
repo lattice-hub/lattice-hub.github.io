@@ -1,0 +1,16 @@
+---
+title: Agent capability discovery
+description: Make MCP servers and A2A agents discoverable without treating prompts as a registry.
+---
+
+Agent capability discovery models MCP servers, tools, A2A agent cards, skills, and protocol endpoints as control-plane resources. This provides structured search, authorization, caching, and audit boundaries.
+
+## Registry roles
+
+- MCP Registry describes callable tool and resource endpoints.
+- A2A Agent Registry stores and discovers agent cards, skills, and protocol metadata.
+- Pole Agent imports an approved MCP tool allowlist for human-gated control-plane work.
+
+A2A Registry does not proxy task traffic, SSE streams, artifacts, or push notifications. Those belong to a caller runtime, gateway, or dedicated A2A data plane.
+
+Keep registry metadata current, use stable identities, and validate endpoint reachability independently from registration success.

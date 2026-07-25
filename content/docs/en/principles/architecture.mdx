@@ -1,0 +1,45 @@
+---
+title: Control-plane assembly
+description: The real pole-control-plane runtime structure across bootstrap, API plugins, domain servers, caches, and storage.
+---
+
+`pole-control-plane` is assembled as an ordered set of domain services rather than a single HTTP CRUD application. Startup enters `bootstrap.Start`, then initializes storage, caches, authorization, namespaces, discovery, governance, configuration, operations, and protocol servers.
+
+## Startup order
+
+The bootstrap sequence matters because later services depend on initialized interfaces and caches:
+
+1. Load and validate runtime configuration.
+2. Initialize the selected storage implementation.
+3. Create cache managers and resource caches.
+4. Initialize access control and namespace services.
+5. Assemble discovery, configuration, and governance servers.
+6. Register operations and AI Registry modules.
+7. Start HTTP, gRPC, xDS, and compatible protocol plugins.
+
+## API servers are plugin slots
+
+Protocol servers live under `plugin/apiserver/*` and register themselves through plugin interfaces. HTTP, gRPC, xDS, Nacos, Apollo, Eureka, MCP, and A2A adapters translate external requests into shared domain operations.
+
+The protocol layer should not duplicate authorization or business rules. It extracts transport context, maps payloads, calls a domain server, and maps the response back to the protocol.
+
+## Domain interceptors
+
+Domain servers use registered proxy factories for cross-cutting behavior. `GetChainOrder()` currently places `auth` before `paramcheck`; `InitServer` wraps the concrete server in that order.
+
+This makes authorization and parameter validation consistent across protocol entry points while keeping domain methods testable.
+
+## Module boundaries
+
+| Layer | Main entry | Responsibility |
+| --- | --- | --- |
+| Bootstrap | `bootstrap/server.go` | Dependency-ordered assembly and lifecycle. |
+| Protocols | `plugin/apiserver/*` | Transport and ecosystem compatibility. |
+| Discovery | `pkg/service` | Services, instances, contracts, reporting, and discovery responses. |
+| Governance | `pkg/goverrule` | Routing, limiting, breaking, detection, lanes, lossless lifecycle, security, mirror, and Mock. |
+| Configuration | `pkg/config` | Groups, files, publishing, and protocol adapters. |
+| Authorization | `apis/access_control/auth`, `plugin/access_control/auth` | Users, policies, resource checks, and permissions. |
+| Cache | `pkg/cache` | Incremental views, active releases, force refresh, and AI registries. |
+| Storage | `plugin/store/mysql` | CRUD, revisions, releases, incremental queries, and transactions. |
+
+The architecture keeps the Control Plane out of the synchronous application traffic path. SDKs and data planes consume published views and execute the capabilities they support.

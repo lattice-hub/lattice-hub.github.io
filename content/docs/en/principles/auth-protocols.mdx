@@ -1,0 +1,32 @@
+---
+title: Authorization and resource mapping
+description: How request context, AuthChecker, resource validation, and protocol adapters share one permission model.
+---
+
+Authorization is enforced in domain-server interceptor chains, not as a token check duplicated in every HTTP handler. Protocol adapters extract identity and request context; `AuthChecker` decides whether the requested domain operation is allowed.
+
+## Unified request context
+
+`AcquireContext` normalizes console and client identity information before the request reaches a domain method. Console and client permission checks remain distinct because management users and workloads have different trust models.
+
+## Resource mapping
+
+Policy fields map to typed resources such as namespaces, services, configuration groups, rule families, users, groups, roles, and policy rules. The mapping lets authorization code validate scope without teaching each protocol about every resource type.
+
+Wildcard `*` represents all resources in a policy. It must not be queried as if it were a concrete resource ID.
+
+## Validate referenced resources
+
+Policy creation and update run parameter checks that confirm referenced resources exist. This catches misspelled or stale resource IDs before a policy becomes an authorization input.
+
+Validation and authorization are separate interceptors: one answers whether the caller may perform an operation; the other answers whether the operation refers to valid resources.
+
+## Governance release permissions
+
+Publish, rollback, delete, version-list, and progressive-delivery operations map to rule-specific method names. Route, rate-limit, circuit-breaker, fault-detect, lane, lossless, security, mirror, and Mock releases can therefore be granted independently.
+
+## Shared across protocols
+
+HTTP, gRPC, xDS, Nacos, Apollo, and Eureka-compatible entry points eventually call the same domain servers. A new protocol adapter should map transport context into the shared model rather than bypass or reimplement permission logic.
+
+Authorization controls management and client API access. Workload-to-workload authentication and final request rejection occur in the connected runtime, not synchronously in the Control Plane.

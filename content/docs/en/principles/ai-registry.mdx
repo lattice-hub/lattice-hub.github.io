@@ -1,0 +1,36 @@
+---
+title: AI Registry and Pole Agent
+description: How MCP servers and A2A agents become control-plane resources, and how Pole Agent operates behind human confirmation.
+---
+
+Lattice Hub treats MCP servers and A2A agents as managed resources. They have storage interfaces, incremental caches, HTTP APIs, and the same environment and authorization boundaries used elsewhere in the Control Plane.
+
+## Resource model
+
+MCP Registry stores server identity, transport metadata, tools, and resources. A2A Agent Registry stores agent cards, skills, protocol interfaces, and discovery metadata.
+
+Both registries support management and discovery. They do not imply that the Control Plane executes MCP tools or proxies A2A task traffic.
+
+## MCP startup and APIs
+
+The MCP module initializes storage-backed caches, management APIs, and the MCP SSE server. Pole’s own MCP surface exposes an approved set of control-plane tools to authenticated clients.
+
+MCP tool execution remains subject to the current caller identity and tool policy.
+
+## A2A startup and APIs
+
+The A2A module exposes agent list, create, update, delete, skill, and agent-card endpoints. The registry is responsible for records and discovery state.
+
+A2A task runtime, task state machines, artifact persistence, SSE forwarding, and push notification brokering belong to a gateway, caller runtime, or dedicated A2A data plane.
+
+## Incremental caching
+
+`MCPServerCache` and `A2AAgentCache` use the shared CacheManager lifecycle and revisioned incremental refresh. Registration success and endpoint reachability are different states; consumers should check both.
+
+## Pole Agent
+
+Pole Agent runs in the Console backend. It loads a versioned system prompt, model profile, MCP endpoint, and tool allowlist, then performs a bounded model-tool loop.
+
+Configuration updates enter an internal proposal flow that requires preview and human confirmation. Pole Agent cannot publish or delete resources through that path, cannot change its own system configuration, and cannot read Pole Secret values.
+
+Model credentials are stored as versioned `pole-secret://` references. The runtime resolves them for the provider adapter; plaintext is not returned to the browser, written to logs, or inserted into model context.

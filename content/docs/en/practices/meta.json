@@ -1,0 +1,4 @@
+{
+  "title": "Best practices",
+  "pages": ["gray-release", "kubernetes-sync", "agent-discovery", "sidecar-data-plane"]
+}

@@ -1,0 +1,39 @@
+---
+title: Incremental cache and event flow
+description: How CacheManager, BaseCache, governance fan-out, and EventHub support low-latency reads.
+---
+
+The cache layer separates read-heavy discovery, configuration, xDS, and AI Registry paths from direct database queries. It also turns resource changes into revisioned in-memory views that can be compared and observed.
+
+## CacheManager
+
+`CacheManager` registers caches for services, instances, configuration, governance families, users and policies, MCP servers, and A2A agents. Domain servers depend on cache interfaces rather than storage implementations for normal reads.
+
+## Incremental refresh window
+
+`BaseCache` tracks the last successful database time and queries with an overlap window. The current `lastFetchTime - 5s` strategy reduces the risk of missing rows around timestamp and transaction boundaries.
+
+Important state includes:
+
+- `lastFetchTime` for the previous successful refresh.
+- `firstUpdate` for initial full loading.
+- per-label maximum modification times.
+- `singleflight.Group` to prevent concurrent forced refreshes from repeatedly hitting storage.
+
+The overlap window is a delivery safeguard, not a conflict-resolution mechanism. Resource revisions and domain validation still decide how updates are applied.
+
+## Discovery hot path
+
+Discovery responses use revision comparison and complete-response caching. Cached protobuf values are cloned on both `Get` and `Put` so callers and transport serialization cannot mutate shared pointers.
+
+Statistics distinguish revision hits from full response-cache hits, which makes performance evidence more useful than a single cache-hit number.
+
+## Governance fan-out
+
+Governance rule caches can share one update query. The unified updater reads changed rules and releases, groups them by rule type, and invokes watchers for route, rate limit, circuit breaker, fault detection, lane, lossless, and traffic-governance caches.
+
+This reduces repeated database scans while preserving rule-specific indexes and query APIs.
+
+## EventHub boundary
+
+EventHub distributes resource-change signals inside the process. It complements caches but does not replace durable storage, runtime delivery confirmation, or OpenTelemetry export.

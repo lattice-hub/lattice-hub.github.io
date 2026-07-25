@@ -1,0 +1,26 @@
+---
+title: Server installation
+description: Deploy the Lattice Hub Control Plane and verify the minimum service, storage, and Console boundaries.
+---
+
+The server can run the control plane and Console together or as separate processes. A production deployment also needs a persistent MySQL instance and explicit bootstrap configuration.
+
+## Runtime modes
+
+| Mode | Purpose |
+| --- | --- |
+| `all` | Starts the control-plane server and Console gateway in one process. |
+| `server` | Starts only the control-plane APIs and protocol servers. |
+| `console` | Starts only the Console gateway and connects to an existing server over the network. |
+
+The command-line `--mode` value takes precedence over YAML configuration. If no mode is supplied, the current default is `all`.
+
+## Minimum validation
+
+1. Confirm MySQL is reachable and the configured database user has the required schema permissions.
+2. Start the selected mode with a reviewed configuration file.
+3. Check the HTTP and gRPC listeners, then open the Console when enabled.
+4. Verify that service discovery, configuration, governance, and AI Registry APIs return authorized responses.
+5. Review logs for bootstrap failures without copying credentials into diagnostics.
+
+For component responsibilities, read [Control Plane](/en/docs/components/control-plane). For the startup sequence and plugin assembly, see [control-plane assembly](/en/docs/principles/architecture).

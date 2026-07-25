@@ -1,0 +1,42 @@
+---
+title: Product overview
+description: Lattice Hub brings environments, service discovery, traffic governance, configuration, identity, AI registries, and observability into one control plane.
+---
+
+Lattice Hub is a cloud-native control plane for services and agents. It gives platform teams one versioned resource model for service discovery, configuration delivery, traffic policies, authorization, and operational visibility. MCP servers and A2A agents enter the same management boundary without turning the control plane into an application traffic proxy.
+
+Use this page to understand the product boundary before moving into the [architecture](/en/docs/principles/architecture), [component guides](/en/docs/components/control-plane), [best practices](/en/docs/practices/gray-release), and [reports](/en/docs/reports).
+
+## The operating model
+
+1. A namespace defines an environment and release boundary.
+2. Teams register services, instances, configuration, governance rules, MCP servers, and A2A agent cards.
+3. Console and API workflows create drafts and immutable releases.
+4. SDKs, controllers, Pole Sidecar, protocol adapters, and agents consume the appropriate published view.
+5. History, events, statistics, and OpenTelemetry expose what changed and how the platform behaves.
+
+## Capability map
+
+| Area | What Lattice Hub provides | Learn more |
+| --- | --- | --- |
+| Environments | Namespace-scoped services, configuration, policies, and releases. | [Features](/en/docs/what-is/features) |
+| Discovery | HTTP, gRPC, xDS, Nacos, Apollo, and Eureka-compatible entry points. | [Integration options](/en/docs/what-is/access) |
+| Governance | Routing, lanes, rate limiting, circuit breaking, detection, lossless lifecycle, mirroring, Mock, and call authorization. | [Governance releases](/en/docs/principles/governance-release) |
+| Configuration | Drafts, versions, progressive rollout, rollback, and long-poll delivery. | [Configuration rollout](/en/docs/blog/config-rollout) |
+| AI Native | MCP Registry, A2A Agent Registry, and the human-gated Pole Agent workspace. | [AI Registry and Pole Agent](/en/docs/principles/ai-registry) |
+| Operations | Platform history, discovery events, statistics, and OTLP export. | [Observability pipeline](/en/docs/principles/observability-chain) |
+
+## Main components
+
+| Component | Responsibility |
+| --- | --- |
+| [Control Plane](/en/docs/components/control-plane) | Owns APIs, domain services, caches, storage, governance releases, and registry resources. |
+| [Console](/en/docs/components/console) | Provides resource workbenches, release review, system settings, and Pole Agent. |
+| [Kubernetes Controller](/en/docs/components/kubernetes-controller) | Synchronizes Kubernetes resources and coordinates runtime injection. |
+| [Rust SDK](/en/docs/components/rust-sdk) | Offers a proxyless integration path for Rust services. |
+| [Pole Sidecar](/en/docs/components/pingora-sidecar) | Provides a Pingora-based local data-plane skeleton for HTTP and gRPC traffic. |
+| [Specification](/en/docs/components/specification) | Defines shared governance and protobuf contracts across components. |
+
+## Recommended reading path
+
+Start with [features](/en/docs/what-is/features) and [integration options](/en/docs/what-is/access). Operators can continue with [server installation](/en/docs/guides/server-install) and [using the Console](/en/docs/guides/console-use). Runtime and platform engineers should then read the architecture, governance, authorization, cache, AI, and observability principle pages.

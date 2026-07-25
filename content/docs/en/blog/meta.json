@@ -1,0 +1,4 @@
+{
+  "title": "Blog",
+  "pages": ["index", "mcp-a2a-registry", "kubernetes-service-sync", "pingora-sidecar", "config-rollout"]
+}

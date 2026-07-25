@@ -1,0 +1,11 @@
+{
+  "title": "Principles",
+  "pages": [
+    "architecture",
+    "cache-eventhub",
+    "governance-release",
+    "auth-protocols",
+    "ai-registry",
+    "observability-chain"
+  ]
+}

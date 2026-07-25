@@ -1,0 +1,22 @@
+---
+title: Using the Console
+description: Understand how Console manages resources, releases, Pole Agent, system settings, and operational evidence.
+---
+
+Console is the primary management interface for platform teams. It is a view and workflow layer over control-plane resources, not a second source of truth.
+
+## Core workflows
+
+- Browse namespaces, services, instances, configuration, governance rules, and AI Registry resources.
+- Edit a draft without implying that the runtime has changed.
+- Review version differences and publish an immutable release.
+- Inspect rollout status, history, authorization failures, and available observability evidence.
+- Use Pole Agent to read authorized context and prepare supported configuration updates for human confirmation.
+
+## Safety boundaries
+
+Saving a draft is not activation. A release becomes visible to a runtime only after the corresponding publish workflow succeeds. Pole Agent cannot bypass permission checks or publish/delete resources through its proposal flow.
+
+System configuration and Pole Secret operations are admin-only. Secret values are write-only: the browser receives status and references, never the plaintext value.
+
+Continue with [governance releases](/en/docs/principles/governance-release), [authorization](/en/docs/principles/auth-protocols), or [AI Registry and Pole Agent](/en/docs/principles/ai-registry).

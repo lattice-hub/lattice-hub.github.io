@@ -1,0 +1,12 @@
+---
+title: Synchronizing Kubernetes Service into Lattice Hub
+description: Compare full, selective, and annotation-driven synchronization models.
+---
+
+Kubernetes Service synchronization answers three questions: what is authoritative, how names map to Lattice Hub environments and services, and how multiple clusters avoid ownership conflicts.
+
+Full synchronization offers broad visibility but can import resources that do not need governance. Selective synchronization reduces noise but requires an explicit allowlist. Annotation-driven synchronization keeps intent near the workload while adding policy and validation requirements.
+
+Whichever mode is selected, endpoint churn should update the same logical service rather than create unstable identities. Deletion must be reconciled explicitly, and controller restart should converge without duplicating records.
+
+Begin with one namespace, test lifecycle events, and only then expand the synchronization boundary.

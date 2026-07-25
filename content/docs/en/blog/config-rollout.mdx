@@ -1,0 +1,12 @@
+---
+title: Configuration rollout, rollback, and long polling
+description: Treat configuration as versioned runtime state instead of a mutable key-value record.
+---
+
+A configuration center must control how changes become visible. Editing a value, publishing a version, selecting a rollout scope, and delivering an update to listeners are separate operations.
+
+Progressive rollout limits exposure by client labels or other supported conditions. Rollback selects a known version instead of reconstructing old text. Long polling and cache refresh then move the active view to clients without requiring every read to hit storage.
+
+Operationally, teams should record the draft revision, release version, rollout condition, activation time, and recovery decision. Listener delivery should be monitored separately from successful publication.
+
+This model keeps “stored,” “published,” and “observed by the runtime” as distinct states.

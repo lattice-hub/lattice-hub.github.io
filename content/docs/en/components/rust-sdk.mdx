@@ -1,0 +1,19 @@
+---
+title: Rust SDK
+description: A proxyless service-governance integration for Rust applications.
+---
+
+The Rust SDK connects an application directly to Lattice Hub without requiring a local data-plane proxy. It is appropriate when a Rust service wants low-hop discovery and governance decisions inside the process.
+
+## Integration model
+
+The SDK discovers control-plane endpoints, consumes service and governance views, maintains local state, and exposes runtime decisions to the application integration layer. Production deployments should use authenticated and encrypted control-plane transport.
+
+## Trade-offs
+
+- Proxyless execution avoids an additional network hop.
+- Policy behavior and observability must be implemented and upgraded in the SDK.
+- Application integration is language-specific.
+- The SDK executes only the governance capabilities available in its current version.
+
+Use the shared [Specification](/en/docs/components/specification) for protocol contracts. Compare this model with the language-neutral [Pole Sidecar](/en/docs/components/pingora-sidecar) before choosing a runtime path.

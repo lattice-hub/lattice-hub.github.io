@@ -1,0 +1,25 @@
+---
+title: Integration options
+description: Choose between Console, APIs, SDKs, Kubernetes, Pole Sidecar, and protocol-compatible entry points.
+---
+
+Lattice Hub integrations differ by where management and runtime work happens. Platform teams normally deploy the Control Plane and Console first, then select an SDK, controller, Pole Sidecar, gateway, or protocol adapter for each workload.
+
+## Management paths
+
+| Path | Use it for |
+| --- | --- |
+| Console | Reviewing resources, configuration, governance scope, releases, permissions, and operational status. |
+| HTTP and gRPC APIs | Automation, platform integration, and client-compatible discovery or configuration flows. |
+| Kubernetes Controller | Synchronizing Service, Endpoints, Namespace, and ConfigMap resources. |
+
+## Runtime paths
+
+| Pattern | Current component | Trade-off |
+| --- | --- | --- |
+| Proxyless client | [Rust SDK](/en/docs/components/rust-sdk) | Low hop count, but policy support is implemented in each SDK. |
+| Local data plane | [Pole Sidecar](/en/docs/components/pingora-sidecar) | Language-neutral traffic interception with an extra local proxy hop. |
+| Mesh or gateway | Envoy/xDS-compatible runtimes | Centralized proxy execution, limited to supported xDS translations. |
+| Compatible protocol client | Nacos, Apollo, Eureka, HTTP, or gRPC clients | Reuses an existing ecosystem while exposing only the mapped capability set. |
+
+Select the runtime according to language coverage, deployment ownership, protocol requirements, and the governance depth that is actually implemented. Do not treat “can connect” as “supports every policy.”

@@ -1,0 +1,12 @@
+---
+title: The lightweight Pole Sidecar data-plane path
+description: How Pingora, HTTP/2, gRPC-h2c, routing, load balancing, and interceptors shape Pole Sidecar.
+---
+
+Pole Sidecar is intentionally smaller than a full service mesh. Its current Pingora-based implementation first establishes reliable protocol forwarding, route selection, round-robin balancing, and interceptor extension points.
+
+That sequence creates a testable runtime boundary before dynamic governance is added. Each new policy should define its control-plane view, local state, request behavior, failure mode, and observability evidence.
+
+Pole Sidecar must not become another control plane. Lattice Hub owns policy creation, versioning, progressive delivery, and rollback; Pole Sidecar executes the subset supported by its deployed version.
+
+Future work should be described as a roadmap until the corresponding data-plane behavior is implemented and verified.

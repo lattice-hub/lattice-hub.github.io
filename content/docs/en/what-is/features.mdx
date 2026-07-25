@@ -1,0 +1,25 @@
+---
+title: Features
+description: Understand Lattice Hub through environments, discovery, governance, configuration, identity, AI registries, and platform operations.
+---
+
+Lattice Hub is not a collection of unrelated APIs. Services, instances, configuration, governance rules, permissions, and AI capability records become versioned control-plane resources that different runtimes can consume.
+
+## Product capabilities
+
+| Capability | Product boundary |
+| --- | --- |
+| Environments | Namespaces separate development, staging, and production resources and releases. |
+| Service discovery | Multiple protocol adapters share the same service and instance model. |
+| Traffic governance | Nine policy families share scope, revision, release, progressive delivery, and rollback semantics. |
+| Configuration | Editing and runtime activation are separated by immutable releases. |
+| Identity and access | Management authorization and workload identity solve different trust problems. |
+| AI Registry | MCP servers and A2A agent cards are searchable control-plane resources. |
+| Pole Agent | A human-gated assistant reads authorized context and creates reviewable change proposals. |
+| Observability | History, events, statistics, and OTLP signals expose control-plane and runtime state. |
+
+## One view, several consumers
+
+Console, SDKs, Kubernetes Controller, Pole Sidecar, protocol adapters, and agents do not need separate copies of the domain model. Each consumer reads only the published views and capabilities it supports.
+
+This distinction matters: protocol compatibility does not imply that every runtime executes every governance policy. See [integration options](/en/docs/what-is/access) for deployment choices and [governance releases](/en/docs/principles/governance-release) for the activation boundary.

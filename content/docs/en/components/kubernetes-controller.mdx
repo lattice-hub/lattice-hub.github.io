@@ -1,0 +1,23 @@
+---
+title: Kubernetes Controller
+description: Synchronize Kubernetes services and coordinate Pole Sidecar or proxy injection with Lattice Hub.
+---
+
+Kubernetes Controller connects cluster resources to the Lattice Hub control-plane model. Its two primary jobs are resource synchronization and runtime injection.
+
+## Resource synchronization
+
+The controller maps Kubernetes `Service`, `Endpoints`, `Namespace`, and selected `ConfigMap` resources into control-plane records. Deployments can choose full or selective synchronization and use annotations to control aliases and integration behavior.
+
+## Runtime injection
+
+The controller can coordinate Pole Sidecar, Java Agent, or Envoy injection according to deployment configuration. Injection is a deployment mechanism; it does not guarantee that the injected runtime supports every governance policy.
+
+## Operational guidance
+
+- Define namespace and naming mappings before enabling synchronization.
+- Use deterministic ownership to avoid multiple clusters overwriting the same logical service.
+- Treat deletion, resync, and transient API errors as explicit reconciliation states.
+- Verify the connected runtime separately from the controller’s resource-sync health.
+
+See [Kubernetes integration](/en/docs/practices/kubernetes-sync) for rollout guidance.

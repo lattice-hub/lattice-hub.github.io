@@ -1,0 +1,18 @@
+---
+title: Progressive delivery
+description: Apply versioning, staged rollout, rollback, and activation boundaries to configuration and governance rules.
+---
+
+Progressive delivery starts by separating editable state from effective runtime state. A draft may be saved and reviewed without changing what clients consume.
+
+## Recommended flow
+
+1. Define the target namespace, service scope, and caller/callee relationship.
+2. Save and validate a draft revision.
+3. Review the immutable release payload and rollout conditions.
+4. Publish to a limited scope and observe runtime evidence.
+5. Expand the release, stop the beta, or roll back to a known version.
+
+Never use “saved” and “effective” as synonyms in operational procedures. The active release is the runtime boundary, and each consuming runtime still executes only its supported capabilities.
+
+See [governance releases](/en/docs/principles/governance-release) for the underlying model.

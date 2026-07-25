@@ -1,0 +1,31 @@
+---
+title: Control Plane
+description: Lattice Hub 的核心控制面，承载服务发现、配置中心、治理规则和 AI Native Registry。
+---
+
+Control Plane 是 Lattice Hub 的核心组件。它基于服务治理控制面的职责组织 API、业务逻辑、缓存和存储，向外提供 HTTP、gRPC、xDS、Nacos、Apollo、Eureka 等多协议入口。
+
+## 关键职责
+
+- 服务发现：管理命名空间、服务、实例和健康状态。
+- 配置中心：支持配置发布、灰度、回滚、SSE 或长轮询监听。
+- 治理规则：承载路由、泳道、限流、熔断、故障探测、无损上下线、调用鉴权、流量镜像和流量 Mock。
+- AI Native：MCP Registry 与 A2A Agent Registry 已具备存储、缓存、HTTP API 和 Console 管理入口。
+- Pole Agent：通过真实 LLM/MCP 最小闭环读取资源，并将配置修改限制在预览、确认和草稿边界内。
+- 系统配置与观测：提供 63 项类型化配置目录、OTel 指标出口和共享 GreptimeDB 查询。
+- 权限控制：资源支持细粒度鉴权，对标云厂商 CAM/RAM 类型能力。
+
+## 已确认工程事实
+
+- 技术栈包括 Go、`go-restful/v3`、gRPC、MySQL、`envoyproxy/go-control-plane`、`mark3labs/mcp-go`、OpenTelemetry 与 Pebble。
+- 控制面按 API 服务层、业务逻辑层、缓存层、存储层组织。
+- 缓存层覆盖服务、配置、治理规则和 AI Registry 等资源，后台默认每 1 秒增量刷新。
+- 增量查询窗口使用 `lastMtime - 5s` 规避时钟偏差。
+
+## 适合继续深入的原理
+
+- [四层控制面架构](/docs/principles/architecture)
+- [增量缓存与事件流](/docs/principles/cache-eventhub)
+- [治理规则与灰度发布](/docs/principles/governance-release)
+- [鉴权链与多协议映射](/docs/principles/auth-protocols)
+- [AI Registry 与 Pole Agent](/docs/principles/ai-registry)

@@ -1,0 +1,21 @@
+---
+title: Pole Sidecar
+description: Pole Sidecar is a lightweight data-plane skeleton implemented with Pingora.
+---
+
+Pole Sidecar is Lattice Hub’s local data-plane component. The current implementation uses Pingora, reads TOML configuration, and supports HTTP/1.1, HTTP/2, and gRPC-h2c forwarding.
+
+## Current capability
+
+- Inbound HTTP and HTTP/2 traffic, including gRPC-h2c.
+- Prefix and gRPC-path routing to configured upstream clusters.
+- Simple round-robin load balancing.
+- Request and upstream interceptor extension points.
+
+## Capability boundary
+
+Pole Sidecar is currently a lightweight proxy skeleton, not a complete service mesh. Dynamic governance delivery, richer policy execution, TLS modes, and production-grade observability must be described according to their implemented status.
+
+The product name is **Pole Sidecar**; Pingora is its current implementation framework. The existing `pingora-sidecar` documentation slug remains stable for compatibility.
+
+Read [Pole Sidecar data-plane practices](/en/docs/practices/sidecar-data-plane) and the [Pole Sidecar roadmap](/en/docs/blog/pingora-sidecar).
