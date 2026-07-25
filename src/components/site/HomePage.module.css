@@ -291,6 +291,10 @@
   letter-spacing: .1em;
 }
 
+.sectionAction {
+  margin-top: 32px;
+}
+
 .release {
   background: #1d2022;
   color: #f5f4ef;

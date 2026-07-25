@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SiteHeader } from '@/components/site/SiteHeader';
-import { componentGroups, componentPageActions } from '@/lib/site-content';
+import { componentGroups, componentPageActions, siteNav } from '@/lib/site-content';
 
 export const metadata: Metadata = {
   title: '组件生态',
@@ -68,8 +68,11 @@ export default function ComponentsPage() {
         </div>
         <div className="footer-links">
           <Link href="/">首页</Link>
-          <Link href="/docs">文档</Link>
-          <Link href="https://github.com/lattice-hub">GitHub</Link>
+          {siteNav.map((item) => (
+            <Link href={item.href} key={item.href}>
+              {item.label}
+            </Link>
+          ))}
         </div>
       </footer>
     </main>

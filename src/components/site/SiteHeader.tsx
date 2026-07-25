@@ -3,18 +3,19 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { siteNav } from '@/lib/site-content';
+import { isSiteNavActive, siteNav } from '@/lib/site-content';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const primaryNav = siteNav.filter((item) => item.label !== 'GitHub');
   const githubNav = siteNav.find((item) => item.label === 'GitHub');
 
   const closeDrawer = () => setOpen(false);
-
   return (
     <header className="topnav">
       <div className="container topnav-inner">
@@ -27,7 +28,12 @@ export function SiteHeader() {
 
         <nav className="nav-links" aria-label="主导航">
           {primaryNav.map((item) => (
-            <Link key={item.href} href={item.href}>
+            <Link
+              aria-current={isSiteNavActive(pathname, item.href) ? 'page' : undefined}
+              className={isSiteNavActive(pathname, item.href) ? 'active' : undefined}
+              key={item.href}
+              href={item.href}
+            >
               {item.label}
             </Link>
           ))}
@@ -53,9 +59,19 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div className={open ? 'drawer open' : 'drawer'} id="site-mobile-drawer">
+      <nav
+        aria-label="移动主导航"
+        className={open ? 'drawer open' : 'drawer'}
+        id="site-mobile-drawer"
+      >
         {primaryNav.map((item) => (
-          <Link href={item.href} key={item.href} onClick={closeDrawer}>
+          <Link
+            aria-current={isSiteNavActive(pathname, item.href) ? 'page' : undefined}
+            className={isSiteNavActive(pathname, item.href) ? 'active' : undefined}
+            href={item.href}
+            key={item.href}
+            onClick={closeDrawer}
+          >
             {item.label}
           </Link>
         ))}
@@ -64,7 +80,7 @@ export function SiteHeader() {
             GitHub
           </Link>
         ) : null}
-      </div>
+      </nav>
     </header>
   );
 }

@@ -7,6 +7,7 @@ import {
   componentGroups,
   docsSections,
   governanceDomains,
+  isSiteNavActive,
   platformFacts,
   principles,
   siteNav,
@@ -18,15 +19,52 @@ test('site navigation exposes real site-level destinations', () => {
   assert.deepEqual(
     siteNav.map((item) => item.href),
     [
-      '/#capabilities',
-      '/#governance',
-      '/#agent',
+      '/product',
+      '/governance',
+      '/agent',
       '/components',
       '/docs',
       'https://github.com/lattice-hub/pole-control-plane',
     ],
   );
   assert.ok(siteNav.every((item) => item.href.startsWith('/') || item.href.startsWith('https://')));
+  assert.equal(isSiteNavActive('/product', '/product'), true);
+  assert.equal(isSiteNavActive('/product/', '/product'), true);
+  assert.equal(isSiteNavActive('/product/runtime', '/product'), true);
+  assert.equal(isSiteNavActive('/governance', '/product'), false);
+  assert.equal(isSiteNavActive('/product', 'https://github.com/lattice-hub/pole-control-plane'), false);
+});
+
+test('primary product navigation resolves to dedicated pages instead of homepage anchors', () => {
+  const header = readFileSync('src/components/site/SiteHeader.tsx', 'utf8');
+  const homepage = readFileSync('src/app/page.tsx', 'utf8');
+  const interiorFooter = readFileSync('src/components/site/InteriorPage.tsx', 'utf8');
+  const pages = [
+    ['src/app/product/page.tsx', /一个控制面，/, /console-platform-metrics\.webp/],
+    ['src/app/governance/page.tsx', /九类规则，/, /governanceDomains\.map/],
+    ['src/app/agent/page.tsx', /让 Agent 理解变更，/, /只保存编辑态草稿/],
+  ] as const;
+
+  assert.doesNotMatch(JSON.stringify(siteNav), /\/#(?:capabilities|governance|agent)/);
+  assert.match(header, /usePathname/);
+  assert.match(header, /移动主导航/);
+  assert.match(header, /aria-current/);
+
+  for (const [file, heading, evidence] of pages) {
+    assert.ok(existsSync(file), `missing dedicated primary navigation page: ${file}`);
+    const source = readFileSync(file, 'utf8');
+    assert.match(source, heading);
+    assert.match(source, evidence);
+    assert.match(source, /<SiteHeader \/>/);
+    assert.match(source, /<InteriorFooter \/>/);
+  }
+
+  assert.match(homepage, /href="\/product"/);
+  assert.match(homepage, /href="\/governance"/);
+  assert.match(homepage, /href="\/agent"/);
+  assert.match(homepage, /siteNav\.map/);
+  assert.match(interiorFooter, /siteNav\.map/);
+  assert.doesNotMatch(`${homepage}\n${interiorFooter}`, /href="\/#(?:capabilities|governance|agent)"/);
 });
 
 test('component matrix covers the Lattice Hub ecosystem', () => {
@@ -73,16 +111,17 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.doesNotMatch(globalCss, /aurora|glass-card|backdrop-filter|radial-gradient/);
 });
 
-test('homepage product screenshots are checked-in optimized assets', () => {
+test('website product screenshots are checked-in optimized assets', () => {
   const assets = [
     'public/product/console-platform-metrics.webp',
     'public/product/console-governance-scope.webp',
+    'public/product/console-agent-readiness.webp',
   ];
 
   for (const asset of assets) {
-    assert.ok(existsSync(asset), `missing homepage product asset: ${asset}`);
-    assert.ok(statSync(asset).size > 5_000, `homepage product asset is unexpectedly small: ${asset}`);
-    assert.ok(statSync(asset).size < 200_000, `homepage product asset should stay optimized: ${asset}`);
+    assert.ok(existsSync(asset), `missing website product asset: ${asset}`);
+    assert.ok(statSync(asset).size > 5_000, `website product asset is unexpectedly small: ${asset}`);
+    assert.ok(statSync(asset).size < 200_000, `website product asset should stay optimized: ${asset}`);
   }
 });
 

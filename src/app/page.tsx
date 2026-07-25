@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { HomeHero } from '@/components/site/HomeHero';
 import styles from '@/components/site/HomePage.module.css';
 import { SiteHeader } from '@/components/site/SiteHeader';
-import { governanceDomains } from '@/lib/site-content';
+import { governanceDomains, siteNav } from '@/lib/site-content';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -117,6 +117,12 @@ export default function HomePage() {
                 <span>界面只证明产品能力存在，不把本地测试数据描述成线上运行指标。</span>
               </p>
             </div>
+            <div className={styles.sectionAction}>
+              <Link className={`${styles.button} ${styles.buttonSecondary}`} href="/product">
+                了解完整产品
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -166,6 +172,12 @@ export default function HomePage() {
                 <span>HISTORY</span>
               </li>
             </ul>
+            <div className={styles.sectionAction}>
+              <Link className={`${styles.button} ${styles.buttonSecondary}`} href="/governance">
+                深入服务治理
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
           </div>
 
           <div className={styles.governanceVisual}>
@@ -197,6 +209,12 @@ export default function HomePage() {
               当前 Pole Agent 可在登录用户权限内读取命名空间、MCP Registry 和配置文件。
               对已有配置文件的更新，它会生成不可变提案与差异预览；确认后只保存编辑态草稿。
             </p>
+            <div className={styles.sectionAction}>
+              <Link className={`${styles.button} ${styles.buttonSecondary}`} href="/agent">
+                了解 Pole Agent
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
           </div>
           <div>
             <div className={styles.agentBoundary} aria-label="Pole Agent 权限边界">
@@ -275,12 +293,11 @@ export default function HomePage() {
               <span>Lattice.Hub</span>
             </Link>
             <nav className={styles.footerLinks} aria-label="页脚导航">
-              <Link href="/#capabilities">产品</Link>
-              <Link href="/#governance">治理</Link>
-              <Link href="/#agent">Pole Agent</Link>
-              <Link href="/components">组件</Link>
-              <Link href="/docs">文档</Link>
-              <Link href="https://github.com/lattice-hub/pole-control-plane">GitHub</Link>
+              {siteNav.map((item) => (
+                <Link href={item.href} key={item.href}>
+                  {item.label}
+                </Link>
+              ))}
             </nav>
           </div>
           <div className={styles.footerBottom}>

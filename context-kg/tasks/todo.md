@@ -274,3 +274,30 @@
 - 线上 `https://lattice-hub.github.io/`、`/components/`、`/docs/` 与两张 `/product/*.webp` 资产均返回 200；首页 HTML 已包含新主标题、发布语义、Agent 边界和真实产品资产路径。
 - 线上 Chrome 再验覆盖 1440px、1150px、390px 首页以及移动端组件页、文档页：无横向溢出、破图、空链接、运行时或网络错误；移动导航可正常展开。
 - GitHub Actions 仍有官方 action 从 Node.js 20 被平台强制迁移到 Node.js 24 的非阻塞提示，以及 deploy-pages timeout 上限提示；本轮构建和部署结果不受影响。
+
+## 一级导航独立页面（2026-07-25）
+
+### 用户纠正
+
+- 顶栏「产品 / 治理 / Pole Agent」不应继续使用首页锚点；三个一级入口都需要自己的稳定路由和完整页面。
+
+### 计划
+
+- [x] 审计现有导航、首页内容和可复用的产品事实。
+- [x] 新建 `/product` 产品页，覆盖运行环境、协议、发布语义和运行时视图。
+- [x] 新建 `/governance` 治理页，覆盖九类治理、作用域与版本化发布。
+- [x] 新建 `/agent` Pole Agent 页，覆盖当前真实闭环、人工发布边界和 Registry 关系。
+- [x] 更新顶栏、移动抽屉与页脚，使一级入口全部指向独立页面。
+- [x] 更新测试并运行 test、lint、生产构建与 `/website` 静态导出。
+- [x] 使用真实浏览器验证新页面桌面/移动端、导航与 Fumadocs 隔离。
+- [ ] 双轴审查后提交、发布并验证线上路由。
+- [ ] 在本节记录 Review。
+
+### 本地实现 Review
+
+- 一级导航现对应五个稳定站点路由：`/product`、`/governance`、`/agent`、`/components`、`/docs`；桌面导航与移动抽屉均提供当前页状态和 `aria-current`，首页旧锚点仅保留为兼容深链，不再充当一级栏目。
+- `/product` 解释运行环境、多协议接入、六类能力、配置与治理的版本化发布语义以及不同运行时边界；`/governance` 解释九类规则、作用域、Revision / release version 与生效视图；`/agent` 解释 Pole MCP 只读上下文、内部 proposal / 确认内核和人工发布链。
+- 三页延续 Huashu-Design 选定的 B+A 视觉方向，并使用真实 Logo、平台监控、治理作用域和 Pole Agent 就绪检查界面。Agent 图明确标注“配置不完整时 fail closed”，不伪造对话或成功状态。
+- Spec 审查纠正了“所有资源都进入版本链”的事实扩张，并收敛 Sidecar、Controller、Pole MCP 与 A2A Registry 的职责；Standards 审查修复移动抽屉 resize 残留、页脚链接散落和移动导航 landmark；视觉审查修复 44px 点击目标、站内/外箭头、非交互假箭头和移动正文可读性。三轮复核均确认 blocker / important 已解决。
+- 本地验证：14 项测试、lint、普通生产构建、`/website` 静态导出和 `git diff --check` 均通过；静态浏览器覆盖首页、三个新页面、组件页与文档页，全部 200、无横向溢出、破图、空链接或浏览器错误。
+- Playwright 实际点击首页“产品”后到达 `/website/product/`；390px 移动抽屉展开后 `display=block`，拉宽到 1440px 后为 `display=none`；菜单点击目标为 44×44，站内次级 CTA 使用 `→`，Pole Agent 真实界面以 1600×1000 加载。

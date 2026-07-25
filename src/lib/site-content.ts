@@ -47,13 +47,17 @@ export type CapabilityPillar = {
 };
 
 export const siteNav: SiteNavItem[] = [
-  { label: '产品', href: '/#capabilities' },
-  { label: '治理', href: '/#governance' },
-  { label: 'Pole Agent', href: '/#agent' },
+  { label: '产品', href: '/product' },
+  { label: '治理', href: '/governance' },
+  { label: 'Pole Agent', href: '/agent' },
   { label: '组件', href: '/components' },
   { label: '文档', href: '/docs' },
   { label: 'GitHub', href: 'https://github.com/lattice-hub/pole-control-plane' },
 ];
+
+export function isSiteNavActive(pathname: string, href: string): boolean {
+  return href.startsWith('/') && (pathname === href || pathname.startsWith(`${href}/`));
+}
 
 export const capabilityPillars: CapabilityPillar[] = [
   {
