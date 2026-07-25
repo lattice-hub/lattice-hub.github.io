@@ -508,6 +508,27 @@
   line-height: 1.75;
 }
 
+.topicCard {
+  display: block;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.topicCard:hover {
+  background: #fff;
+}
+
+.topicCard > strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 34px;
+  color: #0f6cbd;
+  font-size: 14px;
+  font-weight: 620;
+}
+
 .plainList {
   display: grid;
   gap: 0;

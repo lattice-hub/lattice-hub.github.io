@@ -1,25 +1,78 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { isSiteNavActive, siteNav } from '@/lib/site-content';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
 export function SiteHeader() {
-  const [open, setOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [experienceOpen, setExperienceOpen] = useState(false);
   const pathname = usePathname();
-  const primaryNav = siteNav.filter((item) => item.label !== 'GitHub');
-  const githubNav = siteNav.find((item) => item.label === 'GitHub');
+  const experienceTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const closeDrawer = () => setOpen(false);
+  const closeExperience = (restoreFocus = false) => {
+    setExperienceOpen(false);
+    if (restoreFocus) {
+      window.requestAnimationFrame(() => experienceTriggerRef.current?.focus());
+    }
+  };
+
+  const closeDrawer = (restoreFocus = false) => {
+    setDrawerOpen(false);
+    setExperienceOpen(false);
+    if (restoreFocus) {
+      window.requestAnimationFrame(() => menuButtonRef.current?.focus());
+    }
+  };
+
+  const toggleExperienceNotice = (trigger: HTMLButtonElement) => {
+    experienceTriggerRef.current = trigger;
+    setExperienceOpen((current) => !current);
+  };
+
+  useEffect(() => {
+    const resetFrame = window.requestAnimationFrame(() => {
+      setDrawerOpen(false);
+      setExperienceOpen(false);
+    });
+
+    return () => window.cancelAnimationFrame(resetFrame);
+  }, [pathname]);
+
+  useEffect(() => {
+    const desktopBreakpoint = window.matchMedia('(min-width: 821px)');
+    const resetNavigationState = () => {
+      setDrawerOpen(false);
+      setExperienceOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+
+      if (experienceOpen) {
+        closeExperience(true);
+      } else if (drawerOpen) {
+        closeDrawer(true);
+      }
+    };
+
+    desktopBreakpoint.addEventListener('change', resetNavigationState);
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      desktopBreakpoint.removeEventListener('change', resetNavigationState);
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [drawerOpen, experienceOpen]);
+
   return (
     <header className="topnav">
       <div className="container topnav-inner">
-        <Link aria-label="返回 Lattice Hub 首页" className="brand" href="/" onClick={closeDrawer}>
+        <Link aria-label="返回 Lattice Hub 首页" className="brand" href="/" onClick={() => closeDrawer()}>
           <span className="glyph">
             <Image alt="" aria-hidden="true" height={32} priority src={`${basePath}/lattice-hub-logo.png`} width={32} />
           </span>
@@ -27,68 +80,95 @@ export function SiteHeader() {
         </Link>
 
         <nav className="nav-links" aria-label="主导航">
-          {primaryNav.map((item) => (
+          {siteNav.map((item) => (
             <Link
               aria-current={isSiteNavActive(pathname, item.href) ? 'page' : undefined}
               className={isSiteNavActive(pathname, item.href) ? 'active' : undefined}
-              key={item.href}
               href={item.href}
+              key={item.href}
             >
               {item.label}
             </Link>
           ))}
+          <button
+            aria-controls="experience-notice"
+            aria-expanded={experienceOpen}
+            className="experience-trigger"
+            onClick={(event) => toggleExperienceNotice(event.currentTarget)}
+            type="button"
+          >
+            体验
+          </button>
         </nav>
 
         <div className="nav-actions">
-          {githubNav ? (
-            <Link className="ghost github-link" href={githubNav.href}>
-              <GitHubMark />
-              <span>GitHub</span>
-            </Link>
-          ) : null}
           <button
             aria-controls="site-mobile-drawer"
-            aria-expanded={open}
-            aria-label={open ? '关闭导航菜单' : '打开导航菜单'}
+            aria-expanded={drawerOpen}
+            aria-label={drawerOpen ? '关闭导航菜单' : '打开导航菜单'}
             className="menu-btn"
-            onClick={() => setOpen((current) => !current)}
+            onClick={() => (
+              drawerOpen ? closeDrawer(true) : setDrawerOpen(true)
+            )}
+            ref={menuButtonRef}
             type="button"
           >
-            {open ? <X size={18} /> : <Menu size={18} />}
+            {drawerOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </div>
 
       <nav
         aria-label="移动主导航"
-        className={open ? 'drawer open' : 'drawer'}
+        className={drawerOpen ? 'drawer open' : 'drawer'}
         id="site-mobile-drawer"
       >
-        {primaryNav.map((item) => (
+        {siteNav.map((item) => (
           <Link
             aria-current={isSiteNavActive(pathname, item.href) ? 'page' : undefined}
             className={isSiteNavActive(pathname, item.href) ? 'active' : undefined}
             href={item.href}
             key={item.href}
-            onClick={closeDrawer}
+            onClick={() => closeDrawer()}
           >
             {item.label}
           </Link>
         ))}
-        {githubNav ? (
-          <Link href={githubNav.href} onClick={closeDrawer}>
-            GitHub
-          </Link>
-        ) : null}
+        <button
+          aria-controls="experience-notice"
+          aria-expanded={experienceOpen}
+          className="drawer-experience"
+          onClick={(event) => toggleExperienceNotice(event.currentTarget)}
+          type="button"
+        >
+          体验
+        </button>
       </nav>
-    </header>
-  );
-}
 
-function GitHubMark() {
-  return (
-    <svg aria-hidden="true" className="github-mark" fill="currentColor" height="16" viewBox="0 0 24 24" width="16">
-      <path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.72.5.1.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.19-1.11-1.51-1.11-1.51-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.35 1.12 2.92.86.09-.67.35-1.12.64-1.38-2.22-.26-4.55-1.14-4.55-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.36 9.36 0 0 1 12 6.99c.85 0 1.7.12 2.5.34 1.9-1.33 2.74-1.05 2.74-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9 0 1.38-.01 2.49-.01 2.83 0 .27.18.59.69.49A10.08 10.08 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z" />
-    </svg>
+      <section
+        aria-label="产品体验状态"
+        className="experience-notice"
+        hidden={!experienceOpen}
+        id="experience-notice"
+        role="region"
+      >
+        <div>
+          <span>PRODUCT EXPERIENCE</span>
+          <strong>产品体验，马上到来。</strong>
+          <p>Lattice.Hub Console 公开体验环境正在准备中。</p>
+        </div>
+        <button
+          aria-label="关闭产品体验提示"
+          className="experience-notice-close"
+          onClick={() => closeExperience(true)}
+          type="button"
+        >
+          <X size={17} />
+        </button>
+      </section>
+      <p aria-live="polite" className="experience-live" role="status">
+        {experienceOpen ? '产品体验，马上到来。' : ''}
+      </p>
+    </header>
   );
 }

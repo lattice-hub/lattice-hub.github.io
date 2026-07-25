@@ -8,6 +8,7 @@ import {
 } from '@/components/site/InteriorPage';
 import styles from '@/components/site/InteriorPage.module.css';
 import { SiteHeader } from '@/components/site/SiteHeader';
+import { productTopics } from '@/lib/site-content';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -134,9 +135,30 @@ export default function ProductPage() {
       </section>
 
       <section className={styles.section}>
+        <SectionHeading index="04 / PRODUCT TOPICS" title="进入控制面的两个关键工作面。">
+          <p>产品页说明整体模型；专题页继续展开治理发布与智能变更的具体边界。</p>
+        </SectionHeading>
+        <div className={styles.twoColumnCards}>
+          {productTopics.map((topic, index) => (
+            <Link className={`${styles.viewCard} ${styles.topicCard}`} href={topic.href} key={topic.href}>
+              <span>
+                {String(index + 1).padStart(2, '0')} / {topic.labelEn}
+              </span>
+              <h3>{topic.label}</h3>
+              <p>{topic.summary}</p>
+              <strong>
+                {topic.label === '服务治理' ? '深入服务治理' : '了解 Pole Agent'}
+                <span aria-hidden="true">→</span>
+              </strong>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
         <div className={styles.split}>
           <div className={styles.splitCopy}>
-            <p className={styles.sectionIndex}>04 / GOVERNANCE</p>
+            <p className={styles.sectionIndex}>05 / GOVERNANCE</p>
             <h2>先确认作用域，再讨论规则。</h2>
             <p>
               调用方、被调方、规则内容与版本历史共同构成一条完整治理记录。管理面所见的编辑内容，
@@ -169,7 +191,7 @@ export default function ProductPage() {
       </section>
 
       <section className={styles.section}>
-        <SectionHeading index="05 / ACCESS & RUNTIME" title="入口可以不同，运行视图必须确定。">
+        <SectionHeading index="06 / ACCESS & RUNTIME" title="入口可以不同，运行视图必须确定。">
           <p>
             服务端兼容多类既有协议，运行时则按部署形态选择合适的消费方式。控制面统一模型，不强制统一所有技术栈。
           </p>
@@ -203,7 +225,7 @@ export default function ProductPage() {
       </section>
 
       <section className={styles.section}>
-        <SectionHeading index="06 / CLEAR BOUNDARIES" title="产品边界，也是可信度的一部分。">
+        <SectionHeading index="07 / CLEAR BOUNDARIES" title="产品边界，也是可信度的一部分。">
           <p>我们只描述当前控制面真正承担的职责，不把相邻系统能力包装成已经实现的承诺。</p>
         </SectionHeading>
         <div className={styles.rows}>

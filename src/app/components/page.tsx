@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SiteHeader } from '@/components/site/SiteHeader';
-import { componentGroups, componentPageActions, siteNav } from '@/lib/site-content';
+import { componentGroups, componentPageActions, siteFooterNav } from '@/lib/site-content';
 
 export const metadata: Metadata = {
   title: '组件生态',
@@ -68,7 +68,7 @@ export default function ComponentsPage() {
         </div>
         <div className="footer-links">
           <Link href="/">首页</Link>
-          {siteNav.map((item) => (
+          {siteFooterNav.map((item) => (
             <Link href={item.href} key={item.href}>
               {item.label}
             </Link>

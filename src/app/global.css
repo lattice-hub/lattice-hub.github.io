@@ -124,14 +124,14 @@ nextjs-portal,
 }
 
 .nav-links a,
-.github-link {
+.nav-links button {
   color: var(--text-secondary);
   font-size: 14px;
   transition: color 160ms ease;
 }
 
 .nav-links a:hover,
-.github-link:hover {
+.nav-links button:hover {
   color: var(--text);
 }
 
@@ -140,8 +140,7 @@ nextjs-portal,
   box-shadow: inset 0 -2px 0 var(--brand);
 }
 
-.nav-actions,
-.github-link {
+.nav-actions {
   display: flex;
   align-items: center;
 }
@@ -150,12 +149,14 @@ nextjs-portal,
   gap: 14px;
 }
 
-.github-link {
-  gap: 6px;
-}
-
-.github-mark {
-  display: block;
+.experience-trigger {
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .nav-doc-button,
@@ -225,6 +226,86 @@ nextjs-portal,
 .drawer > a.active {
   color: var(--text);
   font-weight: 650;
+}
+
+.drawer-experience {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  text-align: left;
+}
+
+.experience-notice {
+  position: fixed;
+  top: 76px;
+  right: max(24px, calc((100vw - var(--container)) / 2));
+  z-index: 100;
+  display: grid;
+  width: min(390px, calc(100vw - 40px));
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  border: 1px solid #3c4042;
+  padding: 24px;
+  background: #1d2022;
+  box-shadow: 0 20px 56px rgba(29, 32, 34, .2);
+  color: #fff;
+}
+
+.experience-notice[hidden] {
+  display: none;
+}
+
+.experience-notice span {
+  display: block;
+  margin-bottom: 16px;
+  color: #aeb3b5;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 10px;
+  letter-spacing: .16em;
+}
+
+.experience-notice strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 540;
+  letter-spacing: -.035em;
+}
+
+.experience-notice p {
+  margin: 9px 0 0;
+  color: #c1c5c7;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.experience-notice-close {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #555a5d;
+  padding: 0;
+  place-items: center;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.experience-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .drawer .drawer-primary {
@@ -1525,6 +1606,13 @@ nextjs-portal,
 
   .menu-btn {
     display: inline-flex;
+  }
+
+  .experience-notice {
+    position: static;
+    width: calc(100% - var(--gutter) * 2);
+    margin: 0 var(--gutter) 18px;
+    box-shadow: none;
   }
 
   .hero {

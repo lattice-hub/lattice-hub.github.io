@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { siteNav } from '@/lib/site-content';
+import { siteFooterNav } from '@/lib/site-content';
 import styles from './InteriorPage.module.css';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
@@ -96,7 +96,7 @@ export function InteriorFooter() {
             <span>Lattice.Hub</span>
           </Link>
           <nav className={styles.footerLinks} aria-label="页脚导航">
-            {siteNav.map((item) => (
+            {siteFooterNav.map((item) => (
               <Link href={item.href} key={item.href}>
                 {item.label}
               </Link>

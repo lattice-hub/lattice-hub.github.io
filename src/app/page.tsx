@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { HomeHero } from '@/components/site/HomeHero';
 import styles from '@/components/site/HomePage.module.css';
 import { SiteHeader } from '@/components/site/SiteHeader';
-import { governanceDomains, siteNav } from '@/lib/site-content';
+import { governanceDomains, siteFooterNav } from '@/lib/site-content';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -293,7 +293,7 @@ export default function HomePage() {
               <span>Lattice.Hub</span>
             </Link>
             <nav className={styles.footerLinks} aria-label="页脚导航">
-              {siteNav.map((item) => (
+              {siteFooterNav.map((item) => (
                 <Link href={item.href} key={item.href}>
                   {item.label}
                 </Link>

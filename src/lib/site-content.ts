@@ -48,14 +48,40 @@ export type CapabilityPillar = {
 
 export const siteNav: SiteNavItem[] = [
   { label: '产品', href: '/product' },
-  { label: '治理', href: '/governance' },
-  { label: 'Pole Agent', href: '/agent' },
   { label: '组件', href: '/components' },
   { label: '文档', href: '/docs' },
+];
+
+export const siteFooterNav: SiteNavItem[] = [
+  ...siteNav,
   { label: 'GitHub', href: 'https://github.com/lattice-hub/pole-control-plane' },
 ];
 
+export const productTopics: Array<SiteNavItem & { labelEn: string; summary: string }> = [
+  {
+    label: '服务治理',
+    labelEn: 'SERVICE GOVERNANCE',
+    href: '/governance',
+    summary: '九类治理规则通过作用域、版本、灰度发布与回滚形成确定的运行时策略。',
+  },
+  {
+    label: 'Pole Agent',
+    labelEn: 'HUMAN-GATED CHANGE',
+    href: '/agent',
+    summary: '在登录用户权限内读取上下文、生成已有配置更新提案；人工确认后只保存编辑态草稿。',
+  },
+];
+
 export function isSiteNavActive(pathname: string, href: string): boolean {
+  const productAliases = ['/governance', '/agent'];
+  const isProductTopic = productAliases.some(
+    (topic) => pathname === topic || pathname.startsWith(`${topic}/`),
+  );
+
+  if (href === '/product' && isProductTopic) {
+    return true;
+  }
+
   return href.startsWith('/') && (pathname === href || pathname.startsWith(`${href}/`));
 }
 

@@ -10,6 +10,8 @@ import {
   isSiteNavActive,
   platformFacts,
   principles,
+  productTopics,
+  siteFooterNav,
   siteNav,
 } from '../src/lib/site-content';
 import { docsLayoutTabs, getDocsSectionTree } from '../src/lib/docs-navigation';
@@ -18,26 +20,28 @@ import { resolveImageSrc } from '../src/mdx-components';
 test('site navigation exposes real site-level destinations', () => {
   assert.deepEqual(
     siteNav.map((item) => item.href),
-    [
-      '/product',
-      '/governance',
-      '/agent',
-      '/components',
-      '/docs',
-      'https://github.com/lattice-hub/pole-control-plane',
-    ],
+    ['/product', '/components', '/docs'],
   );
   assert.ok(siteNav.every((item) => item.href.startsWith('/') || item.href.startsWith('https://')));
+  assert.deepEqual(
+    siteFooterNav.map((item) => item.href),
+    ['/product', '/components', '/docs', 'https://github.com/lattice-hub/pole-control-plane'],
+  );
+  assert.deepEqual(productTopics.map((item) => item.href), ['/governance', '/agent']);
   assert.equal(isSiteNavActive('/product', '/product'), true);
   assert.equal(isSiteNavActive('/product/', '/product'), true);
   assert.equal(isSiteNavActive('/product/runtime', '/product'), true);
-  assert.equal(isSiteNavActive('/governance', '/product'), false);
+  assert.equal(isSiteNavActive('/governance', '/product'), true);
+  assert.equal(isSiteNavActive('/governance/', '/product'), true);
+  assert.equal(isSiteNavActive('/agent', '/product'), true);
+  assert.equal(isSiteNavActive('/components', '/product'), false);
   assert.equal(isSiteNavActive('/product', 'https://github.com/lattice-hub/pole-control-plane'), false);
 });
 
-test('primary product navigation resolves to dedicated pages instead of homepage anchors', () => {
+test('product topics stay available without occupying primary navigation', () => {
   const header = readFileSync('src/components/site/SiteHeader.tsx', 'utf8');
   const homepage = readFileSync('src/app/page.tsx', 'utf8');
+  const productPage = readFileSync('src/app/product/page.tsx', 'utf8');
   const interiorFooter = readFileSync('src/components/site/InteriorPage.tsx', 'utf8');
   const pages = [
     ['src/app/product/page.tsx', /一个控制面，/, /console-platform-metrics\.webp/],
@@ -49,6 +53,11 @@ test('primary product navigation resolves to dedicated pages instead of homepage
   assert.match(header, /usePathname/);
   assert.match(header, /移动主导航/);
   assert.match(header, /aria-current/);
+  assert.match(header, /产品体验，马上到来/);
+  assert.match(header, /role="region"/);
+  assert.match(header, /aria-live="polite"/);
+  assert.doesNotMatch(header, /href="\/experience"/);
+  assert.doesNotMatch(JSON.stringify(siteNav), /governance|agent|GitHub/);
 
   for (const [file, heading, evidence] of pages) {
     assert.ok(existsSync(file), `missing dedicated primary navigation page: ${file}`);
@@ -62,8 +71,10 @@ test('primary product navigation resolves to dedicated pages instead of homepage
   assert.match(homepage, /href="\/product"/);
   assert.match(homepage, /href="\/governance"/);
   assert.match(homepage, /href="\/agent"/);
-  assert.match(homepage, /siteNav\.map/);
-  assert.match(interiorFooter, /siteNav\.map/);
+  assert.match(productPage, /productTopics\.map/);
+  assert.match(productPage, /href=\{topic\.href\}/);
+  assert.match(homepage, /siteFooterNav\.map/);
+  assert.match(interiorFooter, /siteFooterNav\.map/);
   assert.doesNotMatch(`${homepage}\n${interiorFooter}`, /href="\/#(?:capabilities|governance|agent)"/);
 });
 
