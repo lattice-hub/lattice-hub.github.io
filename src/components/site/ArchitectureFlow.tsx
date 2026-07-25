@@ -13,7 +13,7 @@ const slides = [
     id: 'governance',
     index: '01',
     label: '治理生效',
-    title: '让已接入的 AI 服务调用路径，遵循同一套治理意图。',
+    title: '让已接入的 AI 服务，沿调用链执行同一套治理意图。',
     detail:
       '以承载 Agent 的 Pole Service 为例：A/B 路由、限流、熔断、镜像与 Mock 由已接入数据面按支持范围执行；Pole Agent 的 Prompt 与模型凭据则独立发布和托管。',
   },
@@ -43,9 +43,6 @@ export function ArchitectureFlow() {
             <span className={styles.kicker}>ORGANIZATION ARCHITECTURE</span>
             <strong id="architecture-flow-title">治理与组件全景</strong>
           </div>
-          <span className={styles.counter} aria-hidden="true">
-            {activeSlide.index} / 02
-          </span>
         </div>
 
         <div className={styles.switcher} aria-label="选择架构主题">

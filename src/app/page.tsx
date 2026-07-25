@@ -48,7 +48,7 @@ const environmentScopes = [
   },
   {
     title: '运行时视图',
-    detail: 'Thin SDK、Local Proxy / Sidecar 与 Proxy Mesh / Gateway 读取版本化治理视图。',
+    detail: 'Rust SDK、Local Proxy / Sidecar 与 Proxy Mesh / Gateway 读取版本化治理视图。',
   },
   {
     title: '能力目录',
@@ -74,7 +74,7 @@ export default function HomePage() {
           </article>
           <article>
             <span>03 / RUNTIME</span>
-            <strong>Thin SDK、Local Proxy / Sidecar 与 Proxy Mesh / Gateway</strong>
+            <strong>Rust SDK、Local Proxy / Sidecar 与 Proxy Mesh / Gateway</strong>
           </article>
         </div>
       </aside>

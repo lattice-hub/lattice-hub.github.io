@@ -122,6 +122,8 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.match(homepage, /变更不是保存/);
   assert.match(homepage, /Agent 准备变更/);
   assert.match(homepage, /只保存编辑态草稿/);
+  assert.match(homepage, /Rust SDK、Local Proxy \/ Sidecar 与 Proxy Mesh \/ Gateway/);
+  assert.doesNotMatch(homepage, /Thin SDK/);
   assert.match(homepage, /governanceDomains\.map/);
   assert.doesNotMatch(`${hero}\n${homepage}`, /console-preview|agent-workflow|fact-rail|get_config_file/);
   assert.doesNotMatch(`${hero}\n${homepage}`, />24<|>186<|22 正常|3 隔离|canary 20%/);

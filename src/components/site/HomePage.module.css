@@ -14,7 +14,7 @@
 .hero {
   display: block;
   min-height: 920px;
-  padding-block: 96px 126px;
+  padding-block: 78px 80px;
 }
 
 .heroCopy {
@@ -39,7 +39,7 @@
 .eyebrow {
   grid-column: 1;
   grid-row: 1;
-  margin: 0 0 32px;
+  margin: 0 0 26px;
   color: #595a57;
   letter-spacing: .24em;
 }
@@ -73,8 +73,8 @@
   max-width: 500px;
   margin: 0;
   color: #6b6c69;
-  font-size: 18px;
-  line-height: 1.75;
+  font-size: 17px;
+  line-height: 1.72;
   text-wrap: pretty;
 }
 
@@ -84,7 +84,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-top: 40px;
+  margin-top: 34px;
 }
 
 .button,
@@ -153,7 +153,7 @@
 .heroVisual {
   position: relative;
   min-width: 0;
-  margin-top: 74px;
+  margin-top: 54px;
   animation-delay: 90ms;
 }
 
@@ -679,7 +679,7 @@
   .hero {
     width: min(1060px, calc(100% - 56px));
     min-height: auto;
-    padding-block: 92px 110px;
+    padding-block: 72px 76px;
   }
 
   .heroCopy {
@@ -702,11 +702,11 @@
 
   .heroLede {
     max-width: 650px;
-    margin-top: 34px;
+    margin-top: 28px;
   }
 
   .heroVisual {
-    margin-top: 64px;
+    margin-top: 50px;
   }
 
   .governanceLayout,
@@ -735,7 +735,7 @@
 
   .hero {
     width: calc(100% - 40px);
-    padding-block: 68px 82px;
+    padding-block: 52px 48px;
   }
 
   .hero h1 {
@@ -745,20 +745,25 @@
   .heroLede,
   .sectionIntro,
   .agentCopy {
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .heroActions {
-    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 10px;
   }
 
   .button {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
+    padding-inline: 10px;
+    gap: 8px;
+    font-size: 14px;
   }
 
   .heroVisual {
     width: 100%;
-    margin-top: 52px;
+    margin-top: 40px;
     margin-left: 0;
   }
 

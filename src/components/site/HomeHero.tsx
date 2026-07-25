@@ -12,8 +12,8 @@ export function HomeHero() {
           <span>收进一个控制面。</span>
         </h1>
         <p className={styles.heroLede}>
-          Lattice.Hub 把 AI 服务的路由、限流、熔断、镜像与 Mock 收进同一治理视图；
-          Pole Agent 的 Prompt 可受控发布，模型凭据由 Pole Secret 托管，只在运行时解析，
+          Lattice.Hub 让 AI 服务的路由、限流、熔断、镜像与 Mock 共享同一治理视图。
+          Pole Agent 的 Prompt 受控发布；模型凭据由 Pole Secret 仅在运行时解析，
           不进入浏览器、日志或模型上下文。
         </p>
         <div className={styles.heroActions}>
