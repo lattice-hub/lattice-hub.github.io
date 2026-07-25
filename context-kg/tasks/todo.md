@@ -465,7 +465,7 @@
 - [x] 定义 AI Agent 治理场景的信息架构与双路径布局。
 - [x] 重构桌面和移动治理动态图及首页文案。
 - [x] 完成测试、构建、事实与视觉验收。
-- [ ] 提交、发布并验证线上版本。
+- [x] 提交、发布并验证线上版本。
 - [x] 在本节记录实现与发布 Review。
 
 ### 本地实现 Review
@@ -476,6 +476,12 @@
 - 事实边界按 `../pole-control-plane` HEAD `5d6e37c0` 收敛：图中 Agent Service 显式标注为 Pole Service 示例；通用服务治理不等于 A2A task 代理，A2A Registry 在桌面和移动图中都明确为仅注册发现、不在请求路径。
 - Pole Agent 的 Prompt 明确限定为内置 Prompt 与 Operator Instructions 的版本化发布；Pole Secret 只在 Provider Adapter 运行时解析，凭据不进入浏览器、日志或模型上下文。
 - 本地验证：15 项测试、lint、生产构建与 `git diff --check` 均通过；无头 Chrome 复核桌面和 390px 移动端无横向溢出，移动端节点、标签和连线无重叠。
+
+### 发布 Review
+
+- 实现提交：`1e1b45e`（`feat: present AI service governance on homepage`）。
+- GitHub Pages workflow `30157479832` 构建与部署成功；线上首页返回 HTTP 200，并包含 AI Service Traffic、Pole Agent Prompt、Pole Secret 与 A2A Registry 边界说明。
+- 线上 390px 真实浏览器复核：默认选中「01 治理生效」，页面 `scrollWidth` 与 `innerWidth` 均为 390；减少动态效果模式下无持续运行动画。
 
 ## 一级导航收敛与产品归属（2026-07-25）
 
