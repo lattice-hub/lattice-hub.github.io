@@ -15,9 +15,9 @@ const architectureCopy = {
       slides: {
         governance: {
           label: '治理生效',
-          title: '让 Gateway 在同一 Agent 服务的蓝绿版本间执行精细治理。',
+          title: '看见治理如何改变流量，并换来可控发布与持续可用。',
           detail:
-            'Gateway 按身份与租户维度执行千人千面限流，并按比例把请求分配到同一 Agent Service 的蓝绿版本；版本调用 Provider Adapter 时执行服务身份鉴权。',
+            '超额请求止于 Gateway，蓝绿比例降低发布风险；身份鉴权与 Secret 保护模型调用，镜像、Mock 和故障切换让验证与恢复不影响真实用户。',
         },
         collaboration: {
           label: '组件协作',
@@ -62,7 +62,7 @@ const architectureCopy = {
     },
     governance: {
       aria:
-        'AI 服务治理沉浸式全景生效示意图：平台工程师通过 Console 或 API 发布治理视图；Agent Gateway 按服务身份、用户或租户维度执行千人千面限流，并把同一个 Agent Service 的请求按示例比例分配到蓝绿版本。服务版本调用 Provider Adapter 时执行服务身份鉴权；镜像、Mock 与降级能力按已接入数据面支持范围生效。Pole Secret 只在 Provider Adapter 运行时解析，不进入浏览器、日志或模型上下文。',
+        'AI 服务治理收益动态图：平台工程师发布治理视图后，超额请求在 Agent Gateway 停止，保护下游容量；合格请求按示例 80% 与 20% 分配到同一 Agent Service 的蓝绿版本，降低发布风险。服务身份鉴权保护 Provider Adapter 调用，Pole Secret 仅在适配器内解析。镜像流量进入影子评估但不影响用户响应，Mock 演练不调用真实模型，主模型故障时按能力切换备用模型以保持可用。',
       planes: {
         managementControl: '管理与控制',
         aiTrafficExample: 'AI 服务流量 · 示例',
@@ -78,14 +78,14 @@ const architectureCopy = {
         providerAdapter: { label: '模型适配器', meta: '运行时边界', shortMeta: '运行时' },
         primaryModel: { label: '主模型', meta: '主路径', shortMeta: '主路径' },
         fallbackModel: { label: '备用模型', meta: '按能力支持', shortMeta: '按需' },
-        shadowEval: { label: '影子评估', meta: '不进入响应路径', shortMeta: '旁路' },
-        mockResponse: { label: 'Mock 响应', meta: '按能力支持', shortMeta: '按需' },
+        shadowEval: { label: '影子评估', meta: '不进入响应路径', shortMeta: '用户无感评估' },
+        mockResponse: { label: 'Mock 响应', meta: '按能力支持', shortMeta: '不调用真实模型' },
       },
       governanceBand: {
-        label: '蓝绿路由 · 千人千面限流 @ GW · 熔断 · 镜像 · MOCK',
-        shortLabel: '蓝绿路由 · GW 限流',
-        meta: '服务治理 · 比例为示例 · 执行范围取决于已接入数据面',
-        shortMeta: '比例示例 · 熔断 · 镜像 · MOCK',
+        label: '一次请求，穿过完整治理保护',
+        shortLabel: '一次请求的治理旅程',
+        meta: '每个阶段都改变流量状态，并产生可见收益',
+        shortMeta: '流量变化 → 可见收益',
       },
       promptBand: {
         label: 'POLE AGENT PROMPT → 版本化发布',
@@ -107,6 +107,16 @@ const architectureCopy = {
         greenTraffic: '绿 20% · 示例',
         serviceAuth: '服务身份调用鉴权',
         serviceAuthShort: '身份鉴权',
+      },
+      benefits: {
+        limit: { title: '容量受保护', detail: '超额请求止于 GW' },
+        rollout: { title: '发布风险更低', detail: '20% 流量验证绿版本' },
+        auth: { title: '服务身份鉴权', detail: '匿名调用被拒，授权后才访问模型' },
+        resilience: { title: '故障仍可用', detail: '主模型异常时切至备用模型' },
+        mirror: { title: '真实流量安全评估', detail: '复制请求，不影响用户响应' },
+        mock: { title: '联调不依赖真实模型', detail: '演练请求在模型前短路' },
+        prompt: { title: 'Prompt 变更可控', detail: '版本化、可审阅、可回滚' },
+        secret: { title: '凭据不暴露', detail: '仅在模型适配器内解析' },
       },
       boundary: {
         desktop: 'A2A REGISTRY · 仅用于发现 · 不进入请求路径',
@@ -132,9 +142,9 @@ const architectureCopy = {
       slides: {
         governance: {
           label: 'Governance flow',
-          title: 'Apply precise governance across blue-green versions of one Agent service.',
+          title: 'See governance change traffic into safer releases and continuous service.',
           detail:
-            'The Gateway applies identity- and tenant-aware rate limits, then distributes requests by percentage across blue-green versions of one Agent Service. Service identity authorization protects each call into the Provider Adapter.',
+            'Excess stops at the Gateway, while blue-green weighting lowers release risk. Identity auth and Secret protect model calls; mirroring, mocks, and failover make validation and recovery transparent to users.',
         },
         collaboration: {
           label: 'Components',
@@ -179,7 +189,7 @@ const architectureCopy = {
     },
     governance: {
       aria:
-        'Immersive AI service governance panorama. A platform engineer publishes a governance view through Console or API. Agent Gateway applies per-identity or per-tenant rate limits and distributes requests between blue and green versions of the same Agent Service using illustrative percentages. Service identity authorization protects calls from each version to the Provider Adapter. Mirroring, mocks, and fallback paths apply where the connected data plane supports them. Pole Secret credentials resolve only inside the Provider Adapter and never enter the browser, logs, or model context.',
+        'Animated AI service governance outcomes. After a platform engineer publishes a governance view, excess requests stop at Agent Gateway to protect downstream capacity. Eligible traffic splits by an illustrative 80 to 20 ratio across blue and green versions of the same Agent Service, lowering release risk. Service identity auth protects Provider Adapter calls and Pole Secret resolves only inside the adapter. Mirrored traffic reaches Shadow Eval without affecting the user response, mock drills avoid live model calls, and supported failover keeps the service available when the primary model fails.',
       planes: {
         managementControl: 'MANAGEMENT & CONTROL',
         aiTrafficExample: 'AI SERVICE TRAFFIC · EXAMPLE',
@@ -195,14 +205,14 @@ const architectureCopy = {
         providerAdapter: { label: 'Provider Adapter', meta: 'RUNTIME BOUNDARY', shortMeta: 'RUNTIME ONLY' },
         primaryModel: { label: 'Primary Model', meta: 'PRIMARY', shortMeta: 'PRIMARY' },
         fallbackModel: { label: 'Fallback Model', meta: 'WHEN SUPPORTED', shortMeta: 'SUPPORTED' },
-        shadowEval: { label: 'Shadow Eval', meta: 'NO RESPONSE PATH', shortMeta: 'SIDE PATH' },
-        mockResponse: { label: 'Mock Response', meta: 'WHEN SUPPORTED', shortMeta: 'SUPPORTED' },
+        shadowEval: { label: 'Shadow Eval', meta: 'NO RESPONSE PATH', shortMeta: 'NO USER IMPACT' },
+        mockResponse: { label: 'Mock Response', meta: 'WHEN SUPPORTED', shortMeta: 'NO LIVE MODEL' },
       },
       governanceBand: {
-        label: 'BLUE-GREEN ROUTE · PERSONALIZED LIMIT @ GW · CIRCUIT BREAK · MIRROR · MOCK',
-        shortLabel: 'BLUE-GREEN · GW LIMIT',
-        meta: 'SERVICE GOVERNANCE · SAMPLE SPLIT · CONNECTED DATA-PLANE SUPPORT',
-        shortMeta: 'SAMPLE SPLIT · CIRCUIT BREAK · MIRROR · MOCK',
+        label: 'ONE REQUEST, PROTECTED AT EVERY GOVERNANCE STAGE',
+        shortLabel: 'ONE GOVERNED REQUEST',
+        meta: 'EACH STAGE CHANGES TRAFFIC STATE AND PRODUCES A VISIBLE OUTCOME',
+        shortMeta: 'TRAFFIC CHANGE → OUTCOME',
       },
       promptBand: {
         label: 'POLE AGENT PROMPT → VERSIONED RELEASE',
@@ -224,6 +234,16 @@ const architectureCopy = {
         greenTraffic: 'GREEN 20% · SAMPLE',
         serviceAuth: 'SERVICE IDENTITY AUTH',
         serviceAuthShort: 'ID AUTH',
+      },
+      benefits: {
+        limit: { title: 'CAPACITY PROTECTED', detail: 'EXCESS STOPS AT GW' },
+        rollout: { title: 'LOWER RELEASE RISK', detail: '20% VALIDATES GREEN' },
+        auth: { title: 'SERVICE IDENTITY AUTH', detail: 'ANONYMOUS CALLS DENIED BEFORE MODEL ACCESS' },
+        resilience: { title: 'AVAILABLE THROUGH FAILURE', detail: 'PRIMARY FAILS, FALLBACK SERVES' },
+        mirror: { title: 'SAFE REAL-TRAFFIC EVAL', detail: 'COPY ONLY, NO USER IMPACT' },
+        mock: { title: 'TEST WITHOUT LIVE MODEL', detail: 'DRILL REQUEST SHORT-CIRCUITS' },
+        prompt: { title: 'CONTROLLED PROMPT CHANGE', detail: 'VERSIONED, REVIEWABLE, REVERSIBLE' },
+        secret: { title: 'CREDENTIALS STAY PRIVATE', detail: 'RESOLVED ONLY INSIDE ADAPTER' },
       },
       boundary: {
         desktop: 'A2A REGISTRY · DISCOVERY ONLY · NOT REQUEST PATH',

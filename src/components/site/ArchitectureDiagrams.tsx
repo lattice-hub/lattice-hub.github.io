@@ -187,6 +187,7 @@ function PlatformNode({
   delay = 0,
   tone = 'paper',
   shape = 'slab',
+  cycle = 6.4,
 }: {
   x: number;
   y: number;
@@ -198,12 +199,13 @@ function PlatformNode({
   delay?: number;
   tone?: NodeTone;
   shape?: NodeShape;
+  cycle?: number;
 }) {
   const radiusX = width / 2;
   const radiusY = Math.max(13, Math.round(width * 0.15));
   const timing = {
     '--node-delay': `${delay}s`,
-    '--node-cycle': '6.4s',
+    '--node-cycle': `${cycle}s`,
   } as CSSProperties;
   const labelY = (shape === 'disc' ? radiusY : 14) + depth + 25;
   const toneClass = tone === 'paper' ? '' : styles[`tone${tone}`];
@@ -252,6 +254,168 @@ function PlatformNode({
       </g>
       <text className={styles.nodeLabel} textAnchor="middle" y={labelY}>{label}</text>
       {meta ? <text className={styles.nodeMeta} textAnchor="middle" y={labelY + 17}>{meta}</text> : null}
+    </g>
+  );
+}
+
+function BenefitOutcome({
+  x,
+  y,
+  title,
+  detail,
+  delay,
+  align = 'start',
+}: {
+  x: number;
+  y: number;
+  title: string;
+  detail?: string;
+  delay: number;
+  align?: 'start' | 'middle' | 'end';
+}) {
+  const timing = {
+    '--scene-delay': `${delay}s`,
+  } as CSSProperties;
+  const direction = align === 'end' ? -1 : 1;
+  const lineStart = align === 'middle' ? -28 : 0;
+  const lineEnd = align === 'middle' ? 28 : 34 * direction;
+
+  return (
+    <g
+      className={styles.benefitOutcome}
+      style={timing}
+      transform={`translate(${x} ${y})`}
+    >
+      <path className={styles.benefitRule} d={`M ${lineStart} 0 H ${lineEnd}`} />
+      <circle className={styles.benefitDot} cx={align === 'middle' ? 0 : lineEnd} cy="0" r="3" />
+      <text className={styles.benefitTitle} textAnchor={align} x="0" y="17">{title}</text>
+      {detail ? <text className={styles.benefitDetail} textAnchor={align} x="0" y="31">{detail}</text> : null}
+    </g>
+  );
+}
+
+function LimitDecision({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const timing = { '--scene-delay': `${delay}s` } as CSSProperties;
+
+  return (
+    <g className={styles.limitDecision} style={timing} transform={`translate(${x} ${y})`}>
+      <path className={styles.limitArc} d="M -52 -23 A 58 42 0 0 1 52 -23" />
+      <circle className={styles.profilePacket} cx="-42" cy="-29" r="4" />
+      <circle className={styles.profilePacket} cx="-16" cy="-38" r="4" />
+      <circle className={styles.profilePacketMuted} cx="15" cy="-38" r="4" />
+      <path className={styles.limitReject} d="M 15 -34 V -18" />
+      <path className={styles.limitCross} d="M 10 -13 L 20 -3 M 20 -13 L 10 -3" />
+    </g>
+  );
+}
+
+function TrafficSplitMeter({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const timing = { '--scene-delay': `${delay}s` } as CSSProperties;
+
+  return (
+    <g className={styles.splitMeter} style={timing} transform={`translate(${x} ${y})`}>
+      {Array.from({ length: 10 }, (_, index) => (
+        <circle
+          className={index < 8 ? styles.splitBlue : styles.splitGreen}
+          cx={index * 9}
+          cy="0"
+          key={index}
+          r="3"
+          style={{ '--dot-index': index } as CSSProperties}
+        />
+      ))}
+    </g>
+  );
+}
+
+function AuthCheckpoint({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const timing = { '--scene-delay': `${delay}s` } as CSSProperties;
+
+  return (
+    <g className={styles.authCheckpoint} style={timing} transform={`translate(${x} ${y})`}>
+      <path className={styles.authShield} d="M 0 -12 L 11 -8 V 1 C 11 9 5 14 0 17 C -5 14 -11 9 -11 1 V -8 Z" />
+      <path className={styles.authCheck} d="M -5 1 L -1 5 L 6 -3" />
+    </g>
+  );
+}
+
+function FailoverState({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const timing = { '--scene-delay': `${delay}s` } as CSSProperties;
+
+  return (
+    <g className={styles.failoverState} style={timing} transform={`translate(${x} ${y})`}>
+      <circle className={styles.healthFail} cx="0" cy="0" r="9" />
+      <path className={styles.healthFailMark} d="M -4 -4 L 4 4 M 4 -4 L -4 4" />
+      <path className={styles.failoverArc} d="M -6 14 C -32 34 -30 67 -4 82" />
+      <circle className={styles.healthOk} cx="0" cy="92" r="9" />
+      <path className={styles.healthOkMark} d="M -4 92 L -1 95 L 5 89" />
+    </g>
+  );
+}
+
+function PromptVersionRail({
+  x,
+  y,
+  width,
+  title,
+  detail,
+  delay,
+  compact = false,
+}: {
+  x: number;
+  y: number;
+  width: number;
+  title: string;
+  detail: string;
+  delay: number;
+  compact?: boolean;
+}) {
+  const timing = { '--scene-delay': `${delay}s` } as CSSProperties;
+
+  return (
+    <g className={styles.versionRail} style={timing}>
+      <path className={styles.railLine} d={`M ${x} ${y} H ${x + width}`} />
+      <g transform={`translate(${x + 18} ${y - 14})`}>
+        <rect className={styles.versionOld} height="26" rx="8" width="48" />
+        <text className={styles.versionText} textAnchor="middle" x="24" y="17">v12</text>
+      </g>
+      <path className={styles.versionArrow} d={`M ${x + 78} ${y - 1} H ${x + 114}`} />
+      <g transform={`translate(${x + 124} ${y - 14})`}>
+        <rect className={styles.versionNew} height="26" rx="8" width="48" />
+        <text className={styles.versionTextActive} textAnchor="middle" x="24" y="17">v13</text>
+      </g>
+      <text className={styles.benefitTitle} x={x + (compact ? 175 : 190)} y={y - 5}>{title}</text>
+      <text className={styles.benefitDetail} x={x + (compact ? 175 : 190)} y={y + 11}>{detail}</text>
+    </g>
+  );
+}
+
+function SecretBoundary({
+  x,
+  y,
+  width,
+  title,
+  detail,
+  delay,
+}: {
+  x: number;
+  y: number;
+  width: number;
+  title: string;
+  detail: string;
+  delay: number;
+}) {
+  const timing = { '--scene-delay': `${delay}s` } as CSSProperties;
+
+  return (
+    <g className={styles.secretBoundary} style={timing}>
+      <path className={styles.secretRail} d={`M ${x} ${y} H ${x + width}`} />
+      <rect className={styles.secretRef} height="24" rx="7" width="62" x={x + 10} y={y - 12} />
+      <text className={styles.secretRefText} textAnchor="middle" x={x + 41} y={y + 4}>REF</text>
+      <path className={styles.secretStop} d={`M ${x + 86} ${y - 13} V ${y + 13}`} />
+      <path className={styles.secretLock} d={`M ${x + 98} ${y - 2} h 20 v 15 h -20 Z M ${x + 103} ${y - 2} v -5 a 5 5 0 0 1 10 0 v 5`} />
+      <text className={styles.benefitTitle} x={x + 132} y={y - 5}>{title}</text>
+      <text className={styles.benefitDetail} x={x + 132} y={y + 11}>{detail}</text>
     </g>
   );
 }
@@ -464,74 +628,81 @@ function GovernanceExecutionDesktop({ copy }: { copy: ArchitectureCopy }) {
       aria-hidden="true"
       className={`${styles.diagram} ${styles.desktopDiagram}`}
       data-diagram-viewport="desktop"
-      viewBox="0 0 1200 570"
+      viewBox="0 0 1200 650"
     >
       <DiagramDefs id={markerId} />
-      <rect className={styles.diagramBackground} height="570" width="1200" />
-      <rect fill={`url(#${markerId}-grid)`} height="570" width="1200" />
+      <rect className={styles.diagramBackground} height="650" width="1200" />
+      <rect fill={`url(#${markerId}-grid)`} height="650" width="1200" />
 
-      <PanoramaPlane height={300} index="01" label={content.planes.managementControl} width={315} x={28} y={130} />
-      <PanoramaPlane height={440} index="02" label={content.planes.aiTrafficExample} width={790} x={375} y={55} />
+      <PanoramaPlane height={330} index="01" label={content.planes.managementControl} width={300} x={28} y={145} />
+      <PanoramaPlane height={500} index="02" label={content.planes.aiTrafficExample} width={810} x={355} y={50} />
 
-      <FlowPath d="M 142 225 L 208 225" delay={0.1} markerId={markerId} />
-      <FlowPath d="M 260 245 L 300 245 L 300 350 L 275 350" delay={0.55} markerId={markerId} />
-      <FlowPath d="M 275 350 L 350 350 L 350 116 L 440 116" delay={1.15} markerId={markerId} />
-      <FlowPath d="M 590 140 L 590 225" delay={1.55} markerId={markerId} />
+      <text className={styles.journeyTitle} x="610" y="84">{content.governanceBand.label}</text>
+      <text className={styles.journeyMeta} x="610" y="103">{content.governanceBand.meta}</text>
 
-      <FlowPath d="M 474 265 L 538 265" delay={1.9} markerId={markerId} tone="traffic" />
-      <FlowPath d="M 642 250 L 690 250 L 690 215 L 733 215" delay={2.2} markerId={markerId} tone="traffic" />
-      <FlowPath d="M 642 280 L 690 280 L 690 325 L 733 325" delay={2.45} markerId={markerId} tone="traffic" />
-      <FlowPath d="M 827 215 L 900 215 L 900 250 L 908 250" delay={2.7} markerId={markerId} tone="traffic" />
-      <FlowPath d="M 827 325 L 900 325 L 900 280 L 908 280" delay={2.95} markerId={markerId} tone="traffic" />
-      <FlowPath d="M 1012 250 L 1042 250" delay={3.2} markerId={markerId} tone="traffic" />
-      <FlowPath d="M 1012 280 L 1030 280 L 1030 340 L 1042 340" delay={3.45} markerId={markerId} tone="traffic" />
-      <FlowPath d="M 642 280 L 665 280 L 665 385 L 590 395" delay={3.7} markerId={markerId} tone="shadow" />
-      <FlowPath d="M 642 290 L 700 290 L 700 420 L 742 420" delay={3.95} markerId={markerId} tone="shadow" />
+      <FlowPath d="M 138 230 L 205 230" delay={0.1} duration={2.2} markerId={markerId} />
+      <FlowPath d="M 258 250 L 295 250 L 295 365 L 272 365" delay={0.5} duration={2.2} markerId={markerId} />
+      <FlowPath d="M 272 365 L 340 365 L 340 125 L 560 125 L 560 215" delay={0.9} duration={2.2} markerId={markerId} />
 
-      <PlatformNode delay={0.05} label={content.nodes.engineer.label} mark="PE" meta={content.nodes.engineer.meta} shape="disc" width={104} x={90} y={225} />
-      <PlatformNode delay={0.45} label={content.nodes.consoleApi.label} mark="API" meta={content.nodes.consoleApi.meta} tone="blue" width={104} x={255} y={225} />
-      <ControlPlane compact width={176} x={185} y={350} />
-      <ContractBand
-        dark
-        label={content.governanceBand.label}
-        meta={content.governanceBand.meta}
-        width={650}
-        x={440}
-        y={92}
+      <FlowPath d="M 458 265 L 508 265" delay={1.5} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 612 250 L 655 250 L 655 210 L 688 210" delay={2.4} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 612 280 L 655 280 L 655 320 L 688 320" delay={2.85} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 792 210 L 850 210 L 850 250 L 858 250" delay={3.55} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 792 320 L 850 320 L 850 280 L 858 280" delay={3.85} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 962 250 L 1012 250" delay={4.65} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 962 280 L 994 280 L 994 335 L 1012 335" delay={7.35} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 612 280 L 635 280 L 635 405 L 570 420" delay={5.2} duration={2.2} markerId={markerId} tone="shadow" />
+      <FlowPath d="M 612 292 L 675 292 L 675 430 L 720 430" delay={9.4} duration={2.2} markerId={markerId} tone="shadow" />
+      <FlowPath d="M 720 450 L 670 450 L 670 300 L 612 300" delay={10.1} duration={2.2} markerId={markerId} tone="shadow" />
+
+      <PlatformNode cycle={12.8} delay={0.05} label={content.nodes.engineer.label} mark="PE" meta={content.nodes.engineer.meta} shape="disc" width={100} x={88} y={230} />
+      <PlatformNode cycle={12.8} delay={0.45} label={content.nodes.consoleApi.label} mark="API" meta={content.nodes.consoleApi.meta} tone="blue" width={100} x={250} y={230} />
+      <ControlPlane compact width={172} x={180} y={365} />
+
+      <PlatformNode cycle={12.8} delay={1.45} label={content.nodes.userRequest.label} mark="REQ" meta={content.nodes.userRequest.meta} shape="disc" width={84} x={415} y={265} />
+      <PlatformNode cycle={12.8} delay={1.9} label={content.nodes.agentGateway.label} mark="GW" meta={content.nodes.agentGateway.meta} tone="blue" width={104} x={560} y={265} />
+      <PlatformNode cycle={12.8} delay={2.4} label={content.nodes.agentServiceA.label} mark="BLUE" meta={content.nodes.agentServiceA.meta} tone="blue" width={104} x={740} y={210} />
+      <PlatformNode cycle={12.8} delay={2.85} label={content.nodes.agentServiceB.label} mark="GREEN" meta={content.nodes.agentServiceB.meta} tone="green" width={104} x={740} y={320} />
+      <PlatformNode cycle={12.8} delay={3.65} label={content.nodes.providerAdapter.label} mark="ADP" meta={content.nodes.providerAdapter.meta} width={104} x={910} y={265} />
+      <PlatformNode cycle={12.8} delay={4.55} label={content.nodes.primaryModel.label} mark="LLM" meta={content.nodes.primaryModel.meta} tone="external" width={96} x={1060} y={210} />
+      <PlatformNode cycle={12.8} delay={7.35} label={content.nodes.fallbackModel.label} mark="FB" meta={content.nodes.fallbackModel.meta} tone="external" width={96} x={1060} y={335} />
+      <PlatformNode cycle={12.8} delay={5.15} label={content.nodes.shadowEval.label} mark="MIR" meta={content.nodes.shadowEval.meta} tone="dark" width={96} x={570} y={430} />
+      <PlatformNode cycle={12.8} delay={9.35} label={content.nodes.mockResponse.label} mark="MOCK" meta={content.nodes.mockResponse.meta} tone="external" width={96} x={770} y={430} />
+
+      <LimitDecision delay={1.4} x={560} y={265} />
+      <TrafficSplitMeter delay={2.25} x={661} y={171} />
+      <AuthCheckpoint delay={3.45} x={850} y={210} />
+      <FailoverState delay={6.55} x={995} y={210} />
+
+      <BenefitOutcome delay={1.35} detail={content.benefits.limit.detail} title={content.benefits.limit.title} x={500} y={350} />
+      <BenefitOutcome align="middle" delay={2.25} detail={content.benefits.rollout.detail} title={content.benefits.rollout.title} x={740} y={140} />
+      <BenefitOutcome align="middle" delay={3.45} detail={content.benefits.auth.detail} title={content.benefits.auth.title} x={970} y={155} />
+      <BenefitOutcome align="end" delay={6.55} detail={content.benefits.resilience.detail} title={content.benefits.resilience.title} x={1115} y={430} />
+      <BenefitOutcome delay={5.1} detail={content.benefits.mirror.detail} title={content.benefits.mirror.title} x={450} y={505} />
+      <BenefitOutcome delay={9.3} detail={content.benefits.mock.detail} title={content.benefits.mock.title} x={720} y={505} />
+
+      <PromptVersionRail
+        delay={0.2}
+        detail={content.benefits.prompt.detail}
+        title={content.benefits.prompt.title}
+        width={350}
+        x={375}
+        y={600}
       />
-      <PlatformNode delay={1.85} label={content.nodes.userRequest.label} mark="REQ" meta={content.nodes.userRequest.meta} shape="disc" width={88} x={430} y={265} />
-      <PlatformNode delay={2.05} label={content.nodes.agentGateway.label} mark="GW" meta={content.nodes.agentGateway.meta} tone="blue" width={104} x={590} y={265} />
-      <PlatformNode delay={2.25} label={content.nodes.agentServiceA.label} mark="BLUE" meta={content.nodes.agentServiceA.meta} tone="blue" width={104} x={780} y={215} />
-      <PlatformNode delay={2.5} label={content.nodes.agentServiceB.label} mark="GREEN" meta={content.nodes.agentServiceB.meta} tone="green" width={104} x={780} y={325} />
-      <PlatformNode delay={2.75} label={content.nodes.providerAdapter.label} mark="ADP" meta={content.nodes.providerAdapter.meta} width={104} x={960} y={265} />
-      <PlatformNode delay={3.15} label={content.nodes.primaryModel.label} mark="LLM" meta={content.nodes.primaryModel.meta} tone="external" width={96} x={1090} y={215} />
-      <PlatformNode delay={3.4} label={content.nodes.fallbackModel.label} mark="FB" meta={content.nodes.fallbackModel.meta} tone="external" width={96} x={1090} y={340} />
-      <PlatformNode delay={3.65} label={content.nodes.shadowEval.label} mark="MIR" meta={content.nodes.shadowEval.meta} tone="dark" width={96} x={590} y={420} />
-      <PlatformNode delay={3.9} label={content.nodes.mockResponse.label} mark="MOCK" meta={content.nodes.mockResponse.meta} tone="external" width={96} x={790} y={420} />
-
-      <ContractBand
-        label={content.promptBand.label}
-        meta={content.promptBand.meta}
-        width={390}
-        x={420}
-        y={510}
-      />
-      <ContractBand
-        dark
-        label={content.secretBand.label}
-        meta={content.secretBand.meta}
-        width={340}
-        x={825}
-        y={510}
+      <SecretBoundary
+        delay={4.1}
+        detail={content.benefits.secret.detail}
+        title={content.benefits.secret.title}
+        width={380}
+        x={775}
+        y={600}
       />
 
-      <text className={styles.flowLabel} x="360" y="178">{content.flow.governanceView}</text>
-      <text className={`${styles.flowLabel} ${styles.flowLabelTraffic}`} x="485" y="247">{content.flow.request}</text>
-      <text className={styles.ratioLabel} textAnchor="end" x="724" y="199">{content.flow.blueTraffic}</text>
-      <text className={styles.ratioLabel} textAnchor="end" x="724" y="345">{content.flow.greenTraffic}</text>
-      <text className={styles.authLabel} textAnchor="middle" x="870" y="184">{content.flow.serviceAuth}</text>
-      <text className={`${styles.flowLabel} ${styles.flowLabelShadow}`} x="603" y="366">{content.flow.mirrorMock}</text>
-      <text className={styles.boundaryLabel} textAnchor="end" x="1135" y="490">{content.boundary.desktop}</text>
+      <text className={`${styles.flowLabel} ${styles.flowLabelTraffic}`} x="465" y="246">{content.flow.request}</text>
+      <text className={styles.ratioLabel} textAnchor="end" x="682" y="198">{content.flow.blueTraffic}</text>
+      <text className={styles.ratioLabel} textAnchor="end" x="682" y="342">{content.flow.greenTraffic}</text>
+      <text className={`${styles.flowLabel} ${styles.flowLabelShadow}`} x="580" y="390">{content.flow.mirrorMock}</text>
+      <text className={styles.boundaryLabel} textAnchor="end" x="1135" y="540">{content.boundary.desktop}</text>
     </svg>
   );
 }
@@ -545,61 +716,70 @@ function GovernanceExecutionMobile({ copy }: { copy: ArchitectureCopy }) {
       aria-hidden="true"
       className={`${styles.diagram} ${styles.mobileDiagram}`}
       data-diagram-viewport="mobile"
-      viewBox="0 0 360 930"
+      viewBox="0 0 360 1245"
     >
       <DiagramDefs compact id={markerId} />
-      <rect className={styles.diagramBackground} height="930" width="360" />
-      <rect fill={`url(#${markerId}-grid)`} height="930" width="360" />
+      <rect className={styles.diagramBackground} height="1245" width="360" />
+      <rect fill={`url(#${markerId}-grid)`} height="1245" width="360" />
 
       <PanoramaPlane height={245} index="01" label={content.planes.managementControl} width={336} x={12} y={25} />
-      <PanoramaPlane height={530} index="02" label={content.planes.aiTrafficExample} width={336} x={12} y={290} />
+      <PanoramaPlane height={915} index="02" label={content.planes.aiTrafficExample} width={336} x={12} y={290} />
 
-      <FlowPath d="M 115 90 L 226 90" delay={0.1} markerId={markerId} />
-      <FlowPath d="M 270 115 L 220 115 L 220 175" delay={0.5} markerId={markerId} />
-      <FlowPath d="M 145 235 L 70 235 L 70 355 L 45 355" delay={1.1} markerId={markerId} />
-      <FlowPath d="M 114 445 L 223 445" delay={1.75} markerId={markerId} tone="traffic" />
-      <FlowPath d="M 307 445 L 325 445 L 325 505 L 180 505 L 180 517" delay={2.05} markerId={markerId} tone="traffic" />
-      <FlowPath d="M 220 545 L 300 545 L 300 655 L 223 655" delay={2.4} markerId={markerId} tone="traffic" />
-      <FlowPath d="M 137 655 L 110 655 L 110 765 L 119 765" delay={2.75} markerId={markerId} tone="traffic" />
-      <FlowPath d="M 223 655 L 250 655 L 250 765 L 239 765" delay={3.05} markerId={markerId} tone="traffic" />
+      <text className={styles.journeyTitle} textAnchor="middle" x="180" y="335">{content.governanceBand.shortLabel}</text>
+      <text className={styles.journeyMeta} textAnchor="middle" x="180" y="354">{content.governanceBand.shortMeta}</text>
 
-      <PlatformNode delay={0.05} label={content.nodes.engineer.shortLabel} mark="PE" meta={content.nodes.engineer.shortMeta} shape="disc" width={78} x={76} y={90} />
-      <PlatformNode delay={0.45} label={content.nodes.consoleApi.label} mark="API" meta={content.nodes.consoleApi.shortMeta} tone="blue" width={84} x={270} y={115} />
+      <FlowPath d="M 115 90 L 226 90" delay={0.1} duration={2.2} markerId={markerId} />
+      <FlowPath d="M 270 115 L 220 115 L 220 175" delay={0.5} duration={2.2} markerId={markerId} />
+      <FlowPath d="M 145 235 L 45 235 L 45 390 L 265 390 L 265 400" delay={0.9} duration={2.2} markerId={markerId} />
+      <FlowPath d="M 114 430 L 223 430" delay={1.5} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 307 430 L 325 430 L 325 540 L 180 540 L 180 562" delay={2.35} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 180 620 L 180 722" delay={3.5} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 137 750 L 85 750 L 85 870 L 119 870" delay={4.6} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 223 750 L 275 750 L 275 870 L 239 870" delay={7.3} duration={2.2} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 223 590 L 300 590 L 300 1040 L 268 1040" delay={9.3} duration={2.2} markerId={markerId} tone="shadow" />
+      <FlowPath d="M 137 590 L 60 590 L 60 1040 L 92 1040" delay={5.1} duration={2.2} markerId={markerId} tone="shadow" />
+
+      <PlatformNode cycle={12.8} delay={0.05} label={content.nodes.engineer.shortLabel} mark="PE" meta={content.nodes.engineer.shortMeta} shape="disc" width={78} x={76} y={90} />
+      <PlatformNode cycle={12.8} delay={0.45} label={content.nodes.consoleApi.label} mark="API" meta={content.nodes.consoleApi.shortMeta} tone="blue" width={84} x={270} y={115} />
       <ControlPlane compact width={178} x={180} y={215} />
-      <ContractBand
-        dark
-        label={content.governanceBand.shortLabel}
-        meta={content.governanceBand.shortMeta}
-        width={270}
-        x={45}
-        y={330}
-      />
-      <PlatformNode delay={1.7} label={content.nodes.userRequest.label} mark="REQ" meta={content.nodes.userRequest.shortMeta} shape="disc" width={78} x={75} y={445} />
-      <PlatformNode delay={1.95} label={content.nodes.agentGateway.label} mark="GW" meta={content.nodes.agentGateway.shortMeta} tone="blue" width={84} x={265} y={445} />
-      <PlatformNode delay={2.3} label={content.nodes.agentService.label} mark="B/G" meta={content.nodes.agentService.shortMeta} width={94} x={180} y={545} />
-      <PlatformNode delay={2.65} label={content.nodes.providerAdapter.label} mark="ADP" meta={content.nodes.providerAdapter.shortMeta} width={86} x={180} y={655} />
-      <PlatformNode delay={2.95} label={content.nodes.primaryModel.label} mark="LLM" meta={content.nodes.primaryModel.shortMeta} tone="external" width={78} x={80} y={765} />
-      <PlatformNode delay={3.25} label={content.nodes.fallbackModel.label} mark="FB" meta={content.nodes.fallbackModel.shortMeta} tone="external" width={82} x={280} y={765} />
+      <PlatformNode cycle={12.8} delay={1.45} label={content.nodes.userRequest.label} mark="REQ" meta={content.nodes.userRequest.shortMeta} shape="disc" width={78} x={75} y={430} />
+      <PlatformNode cycle={12.8} delay={1.9} label={content.nodes.agentGateway.label} mark="GW" meta={content.nodes.agentGateway.shortMeta} tone="blue" width={84} x={265} y={430} />
+      <PlatformNode cycle={12.8} delay={2.3} label={content.nodes.agentService.label} mark="B/G" meta={content.nodes.agentService.shortMeta} width={94} x={180} y={590} />
+      <PlatformNode cycle={12.8} delay={3.45} label={content.nodes.providerAdapter.label} mark="ADP" meta={content.nodes.providerAdapter.shortMeta} width={86} x={180} y={750} />
+      <PlatformNode cycle={12.8} delay={4.55} label={content.nodes.primaryModel.label} mark="LLM" meta={content.nodes.primaryModel.shortMeta} tone="external" width={78} x={80} y={870} />
+      <PlatformNode cycle={12.8} delay={7.25} label={content.nodes.fallbackModel.label} mark="FB" meta={content.nodes.fallbackModel.shortMeta} tone="external" width={82} x={280} y={870} />
+      <PlatformNode cycle={12.8} delay={5.05} label={content.nodes.shadowEval.label} mark="MIR" meta={content.nodes.shadowEval.shortMeta} tone="dark" width={82} x={72} y={1040} />
+      <PlatformNode cycle={12.8} delay={9.25} label={content.nodes.mockResponse.label} mark="MOCK" meta={content.nodes.mockResponse.shortMeta} tone="external" width={86} x={280} y={1040} />
 
-      <ContractBand
-        label={content.promptBand.shortLabel}
-        meta={content.promptBand.shortMeta}
-        width={145}
-        x={25}
-        y={855}
+      <LimitDecision delay={1.4} x={265} y={430} />
+      <TrafficSplitMeter delay={2.2} x={135} y={540} />
+      <AuthCheckpoint delay={3.4} x={180} y={685} />
+      <FailoverState delay={6.5} x={180} y={870} />
+
+      <BenefitOutcome align="end" delay={1.35} title={content.benefits.limit.title} x={330} y={500} />
+      <BenefitOutcome align="middle" delay={2.2} title={content.benefits.rollout.title} x={180} y={665} />
+      <BenefitOutcome align="end" delay={3.4} title={content.benefits.auth.title} x={330} y={690} />
+      <BenefitOutcome align="middle" delay={6.5} title={content.benefits.resilience.title} x={180} y={1000} />
+
+      <PromptVersionRail
+        compact
+        delay={0.2}
+        detail={content.benefits.prompt.detail}
+        title={content.benefits.prompt.title}
+        width={320}
+        x={15}
+        y={1135}
       />
-      <ContractBand
-        dark
-        label={content.secretBand.shortLabel}
-        meta={content.secretBand.shortMeta}
-        width={155}
-        x={180}
-        y={855}
+      <SecretBoundary
+        delay={4.1}
+        detail={content.benefits.secret.detail}
+        title={content.benefits.secret.title}
+        width={320}
+        x={15}
+        y={1190}
       />
 
-      <text className={styles.flowLabel} x="84" y="282">{content.flow.governanceView}</text>
-      <text className={styles.authLabel} textAnchor="end" x="292" y="610">{content.flow.serviceAuthShort}</text>
-      <text className={styles.boundaryLabel} textAnchor="middle" x="180" y="405">
+      <text className={styles.boundaryLabel} textAnchor="middle" x="180" y="1220">
         <tspan x="180">{content.boundary.mobileLine1}</tspan>
         <tspan x="180" dy="12">{content.boundary.mobileLine2}</tspan>
       </text>

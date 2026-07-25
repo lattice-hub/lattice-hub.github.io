@@ -180,8 +180,13 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
     'Fallback Model',
     'Shadow Eval',
     'Mock Response',
-    'BLUE-GREEN ROUTE',
-    'CIRCUIT BREAK',
+    'CAPACITY PROTECTED',
+    'LOWER RELEASE RISK',
+    'AVAILABLE THROUGH FAILURE',
+    'SAFE REAL-TRAFFIC EVAL',
+    'TEST WITHOUT LIVE MODEL',
+    'CONTROLLED PROMPT CHANGE',
+    'CREDENTIALS STAY PRIVATE',
     'POLE AGENT PROMPT',
     'POLE SECRET',
     'NEVER MODEL CONTEXT',
@@ -206,6 +211,12 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.match(architectureDiagrams, /<PanoramaPlane/);
   assert.match(architectureDiagrams, /<PlatformNode/);
   assert.match(architectureDiagrams, /<ControlPlane/);
+  assert.match(architectureDiagrams, /<LimitDecision/);
+  assert.match(architectureDiagrams, /<TrafficSplitMeter/);
+  assert.match(architectureDiagrams, /<AuthCheckpoint/);
+  assert.match(architectureDiagrams, /<FailoverState/);
+  assert.match(architectureDiagrams, /<PromptVersionRail/);
+  assert.match(architectureDiagrams, /<SecretBoundary/);
   assert.match(architectureDiagrams, /desktopDiagram/);
   assert.match(architectureDiagrams, /mobileDiagram/);
   assert.match(architectureCss, /prefers-reduced-motion: reduce/);
@@ -391,8 +402,9 @@ test('architecture diagram locale copy is symmetric and brand-safe', () => {
   assert.equal(english.governance.nodes.agentService.shortMeta, 'BLUE 80% · GREEN 20%');
   assert.match(architectureDiagrams, /content\.flow\.blueTraffic/);
   assert.match(architectureDiagrams, /content\.flow\.greenTraffic/);
-  assert.match(architectureDiagrams, /content\.flow\.serviceAuth/);
-  assert.match(architectureDiagrams, /content\.flow\.serviceAuthShort/);
+  assert.match(architectureDiagrams, /content\.benefits\.auth/);
+  assert.match(architectureDiagrams, /content\.benefits\.resilience/);
+  assert.match(architectureDiagrams, /content\.benefits\.secret/);
   assert.match(flowSource, /aria-pressed=\{locale === option\}/);
   assert.match(flowSource, /option === 'zh-CN' \? '中' : 'EN'/);
   assert.doesNotMatch(visibleCopy, /Pingora Sidecar|Local Proxy\s*\/\s*Sidecar/);
