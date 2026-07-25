@@ -254,8 +254,8 @@
 - [x] 运行测试、lint、普通构建和 GitHub Pages 静态导出。
 - [x] 使用真实浏览器检查 1440px 与 390px 的首页、组件页和文档页。
 - [x] 对生产差异执行 Standards / Spec 双轴审查并修复阻塞项。
-- [ ] 提交、推送并验证 GitHub Pages 线上页面。
-- [ ] 在本节记录实现与发布 Review。
+- [x] 提交、推送并验证 GitHub Pages 线上页面。
+- [x] 在本节记录实现与发布 Review。
 
 ### 实现 Review
 
@@ -266,3 +266,11 @@
 - Standards 审查发现 1101–1189px 双栏可能溢出，已把单栏断点提高到 1200px，并新增 1150px 浏览器验收；发现的四组小字号低对比文本均已调整到 5.08:1–7.73:1。
 - 本地验证：13 项测试、lint、普通生产构建、`/website` 静态导出均通过；33 个静态 HTML 的内部资源引用零缺失。
 - Chrome 覆盖 1440px、1150px 与 390px 首页，以及 390px 组件页、文档页：无横向溢出、破图、空链接、运行时或网络错误；移动导航实际点击后 `aria-expanded=true` 且抽屉打开。
+
+### 发布 Review
+
+- 首页实现提交：`ea21c87 feat: redesign homepage with real product visuals`，已推送到 `origin/main`。
+- GitHub Pages workflow run `30147786779` 的 build 与 deploy 均成功；workflow 内 test、lint、静态导出、Pages artifact 上传和部署全部通过。
+- 线上 `https://lattice-hub.github.io/`、`/components/`、`/docs/` 与两张 `/product/*.webp` 资产均返回 200；首页 HTML 已包含新主标题、发布语义、Agent 边界和真实产品资产路径。
+- 线上 Chrome 再验覆盖 1440px、1150px、390px 首页以及移动端组件页、文档页：无横向溢出、破图、空链接、运行时或网络错误；移动导航可正常展开。
+- GitHub Actions 仍有官方 action 从 Node.js 20 被平台强制迁移到 Node.js 24 的非阻塞提示，以及 deploy-pages timeout 上限提示；本轮构建和部署结果不受影响。
