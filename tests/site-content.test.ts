@@ -43,7 +43,7 @@ test('site navigation exposes real site-level destinations', () => {
   assert.ok(siteNav.every((item) => item.href.startsWith('/') || item.href.startsWith('https://')));
   assert.deepEqual(
     siteFooterNav.map((item) => item.href),
-    ['/product', '/components', '/docs', 'https://github.com/lattice-hub/pole-control-plane'],
+    ['/product', '/components', '/docs', 'https://github.com/lattice-hub'],
   );
   assert.deepEqual(productTopics.map((item) => item.href), ['/governance', '/agent']);
   assert.equal(isSiteNavActive('/product', '/product'), true);
@@ -73,6 +73,9 @@ test('product topics stay available without occupying primary navigation', () =>
   assert.match(header, /移动主导航/);
   assert.match(header, /aria-current/);
   assert.match(header, /产品体验，马上到来/);
+  assert.match(header, /GITHUB_ORGANIZATION_URL/);
+  assert.match(header, /className="github-link"/);
+  assert.match(header, /className="drawer-github"/);
   assert.match(header, /role="region"/);
   assert.match(header, /aria-live="polite"/);
   assert.doesNotMatch(header, /href="\/experience"/);
@@ -116,6 +119,13 @@ test('docs routing exposes the five PRD landing destinations', () => {
     docsSections.map((section) => section.href),
     ['/docs', '/docs/principles/architecture', '/components', '/docs/practices/gray-release', '/docs/reports'],
   );
+});
+
+test('docs brand navigation returns to the website homepage', () => {
+  const docsLayout = readFileSync('src/app/docs/_components/DocsLayoutContent.tsx', 'utf8');
+
+  assert.match(docsLayout, /nav=\{\{[\s\S]*url:\s*'\/'/);
+  assert.doesNotMatch(docsLayout, /nav=\{\{[\s\S]*url:\s*getDocsUrl\(locale\)/);
 });
 
 test('homepage uses the selected B+A direction and real product evidence', () => {
@@ -171,9 +181,11 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
     'Specification',
     'Agent Gateway',
     'Agent Service',
-    'BLUE 80%',
-    'GREEN 20%',
-    'PERSONALIZED LIMIT',
+    'User A',
+    'User B',
+    'BLUE · STABLE',
+    'GREEN · EXPERIENCE',
+    'ATTRIBUTE ROUTING · COHORT LIMIT',
     'SERVICE IDENTITY AUTH',
     'Provider Adapter',
     'Primary Model',
@@ -181,7 +193,7 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
     'Shadow Eval',
     'Mock Response',
     'CAPACITY PROTECTED',
-    'LOWER RELEASE RISK',
+    'ISOLATED EXPERIENCE',
     'AVAILABLE THROUGH FAILURE',
     'SAFE REAL-TRAFFIC EVAL',
     'TEST WITHOUT LIVE MODEL',
@@ -199,7 +211,7 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
     );
   }
   assert.doesNotMatch(architectureLocale, /Agent Service [AB]/);
-  assert.match(architectureLocale, /同一 Agent Service 的蓝绿版本/);
+  assert.match(architectureLocale, /同一 Agent Service 的 BLUE 稳定版本/);
   assert.match(architectureLocale, /服务身份调用鉴权/);
 
   assert.match(architectureFlow, /aria-pressed/);
@@ -212,7 +224,7 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.match(architectureDiagrams, /<PlatformNode/);
   assert.match(architectureDiagrams, /<ControlPlane/);
   assert.match(architectureDiagrams, /<LimitDecision/);
-  assert.match(architectureDiagrams, /<TrafficSplitMeter/);
+  assert.match(architectureDiagrams, /<ServiceVersionBoundary/);
   assert.match(architectureDiagrams, /<AuthCheckpoint/);
   assert.match(architectureDiagrams, /<FailoverState/);
   assert.match(architectureDiagrams, /<PromptVersionRail/);
@@ -390,18 +402,25 @@ test('architecture diagram locale copy is symmetric and brand-safe', () => {
   assert.doesNotMatch(JSON.stringify(english), /\p{Script=Han}/u);
   assert.equal(chinese.collaboration.nodes.sidecar.label, 'Pole Sidecar');
   assert.equal(english.collaboration.nodes.sidecar.label, 'Pole Sidecar');
-  assert.match(chinese.governance.nodes.agentGateway.meta, /千人千面限流/);
-  assert.match(english.governance.nodes.agentGateway.meta, /PERSONALIZED LIMIT/);
+  assert.match(chinese.governance.nodes.agentGateway.meta, /按请求属性路由 · 分组限流/);
+  assert.match(english.governance.nodes.agentGateway.meta, /ATTRIBUTE ROUTING · COHORT LIMIT/);
+  assert.equal(chinese.governance.nodes.userA.label, 'User A');
+  assert.equal(chinese.governance.nodes.userB.label, 'User B');
+  assert.match(chinese.governance.nodes.userA.meta, /稳定用户 · 示例 80%/);
+  assert.match(chinese.governance.nodes.userB.meta, /体验用户 · 示例 20%/);
   assert.equal(chinese.governance.nodes.agentServiceA.label, 'Agent Service');
   assert.equal(chinese.governance.nodes.agentServiceB.label, 'Agent Service');
-  assert.match(chinese.governance.nodes.agentServiceA.meta, /蓝版本 · 示例 80%/);
-  assert.match(chinese.governance.nodes.agentServiceB.meta, /绿版本 · 示例 20%/);
+  assert.match(chinese.governance.nodes.agentServiceA.meta, /BLUE · 稳定版本/);
+  assert.match(chinese.governance.nodes.agentServiceB.meta, /GREEN · 体验版本/);
   assert.equal(chinese.governance.flow.serviceAuth, '服务身份调用鉴权');
   assert.equal(english.governance.flow.serviceAuth, 'SERVICE IDENTITY AUTH');
-  assert.equal(chinese.governance.nodes.agentService.shortMeta, '蓝 80% · 绿 20%');
-  assert.equal(english.governance.nodes.agentService.shortMeta, 'BLUE 80% · GREEN 20%');
+  assert.equal(chinese.governance.nodes.agentService.shortMeta, '同一逻辑服务');
+  assert.equal(english.governance.nodes.agentService.shortMeta, 'ONE LOGICAL SERVICE');
   assert.match(architectureDiagrams, /content\.flow\.blueTraffic/);
   assert.match(architectureDiagrams, /content\.flow\.greenTraffic/);
+  assert.match(architectureDiagrams, /content\.nodes\.userA/);
+  assert.match(architectureDiagrams, /content\.nodes\.userB/);
+  assert.doesNotMatch(architectureDiagrams, /mark="B\/G"/);
   assert.match(architectureDiagrams, /content\.benefits\.auth/);
   assert.match(architectureDiagrams, /content\.benefits\.resilience/);
   assert.match(architectureDiagrams, /content\.benefits\.secret/);

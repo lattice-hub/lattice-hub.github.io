@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { getDocsLayoutTabs, getDocsSectionTree } from '@/lib/docs-navigation';
-import { getDocsUrl, source, type DocsLocale } from '@/lib/source';
+import { source, type DocsLocale } from '@/lib/source';
 import { DocsDocumentLanguage } from './DocsDocumentLanguage';
 
 export function DocsLayoutContent({
@@ -23,7 +23,7 @@ export function DocsLayoutContent({
         tabMode="auto"
         nav={{
           title: locale === 'en' ? 'Lattice Hub Docs' : 'Lattice Hub 文档',
-          url: getDocsUrl(locale),
+          url: '/',
         }}
       >
         {children}

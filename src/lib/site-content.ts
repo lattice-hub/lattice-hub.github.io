@@ -51,9 +51,11 @@ export const siteNav: SiteNavItem[] = [
   { label: '文档', href: '/docs' },
 ];
 
+export const GITHUB_ORGANIZATION_URL = 'https://github.com/lattice-hub';
+
 export const siteFooterNav: SiteNavItem[] = [
   ...siteNav,
-  { label: 'GitHub', href: 'https://github.com/lattice-hub/pole-control-plane' },
+  { label: 'GitHub', href: GITHUB_ORGANIZATION_URL },
 ];
 
 export const productTopics: Array<SiteNavItem & { labelEn: string; summary: string }> = [

@@ -15,9 +15,9 @@ const architectureCopy = {
       slides: {
         governance: {
           label: '治理生效',
-          title: '看见治理如何改变流量，并换来可控发布与持续可用。',
+          title: '两类用户，两条版本路径，同一个 Agent Service。',
           detail:
-            '超额请求止于 Gateway，蓝绿比例降低发布风险；身份鉴权与 Secret 保护模型调用，镜像、Mock 和故障切换让验证与恢复不影响真实用户。',
+            'User A 进入 BLUE 稳定版本，User B 进入 GREEN 体验版本；80/20 是示例分配。Gateway 先执行差异化限流，身份鉴权、Secret、镜像、Mock 与故障切换继续保护模型调用。',
         },
         collaboration: {
           label: '组件协作',
@@ -62,7 +62,7 @@ const architectureCopy = {
     },
     governance: {
       aria:
-        'AI 服务治理收益动态图：平台工程师发布治理视图后，超额请求在 Agent Gateway 停止，保护下游容量；合格请求按示例 80% 与 20% 分配到同一 Agent Service 的蓝绿版本，降低发布风险。服务身份鉴权保护 Provider Adapter 调用，Pole Secret 仅在适配器内解析。镜像流量进入影子评估但不影响用户响应，Mock 演练不调用真实模型，主模型故障时按能力切换备用模型以保持可用。',
+        'AI 服务治理收益动态图：上层平台工程师发布治理视图，下层 User A 经过 Agent Gateway 进入同一 Agent Service 的 BLUE 稳定版本，User B 进入 GREEN 体验版本。分组限流保护下游容量，体验隔离避免新版本影响稳定用户；服务身份鉴权保护 Provider Adapter 调用，Pole Secret 仅在适配器内解析。镜像、Mock 与故障切换支持安全验证和持续可用。',
       planes: {
         managementControl: '管理与控制',
         aiTrafficExample: 'AI 服务流量 · 示例',
@@ -71,10 +71,12 @@ const architectureCopy = {
         engineer: { label: '平台工程师', shortLabel: '工程师', meta: '定义 · 审阅', shortMeta: '定义' },
         consoleApi: { label: 'Console / API', meta: '统一发布', shortMeta: '发布' },
         userRequest: { label: '用户请求', meta: 'AGENT 调用', shortMeta: 'AGENT 调用' },
-        agentGateway: { label: 'Agent Gateway', meta: '千人千面限流 · 身份 / 租户', shortMeta: '千人千面限流' },
-        agentServiceA: { label: 'Agent Service', meta: '蓝版本 · 示例 80%', shortMeta: '蓝 · 80%' },
-        agentServiceB: { label: 'Agent Service', meta: '绿版本 · 示例 20%', shortMeta: '绿 · 20%' },
-        agentService: { label: 'Agent Service', meta: '同一服务 · 蓝绿版本', shortMeta: '蓝 80% · 绿 20%' },
+        userA: { label: 'User A', meta: '稳定用户 · 示例 80%', shortMeta: '稳定 · 80%' },
+        userB: { label: 'User B', meta: '体验用户 · 示例 20%', shortMeta: '体验 · 20%' },
+        agentGateway: { label: 'Agent Gateway', meta: '按请求属性路由 · 分组限流', shortMeta: '分组限流 · 容量保护' },
+        agentServiceA: { label: 'Agent Service', meta: 'BLUE · 稳定版本', shortMeta: 'BLUE · 稳定' },
+        agentServiceB: { label: 'Agent Service', meta: 'GREEN · 体验版本', shortMeta: 'GREEN · 体验' },
+        agentService: { label: 'Agent Service', meta: '同一服务 · 蓝绿版本', shortMeta: '同一逻辑服务' },
         providerAdapter: { label: '模型适配器', meta: '运行时边界', shortMeta: '运行时' },
         primaryModel: { label: '主模型', meta: '主路径', shortMeta: '主路径' },
         fallbackModel: { label: '备用模型', meta: '按能力支持', shortMeta: '按需' },
@@ -103,14 +105,14 @@ const architectureCopy = {
         governanceView: '治理视图',
         request: '请求',
         mirrorMock: '镜像 / MOCK',
-        blueTraffic: '蓝 80% · 示例',
-        greenTraffic: '绿 20% · 示例',
+        blueTraffic: 'A · 示例 80% → BLUE',
+        greenTraffic: 'B · 示例 20% → GREEN',
         serviceAuth: '服务身份调用鉴权',
         serviceAuthShort: '身份鉴权',
       },
       benefits: {
         limit: { title: '容量受保护', detail: '超额请求止于 GW' },
-        rollout: { title: '发布风险更低', detail: '20% 流量验证绿版本' },
+        rollout: { title: '体验隔离，发布更稳', detail: '稳定用户不受新版实验影响' },
         auth: { title: '服务身份鉴权', detail: '匿名调用被拒，授权后才访问模型' },
         resilience: { title: '故障仍可用', detail: '主模型异常时切至备用模型' },
         mirror: { title: '真实流量安全评估', detail: '复制请求，不影响用户响应' },
@@ -142,9 +144,9 @@ const architectureCopy = {
       slides: {
         governance: {
           label: 'Governance flow',
-          title: 'See governance change traffic into safer releases and continuous service.',
+          title: 'Two user paths, two release versions, one Agent Service.',
           detail:
-            'Excess stops at the Gateway, while blue-green weighting lowers release risk. Identity auth and Secret protect model calls; mirroring, mocks, and failover make validation and recovery transparent to users.',
+            'User A reaches stable BLUE while User B experiences GREEN; 80/20 is illustrative. The Gateway applies differentiated limits before identity auth, Secret, mirroring, mocks, and failover protect model calls.',
         },
         collaboration: {
           label: 'Components',
@@ -189,7 +191,7 @@ const architectureCopy = {
     },
     governance: {
       aria:
-        'Animated AI service governance outcomes. After a platform engineer publishes a governance view, excess requests stop at Agent Gateway to protect downstream capacity. Eligible traffic splits by an illustrative 80 to 20 ratio across blue and green versions of the same Agent Service, lowering release risk. Service identity auth protects Provider Adapter calls and Pole Secret resolves only inside the adapter. Mirrored traffic reaches Shadow Eval without affecting the user response, mock drills avoid live model calls, and supported failover keeps the service available when the primary model fails.',
+        'Animated AI service governance outcomes. A platform engineer publishes a governance view in the upper control layer. In the lower request layer, User A passes Agent Gateway to the BLUE stable version of one Agent Service, while User B reaches its GREEN experience version. Cohort limiting protects capacity and experience isolation keeps the stable cohort away from release experiments. Service identity auth protects Provider Adapter calls, while Secret, mirroring, mocks, and failover support private and resilient model access.',
       planes: {
         managementControl: 'MANAGEMENT & CONTROL',
         aiTrafficExample: 'AI SERVICE TRAFFIC · EXAMPLE',
@@ -198,10 +200,12 @@ const architectureCopy = {
         engineer: { label: 'Platform Engineer', shortLabel: 'Engineer', meta: 'DEFINE · REVIEW', shortMeta: 'DEFINE' },
         consoleApi: { label: 'Console / API', meta: 'PUBLISH ONCE', shortMeta: 'PUBLISH ONCE' },
         userRequest: { label: 'User Request', meta: 'AGENT CALL', shortMeta: 'AGENT CALL' },
-        agentGateway: { label: 'Agent Gateway', meta: 'PERSONALIZED LIMIT · ID / TENANT', shortMeta: 'PERSONALIZED LIMIT' },
-        agentServiceA: { label: 'Agent Service', meta: 'BLUE · SAMPLE 80%', shortMeta: 'BLUE · 80%' },
-        agentServiceB: { label: 'Agent Service', meta: 'GREEN · SAMPLE 20%', shortMeta: 'GREEN · 20%' },
-        agentService: { label: 'Agent Service', meta: 'ONE SERVICE · BLUE / GREEN', shortMeta: 'BLUE 80% · GREEN 20%' },
+        userA: { label: 'User A', meta: 'STABLE COHORT · SAMPLE 80%', shortMeta: 'STABLE · 80%' },
+        userB: { label: 'User B', meta: 'EXPERIENCE COHORT · SAMPLE 20%', shortMeta: 'EXPERIENCE · 20%' },
+        agentGateway: { label: 'Agent Gateway', meta: 'ATTRIBUTE ROUTING · COHORT LIMIT', shortMeta: 'COHORT LIMIT · CAPACITY' },
+        agentServiceA: { label: 'Agent Service', meta: 'BLUE · STABLE VERSION', shortMeta: 'BLUE · STABLE' },
+        agentServiceB: { label: 'Agent Service', meta: 'GREEN · EXPERIENCE VERSION', shortMeta: 'GREEN · EXPERIENCE' },
+        agentService: { label: 'Agent Service', meta: 'ONE SERVICE · BLUE / GREEN', shortMeta: 'ONE LOGICAL SERVICE' },
         providerAdapter: { label: 'Provider Adapter', meta: 'RUNTIME BOUNDARY', shortMeta: 'RUNTIME ONLY' },
         primaryModel: { label: 'Primary Model', meta: 'PRIMARY', shortMeta: 'PRIMARY' },
         fallbackModel: { label: 'Fallback Model', meta: 'WHEN SUPPORTED', shortMeta: 'SUPPORTED' },
@@ -230,14 +234,14 @@ const architectureCopy = {
         governanceView: 'GOVERNANCE VIEW',
         request: 'REQUEST',
         mirrorMock: 'MIRROR / MOCK',
-        blueTraffic: 'BLUE 80% · SAMPLE',
-        greenTraffic: 'GREEN 20% · SAMPLE',
+        blueTraffic: 'A · SAMPLE 80% → BLUE',
+        greenTraffic: 'B · SAMPLE 20% → GREEN',
         serviceAuth: 'SERVICE IDENTITY AUTH',
         serviceAuthShort: 'ID AUTH',
       },
       benefits: {
         limit: { title: 'CAPACITY PROTECTED', detail: 'EXCESS STOPS AT GW' },
-        rollout: { title: 'LOWER RELEASE RISK', detail: '20% VALIDATES GREEN' },
+        rollout: { title: 'ISOLATED EXPERIENCE', detail: 'STABLE USERS AVOID RELEASE EXPERIMENTS' },
         auth: { title: 'SERVICE IDENTITY AUTH', detail: 'ANONYMOUS CALLS DENIED BEFORE MODEL ACCESS' },
         resilience: { title: 'AVAILABLE THROUGH FAILURE', detail: 'PRIMARY FAILS, FALLBACK SERVES' },
         mirror: { title: 'SAFE REAL-TRAFFIC EVAL', detail: 'COPY ONLY, NO USER IMPACT' },

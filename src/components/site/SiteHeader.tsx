@@ -2,10 +2,14 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { GitFork, Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { isSiteNavActive, siteNav } from '@/lib/site-content';
+import {
+  GITHUB_ORGANIZATION_URL,
+  isSiteNavActive,
+  siteNav,
+} from '@/lib/site-content';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -102,6 +106,16 @@ export function SiteHeader() {
         </nav>
 
         <div className="nav-actions">
+          <a
+            aria-label="访问 Lattice Hub GitHub 组织（在新窗口打开）"
+            className="github-link"
+            href={GITHUB_ORGANIZATION_URL}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <GitFork aria-hidden="true" size={17} strokeWidth={1.8} />
+            <span>GitHub</span>
+          </a>
           <button
             aria-controls="site-mobile-drawer"
             aria-expanded={drawerOpen}
@@ -143,6 +157,16 @@ export function SiteHeader() {
         >
           体验
         </button>
+        <a
+          className="drawer-github"
+          href={GITHUB_ORGANIZATION_URL}
+          onClick={() => closeDrawer()}
+          rel="noreferrer"
+          target="_blank"
+        >
+          <GitFork aria-hidden="true" size={17} strokeWidth={1.8} />
+          <span>GitHub</span>
+        </a>
       </nav>
 
       <section
