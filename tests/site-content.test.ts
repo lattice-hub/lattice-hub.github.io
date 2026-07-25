@@ -125,18 +125,23 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.doesNotMatch(globalCss, /aurora|glass-card|backdrop-filter|radial-gradient/);
 
   for (const keyword of [
-    'Polaris · Nacos · Apollo · Eureka · xDS v3',
-    'MCP + A2A',
-    'REGISTER & DISCOVER ONLY',
-    'PROPOSAL CONFIRM → DRAFT / RELEASE GATE → VERSION',
+    'Polaris、Nacos、Apollo、Eureka 与 xDS v3',
+    'MCP / A2A Registry',
+    'REGISTER · DISCOVER',
+    'CONFIG + GOVERNANCE ONLY',
     'MySQL 是事实来源',
-    'Pole Agent 只通过 Pole MCP 白名单读取',
-    'SDK / 协议客户端',
-    'Envoy / Gateway / Mesh',
+    'Pole Agent 的已有配置更新提案',
+    'SDK、协议客户端、Sidecar 与 Envoy / Gateway / Mesh',
+    'Active 与 History 分离',
   ]) {
     assert.ok(architectureFlow.includes(keyword), `missing architecture flow fact: ${keyword}`);
   }
 
+  assert.match(architectureFlow, /<DesktopTopology \/>/);
+  assert.match(architectureFlow, /<MobileTopology \/>/);
+  assert.match(architectureFlow, /<svg/);
+  assert.match(architectureFlow, /<FlowPath/);
+  assert.match(architectureFlow, /<IsoNode/);
   assert.match(architectureCss, /prefers-reduced-motion: reduce/);
   assert.match(architectureCss, /scripting: none/);
   assert.match(architectureFlow, /IntersectionObserver/);
