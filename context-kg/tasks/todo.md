@@ -325,7 +325,7 @@
 - [x] 运行 test、lint、生产构建与静态导出。
 - [x] 使用真实浏览器验证桌面、移动端、暂停/重播与 reduced-motion。
 - [x] 完成事实、视觉、无障碍和性能终审。
-- [ ] 提交、发布并验证线上结果。
+- [x] 提交、发布并验证线上结果。
 - [x] 在本节记录实现与发布 Review。
 
 ### 本地实现 Review
@@ -338,6 +338,14 @@
 - 生命周期覆盖暂停、继续、重播、离屏暂停、标签页隐藏、运行时 reduced-motion 切换与 720px 响应式切换。completed、reduced-motion 与 no-JS 共用明确静态终帧，SSR 保留完整文字替代。
 - 本地验证：14 项测试、lint、普通生产构建、`/website` 静态导出与 `git diff --check` 均通过。Chrome 验证桌面和 390px 移动端零横向溢出，按钮为 88×44px，暂停状态冻结，移动端完成后可重播。
 - 扩展浏览器审计通过 completed → reduced → completed、运行中 721 → 719px、完成后 719 → 721px；画布、响应式 SVG 与完成哨兵始终同步。事实、视觉、无障碍与性能终审均无 blocker / important。
+
+### 发布 Review
+
+- 实现提交：`1f9f8a0 feat: redesign homepage architecture as isometric topology`，已推送到 `origin/main`。
+- GitHub Pages workflow run `30153305681` 的 build 与 deploy 均成功；workflow 内 14 项测试、lint、静态导出、Pages artifact 上传与生产部署全部通过。
+- 线上 `https://lattice-hub.github.io/` 返回 200；桌面加载完整等距拓扑，390px 移动端切换为独立移动构图，两端均无横向溢出，五阶段与中央控制面节点完整。
+- 线上桌面和移动端完成 8.6 秒单次动画后均显示“重新播放”；reduced-motion 直接进入静态终帧。公网浏览器未捕获 4xx / 5xx、控制台错误或页面异常。
+- Workflow 仍有官方 action 从 Node.js 20 被平台强制运行到 Node.js 24 的非阻塞提示；本次构建和部署结果不受影响。
 
 ## 一级导航收敛与产品归属（2026-07-25）
 
