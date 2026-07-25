@@ -1,0 +1,463 @@
+.diagramFrame {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background: #f7f6f1;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.mobileDiagram {
+  display: none;
+}
+
+.diagramBackground {
+  fill: #f7f6f1;
+}
+
+.gridDot {
+  fill: #bcb8ae;
+  opacity: .25;
+}
+
+.zone {
+  fill: rgba(255, 255, 255, .2);
+  stroke: #aaa79e;
+  stroke-dasharray: 5 7;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.zoneLabel,
+.nodeLabel,
+.nodeMeta,
+.coreEyebrow,
+.coreTitle,
+.coreMeta,
+.railLabel,
+.railMeta,
+.pathLabel,
+.resultLabel {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  pointer-events: none;
+}
+
+.zoneLabel {
+  fill: #747570;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: .14em;
+}
+
+.connection,
+.connectionActive,
+.dataPacket {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.connection {
+  stroke: #696b67;
+  stroke-width: 1.15;
+}
+
+.connectionMuted {
+  stroke: #92938e;
+  stroke-dasharray: 5 5;
+}
+
+.connectionActive {
+  stroke: #0f6cbd;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  stroke-width: 1.8;
+  animation: path-reveal var(--path-duration) cubic-bezier(.16, 1, .3, 1) var(--path-delay) both;
+}
+
+.dataPacket {
+  stroke: #0f6cbd;
+  stroke-dasharray: .025 .975;
+  stroke-dashoffset: 1;
+  stroke-width: 5;
+  animation: packet-travel var(--path-duration) cubic-bezier(.45, 0, .55, 1) var(--path-delay) both;
+}
+
+.nodeLift,
+.coreLift {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: node-receive .9s cubic-bezier(.16, 1, .3, 1) var(--node-delay) both;
+}
+
+.nodeTop,
+.nodeLeft,
+.nodeRight,
+.coreTop,
+.coreLeft,
+.coreRight,
+.coreInset,
+.railTop,
+.railLeft,
+.railRight {
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.nodeTop {
+  fill: #fbfaf6;
+  stroke: #565852;
+}
+
+.nodeLeft {
+  fill: #c5c2b9;
+  stroke: #565852;
+}
+
+.nodeRight {
+  fill: #dfdcd3;
+  stroke: #565852;
+}
+
+.nodeSignature {
+  stroke: #0f6cbd;
+  stroke-linecap: round;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.toneblue .nodeTop {
+  fill: #0f6cbd;
+  stroke: #0a4b7f;
+}
+
+.toneblue .nodeLeft {
+  fill: #0a4a7d;
+  stroke: #083d68;
+}
+
+.toneblue .nodeRight {
+  fill: #0c5a98;
+  stroke: #083d68;
+}
+
+.toneblue .nodeSignature {
+  stroke: #b9e1ff;
+}
+
+.tonedark .nodeTop {
+  fill: #292c2d;
+  stroke: #151718;
+}
+
+.tonedark .nodeLeft {
+  fill: #151718;
+  stroke: #151718;
+}
+
+.tonedark .nodeRight {
+  fill: #3d4142;
+  stroke: #151718;
+}
+
+.toneexternal .nodeTop,
+.toneexternal .nodeLeft,
+.toneexternal .nodeRight {
+  fill: rgba(255, 255, 255, .52);
+  stroke: #6f716d;
+  stroke-dasharray: 3 3;
+}
+
+.nodeLabel {
+  fill: #202120;
+  font-size: 11px;
+  font-weight: 680;
+  letter-spacing: .01em;
+}
+
+.nodeMeta {
+  fill: #646662;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: .07em;
+}
+
+.controlPlane {
+  filter: drop-shadow(0 9px 10px rgba(32, 33, 32, .14));
+}
+
+.coreTop,
+.coreLeft,
+.coreRight,
+.coreInset {
+  stroke: #202120;
+}
+
+.coreTop {
+  fill: #ebe8df;
+}
+
+.coreLeft {
+  fill: #252827;
+}
+
+.coreRight {
+  fill: #50534f;
+}
+
+.coreInset {
+  fill: #faf9f5;
+  stroke: #0f6cbd;
+}
+
+.coreEyebrow {
+  fill: #0f6cbd;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: .14em;
+}
+
+.coreTitle {
+  fill: #202120;
+  font-size: 15px;
+  font-weight: 720;
+  letter-spacing: -.03em;
+}
+
+.coreMeta {
+  fill: #60625e;
+  font-size: 7.5px;
+  font-weight: 650;
+  letter-spacing: .07em;
+}
+
+.railTop {
+  fill: #fbfaf6;
+  stroke: #747670;
+  stroke-dasharray: 4 4;
+}
+
+.railLeft {
+  fill: #c8c5bc;
+  stroke: #747670;
+  stroke-dasharray: 4 4;
+}
+
+.railRight {
+  fill: #dfdcd3;
+  stroke: #747670;
+  stroke-dasharray: 4 4;
+}
+
+.raildark .railTop {
+  fill: #202324;
+  stroke: #151718;
+  stroke-dasharray: none;
+}
+
+.raildark .railLeft {
+  fill: #111314;
+  stroke: #151718;
+  stroke-dasharray: none;
+}
+
+.raildark .railRight {
+  fill: #3d4142;
+  stroke: #151718;
+  stroke-dasharray: none;
+}
+
+.railLabel {
+  fill: #303230;
+  font-size: 9px;
+  font-weight: 720;
+  letter-spacing: .08em;
+}
+
+.railMeta {
+  fill: #6e706b;
+  font-size: 7px;
+  font-weight: 620;
+  letter-spacing: .06em;
+}
+
+.raildark .railLabel {
+  fill: #fff;
+}
+
+.raildark .railMeta {
+  fill: #b9bec0;
+}
+
+.junction {
+  fill: #454844;
+  stroke: #202120;
+  stroke-width: 1;
+}
+
+.pathLabel {
+  fill: #6f716d;
+  font-size: 7.5px;
+  font-weight: 650;
+  letter-spacing: .07em;
+}
+
+.resultLabel {
+  fill: #0f6cbd;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .14em;
+}
+
+.legend {
+  position: absolute;
+  right: 18px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #777873;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: .04em;
+}
+
+.legend i {
+  display: block;
+  width: 18px;
+  border-top: 1.5px solid #0f6cbd;
+}
+
+.legend i:last-of-type {
+  border-color: #92938e;
+  border-top-style: dashed;
+}
+
+.staticDiagram .nodeLift,
+.staticDiagram .coreLift,
+.staticDiagram .connectionActive,
+.staticDiagram .dataPacket {
+  animation: none;
+}
+
+.staticDiagram .connectionActive {
+  stroke-dashoffset: 0;
+}
+
+.staticDiagram .dataPacket {
+  display: none;
+}
+
+@keyframes path-reveal {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes packet-travel {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes node-receive {
+  0%,
+  55% {
+    transform: translateY(0);
+  }
+
+  74% {
+    transform: translateY(-5px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 720px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+
+  .legend {
+    right: 12px;
+    bottom: 8px;
+    gap: 6px;
+    font-size: 7px;
+  }
+
+  .legend i {
+    width: 14px;
+  }
+
+  .nodeLabel {
+    font-size: 9px;
+  }
+
+  .nodeMeta {
+    font-size: 6.5px;
+  }
+
+  .coreTitle {
+    font-size: 11px;
+  }
+
+  .coreEyebrow,
+  .coreMeta {
+    font-size: 6px;
+  }
+
+  .railLabel {
+    font-size: 7px;
+  }
+
+  .railMeta {
+    font-size: 5.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nodeLift,
+  .coreLift,
+  .connectionActive,
+  .dataPacket {
+    animation: none;
+  }
+
+  .connectionActive {
+    stroke-dashoffset: 0;
+  }
+
+  .dataPacket {
+    display: none;
+  }
+}
+
+@media (scripting: none) {
+  .nodeLift,
+  .coreLift,
+  .connectionActive,
+  .dataPacket {
+    animation: none;
+  }
+
+  .connectionActive {
+    stroke-dashoffset: 0;
+  }
+
+  .dataPacket {
+    display: none;
+  }
+}

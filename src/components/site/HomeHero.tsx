@@ -12,7 +12,7 @@ export function HomeHero() {
           <span>收进一个控制面。</span>
         </h1>
         <p className={styles.heroLede}>
-          Lattice.Hub 让 Console、Kubernetes Controller、Thin SDK、Pingora Sidecar 与
+          Lattice.Hub 让 Console、Kubernetes Controller、Rust SDK、Pingora Sidecar 与
           Envoy / Gateway 围绕同一控制面协作；治理规则在控制面发布，由已接入的运行时组件按支持范围执行。
         </p>
         <div className={styles.heroActions}>

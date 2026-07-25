@@ -104,204 +104,8 @@
 }
 
 .canvas {
-  min-height: 360px;
   overflow: hidden;
   animation: frame-enter 360ms cubic-bezier(.2, .65, .25, 1) both;
-}
-
-.diagram {
-  display: block;
-  max-width: 100%;
-  width: 100%;
-  height: auto;
-}
-
-.diagramLarge {
-  width: 100%;
-}
-
-.diagramBackground {
-  fill: #f7f6f1;
-}
-
-.gridDot {
-  fill: #d8d6cf;
-}
-
-.region,
-.executionRegion {
-  fill: rgba(255, 255, 255, .34);
-  stroke: #b8b7b1;
-  stroke-dasharray: 5 6;
-}
-
-.executionRegion {
-  fill: rgba(229, 241, 251, .26);
-  stroke: #9ebfd9;
-}
-
-.regionLabel,
-.nodeEyebrow,
-.controlEyebrow {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: .12em;
-}
-
-.regionLabel {
-  fill: #7c7d78;
-}
-
-.diagramNode rect {
-  stroke-width: 1;
-}
-
-.nodepaper rect {
-  fill: #fff;
-  stroke: #a9aaa5;
-}
-
-.nodesoft rect {
-  fill: #f0f4f6;
-  stroke: #b1bdc5;
-}
-
-.nodeblue rect {
-  fill: #0f6cbd;
-  stroke: #0b548f;
-}
-
-.nodeEyebrow {
-  fill: #797a75;
-}
-
-.nodeTitle {
-  fill: #202120;
-  font-size: 13px;
-  font-weight: 670;
-  letter-spacing: -.01em;
-}
-
-.nodeDetail {
-  fill: #6d6e69;
-  font-size: 9px;
-}
-
-.nodeblue .nodeEyebrow,
-.nodeblue .nodeDetail {
-  fill: rgba(255, 255, 255, .76);
-}
-
-.nodeblue .nodeTitle {
-  fill: #fff;
-}
-
-.controlNode > rect {
-  fill: #1d2022;
-  stroke: #151718;
-  filter: drop-shadow(0 9px 14px rgba(32, 33, 32, .16));
-}
-
-.controlEyebrow {
-  fill: #86c5f5;
-  font-size: 9px;
-}
-
-.controlTitle {
-  fill: #fff;
-  font-size: 22px;
-  font-weight: 620;
-  letter-spacing: -.03em;
-}
-
-.controlDetail {
-  fill: #b7bdc0;
-  font-size: 10px;
-}
-
-.controlChips rect {
-  fill: #2b3033;
-  stroke: #464d51;
-}
-
-.controlChips text {
-  fill: #d8dcde;
-  font-size: 9px;
-}
-
-.specNode rect {
-  fill: #fbfaf7;
-  stroke: #b8b7b1;
-  stroke-dasharray: 4 4;
-}
-
-.specTitle {
-  fill: #3a3b39;
-  font-size: 10px;
-  font-weight: 600;
-}
-
-.flowLine {
-  fill: none;
-  stroke: #0f6cbd;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.7;
-}
-
-.flowLineMuted {
-  stroke: #898b87;
-  stroke-dasharray: 4 5;
-  stroke-width: 1.25;
-}
-
-.flowPulse {
-  fill: none;
-  stroke: #8ac8f5;
-  stroke-dasharray: .08 .92;
-  stroke-linecap: round;
-  stroke-width: 4;
-  animation: flow-travel 3.4s linear infinite;
-}
-
-.arrowBlue {
-  fill: #0f6cbd;
-}
-
-.arrowMuted {
-  fill: #898b87;
-}
-
-.pathLabel,
-.railLabel {
-  fill: #73746f;
-  font-size: 8px;
-}
-
-.railLabel {
-  fill: #0f6cbd;
-  font-weight: 650;
-  letter-spacing: .04em;
-}
-
-.serviceCall rect {
-  fill: #1d2022;
-  stroke: #151718;
-}
-
-.serviceCall text {
-  fill: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .13em;
-}
-
-.serviceCall .serviceDetail {
-  fill: #b9bec0;
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0;
 }
 
 .caption {
@@ -353,12 +157,6 @@
   text-underline-offset: 4px;
 }
 
-@keyframes flow-travel {
-  to {
-    stroke-dashoffset: -1;
-  }
-}
-
 @keyframes frame-enter {
   from {
     opacity: 0;
@@ -381,14 +179,6 @@
     padding-inline: 10px;
   }
 
-  .canvas {
-    min-height: 214px;
-  }
-
-  .diagram {
-    min-height: 0;
-  }
-
   .caption {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -407,11 +197,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .canvas {
-    animation: none;
-  }
-
-  .flowPulse {
-    display: none;
     animation: none;
   }
 

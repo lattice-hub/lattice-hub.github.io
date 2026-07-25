@@ -106,6 +106,10 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   const architectureFlow = readFileSync('src/components/site/ArchitectureFlow.tsx', 'utf8');
   const architectureDiagrams = readFileSync('src/components/site/ArchitectureDiagrams.tsx', 'utf8');
   const architectureCss = readFileSync('src/components/site/ArchitectureFlow.module.css', 'utf8');
+  const architectureDiagramCss = readFileSync(
+    'src/components/site/ArchitectureDiagrams.module.css',
+    'utf8',
+  );
   const homeCss = readFileSync('src/components/site/HomePage.module.css', 'utf8');
   const globalCss = readFileSync('src/app/global.css', 'utf8');
 
@@ -133,7 +137,7 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
     'Console',
     'Kubernetes Controller',
     'Control Plane',
-    'Thin SDK',
+    'Rust SDK',
     'Pingora Sidecar',
     'Envoy / Gateway',
     'Specification',
@@ -147,9 +151,18 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.match(architectureFlow, /ComponentCollaborationDiagram/);
   assert.match(architectureFlow, /GovernanceExecutionDiagram/);
   assert.match(architectureDiagrams, /<svg/);
-  assert.match(architectureDiagrams, /<FlowArrow/);
+  assert.match(architectureDiagrams, /<FlowPath/);
+  assert.match(architectureDiagrams, /<IsoNode/);
+  assert.match(architectureDiagrams, /<ControlPlane/);
+  assert.match(architectureDiagrams, /desktopDiagram/);
+  assert.match(architectureDiagrams, /mobileDiagram/);
   assert.match(architectureCss, /prefers-reduced-motion: reduce/);
   assert.match(architectureCss, /scripting: none/);
+  assert.match(architectureDiagramCss, /prefers-reduced-motion: reduce/);
+  assert.match(architectureDiagramCss, /scripting: none/);
+  assert.match(architectureDiagramCss, /node-receive/);
+  assert.match(architectureDiagramCss, /path-reveal/);
+  assert.doesNotMatch(architectureDiagramCss, /infinite|linear/);
   assert.doesNotMatch(
     `${architectureFlow}\n${architectureDiagrams}`,
     /MySQL|CacheManager|EventHub|CONFIG \+ GOVERNANCE ONLY|setInterval|Math\.random|requests per second|latency|uptime/,
