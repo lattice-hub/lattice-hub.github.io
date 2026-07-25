@@ -1,25 +1,60 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import {
-  ArrowRight,
-  Check,
-  CircleDot,
-  Database,
-  FileDiff,
-  Gauge,
-  KeyRound,
-  RadioTower,
-  Server,
-} from 'lucide-react';
 import { HomeHero } from '@/components/site/HomeHero';
+import styles from '@/components/site/HomePage.module.css';
 import { SiteHeader } from '@/components/site/SiteHeader';
-import {
-  capabilityPillars,
-  docsSections,
-  governanceDomains,
-  platformFacts,
-} from '@/lib/site-content';
+import { governanceDomains } from '@/lib/site-content';
 
-const governanceGroups = ['流量路径', '稳定性', '安全与测试'] as const;
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+
+const releaseSteps = [
+  {
+    index: '01 / DRAFT',
+    title: '保存草稿',
+    detail: '先记录变化，不直接改变运行态。',
+  },
+  {
+    index: '02 / VERSION',
+    title: '形成版本',
+    detail: '配置生成不可变发布快照，治理规则保留版本记录。',
+  },
+  {
+    index: '03 / RELEASE',
+    title: '受控发布',
+    detail: '通过灰度或全量流程，将已确认版本送入运行时。',
+  },
+  {
+    index: '04 / ROLLBACK',
+    title: '历史回滚',
+    detail: '出现偏差时返回已知版本，而不是重新猜测旧状态。',
+  },
+] as const;
+
+const agentBoundaries = [
+  ['01', '读取已有配置', 'Agent'],
+  ['02', '生成不可变提案', 'Agent'],
+  ['03', '预览差异并确认', '人'],
+  ['04', '保存编辑态草稿', 'Agent'],
+] as const;
+
+const environmentScopes = [
+  {
+    title: '运行环境',
+    detail: 'Namespace 组织服务、配置与治理资源，但不冒充租户或团队空间。',
+  },
+  {
+    title: '协议接入',
+    detail: '接入 Polaris gRPC / REST、Nacos v1 / v2、Apollo、Eureka 与 Envoy xDS v3。',
+  },
+  {
+    title: '运行时视图',
+    detail: 'Thin SDK、Local Proxy / Sidecar 与 Proxy Mesh / Gateway 读取版本化治理视图。',
+  },
+  {
+    title: '能力目录',
+    detail: 'MCP 与 A2A Registry 登记工具、Agent Card、技能和能力元数据，只承担注册发现。',
+  },
+] as const;
 
 export default function HomePage() {
   return (
@@ -27,224 +62,232 @@ export default function HomePage() {
       <SiteHeader />
       <HomeHero />
 
-      <section className="fact-rail" aria-label="已确认产品事实">
-        {platformFacts.map((fact) => (
-          <article key={fact.label}>
-            <strong>{fact.value}</strong>
-            <div>
-              <span>{fact.label}</span>
-              <small>{fact.note}</small>
-            </div>
+      <aside className={styles.systemStrip} aria-label="产品能力概览">
+        <div className={styles.systemStripInner}>
+          <article>
+            <span>01 / PROTOCOLS</span>
+            <strong>Polaris、Nacos、Apollo、Eureka 与 Envoy xDS v3</strong>
           </article>
-        ))}
+          <article>
+            <span>02 / RELEASE</span>
+            <strong>草稿、版本、灰度、发布与回滚</strong>
+          </article>
+          <article>
+            <span>03 / RUNTIME</span>
+            <strong>Thin SDK、Local Proxy / Sidecar 与 Proxy Mesh / Gateway</strong>
+          </article>
+        </div>
+      </aside>
+
+      <section className={`${styles.section} ${styles.evidence}`} id="capabilities">
+        <div className={styles.sectionInner}>
+          <div className={styles.sectionHead}>
+            <p className={styles.sectionKicker}>01 / Product evidence</p>
+            <div>
+              <h2>
+                控制面应该可见，
+                <br />
+                而不是靠想象。
+              </h2>
+              <p className={styles.sectionIntro}>
+                当前 Console 将控制面组件、接口指标与延迟分布放进同一视图，
+                帮助操作者检查系统状态和变化影响。它是控制面自身的观测入口，
+                不是独立的全链路观测平台。
+              </p>
+            </div>
+          </div>
+
+          <div className={styles.evidenceStage}>
+            <div className={styles.productFrame}>
+              <Image
+                alt="Lattice.Hub Console 平台监控完整真实界面"
+                height={1000}
+                sizes="(max-width: 720px) 100vw, 1280px"
+                src={`${basePath}/product/console-platform-metrics.webp`}
+                width={1600}
+              />
+            </div>
+            <div className={styles.captionRow} aria-label="界面说明">
+              <p>
+                <b>A</b>
+                <span>当前 Console 真实界面 · Platform Metrics。</span>
+              </p>
+              <p>
+                <b>B</b>
+                <span>界面只证明产品能力存在，不把本地测试数据描述成线上运行指标。</span>
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="capabilities section-frame" id="capabilities" aria-labelledby="capabilities-title">
-        <div className="section-intro">
-          <p className="overline">One resource model</p>
-          <h2 id="capabilities-title">把环境、资源和发布状态放回同一张图里。</h2>
-          <p>
-            控制面不只是协议聚合器。它先定义资源属于哪个运行环境、当前处于编辑态还是发布态，
-            再让不同客户端和数据面消费一致结果。
-          </p>
+      <section className={`${styles.section} ${styles.release}`} id="governance">
+        <div className={styles.sectionInner}>
+          <div className={styles.sectionHead}>
+            <p className={styles.sectionKicker}>02 / Deterministic release</p>
+            <h2>
+              变更不是保存，
+              <br />
+              <span>是版本。</span>
+            </h2>
+          </div>
+          <div className={styles.releaseSteps} aria-label="发布语义">
+            {releaseSteps.map((step) => (
+              <article key={step.index}>
+                <span>{step.index}</span>
+                <h3>{step.title}</h3>
+                <p>{step.detail}</p>
+              </article>
+            ))}
+          </div>
         </div>
+      </section>
 
-        <div className="capability-list">
-          {capabilityPillars.map((item) => (
-            <Link className={`capability-row capability-${item.accent}`} href={item.href} key={item.index}>
-              <span className="capability-index">{item.index}</span>
-              <div className="capability-copy">
-                <h3>{item.title}</h3>
-                <p>{item.summary}</p>
-              </div>
-              <p className="capability-detail">{item.detail}</p>
-              <ArrowRight aria-hidden="true" size={19} />
+      <section className={`${styles.section} ${styles.governance}`}>
+        <div className={`${styles.sectionInner} ${styles.governanceLayout}`}>
+          <div className={styles.governanceCopy}>
+            <p className={styles.sectionKicker}>03 / Governance semantics</p>
+            <h2>规则的作用域，和规则本身一样重要。</h2>
+            <p>
+              {governanceDomains.map((domain) => domain.name).join('、')}，
+              共享一致的资源表达与发布语义。
+            </p>
+            <ul>
+              <li>
+                服务调用范围
+                <span>WHO → WHOM</span>
+              </li>
+              <li>
+                规则与子规则
+                <span>POLICY</span>
+              </li>
+              <li>
+                版本与发布记录
+                <span>HISTORY</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className={styles.governanceVisual}>
+            <Image
+              alt="Lattice.Hub Console 治理规则详情真实界面，展示服务调用范围与熔断子规则"
+              height={520}
+              loading="eager"
+              sizes="(max-width: 1200px) 100vw, 58vw"
+              src={`${basePath}/product/console-governance-scope.webp`}
+              width={1340}
+            />
+            <p>
+              真实治理详情：调用方、被调方、熔断粒度与子规则在同一上下文中确认。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className={`${styles.section} ${styles.agent}`} id="agent">
+        <div className={`${styles.sectionInner} ${styles.agentGrid}`}>
+          <div>
+            <p className={styles.sectionKicker}>04 / Pole Agent</p>
+            <h2>
+              Agent 准备变更，
+              <br />
+              人决定发布。
+            </h2>
+            <p className={styles.agentCopy}>
+              当前 Pole Agent 可在登录用户权限内读取命名空间、MCP Registry 和配置文件。
+              对已有配置文件的更新，它会生成不可变提案与差异预览；确认后只保存编辑态草稿。
+            </p>
+          </div>
+          <div>
+            <div className={styles.agentBoundary} aria-label="Pole Agent 权限边界">
+              {agentBoundaries.map(([index, action, owner]) => (
+                <div className={styles.boundaryRow} key={index}>
+                  <span>{index}</span>
+                  <strong>{action}</strong>
+                  <small>{owner}</small>
+                </div>
+              ))}
+            </div>
+            <p className={styles.agentNote}>
+              发布、回滚与删除仍由确定性的产品流程承担。当前写路径仅覆盖已有配置文件更新；
+              治理规则写入、新建资源、流式输出与服务端会话持久化仍未覆盖。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className={`${styles.section} ${styles.scope}`}>
+        <div className={`${styles.sectionInner} ${styles.scopeLayout}`}>
+          <div className={styles.scopeCopy}>
+            <p className={styles.sectionKicker}>05 / One environment</p>
+            <h2>不替换现有入口，统一背后的控制面。</h2>
+            <p>从协议接入到运行时消费，每类资源都回到同一份版本化控制面视图。</p>
+          </div>
+          <ol className={styles.scopeList}>
+            {environmentScopes.map((scope, index) => (
+              <li key={scope.title}>
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <div>
+                  <strong>{scope.title}</strong>
+                  <p>{scope.detail}</p>
+                </div>
+                <span aria-hidden="true">→</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className={styles.finalCta}>
+        <div className={styles.finalCtaInner}>
+          <div>
+            <p className={styles.eyebrow}>Read the control plane</p>
+            <h2>从一份确定的发布语义开始。</h2>
+          </div>
+          <div className={styles.finalCtaActions}>
+            <Link className={styles.finalCtaButton} href="/docs">
+              阅读文档
+              <span aria-hidden="true">→</span>
             </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="governance section-frame" id="governance" aria-labelledby="governance-title">
-        <div className="governance-heading">
-          <p className="overline">Governance workbench</p>
-          <h2 id="governance-title">九类治理能力，共用一套版本与发布语义。</h2>
-          <p>
-            Console 以结构化视图编辑规则。草稿、校验、灰度发布、历史与回滚彼此分离，
-            避免“保存按钮”悄悄改变线上流量。
-          </p>
-          <Link className="text-link" href="/docs/principles/governance-release">
-            了解治理发布链
-            <ArrowRight aria-hidden="true" size={16} />
-          </Link>
-        </div>
-
-        <div className="governance-catalog">
-          {governanceGroups.map((group) => (
-            <div className="governance-group" key={group}>
-              <div className="governance-group-title">
-                <span>{group}</span>
-                <small>{governanceDomains.filter((item) => item.group === group).length} 项</small>
-              </div>
-              {governanceDomains
-                .filter((item) => item.group === group)
-                .map((item) => (
-                  <article className="governance-item" key={item.id}>
-                    <CircleDot aria-hidden="true" size={15} />
-                    <strong>{item.name}</strong>
-                    <p>{item.summary}</p>
-                    <span className="item-state">可编辑 · 可发布</span>
-                  </article>
-                ))}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="agent-section section-frame" aria-labelledby="agent-title">
-        <div className="agent-workflow">
-          <div className="agent-workflow-top">
-            <div>
-              <span className="panel-label">POLE AGENT / CONTROLLED CHANGE</span>
-              <h3>更新 production / billing / timeout.yaml</h3>
-            </div>
-            <span className="runtime-ready"><i /> 需要人工确认</span>
-          </div>
-
-          <div className="agent-message user-message">
-            <span>你</span>
-            <p>把下游超时从 3s 调整到 5s，先给我看差异。</p>
-          </div>
-
-          <div className="tool-trace">
-            <span className="trace-icon"><Database aria-hidden="true" size={15} /></span>
-            <div>
-              <strong>get_config_file</strong>
-              <small>读取当前版本 · production/billing/timeout.yaml</small>
-            </div>
-            <Check aria-label="已完成" size={16} />
-          </div>
-
-          <div className="diff-view" aria-label="配置差异示意">
-            <div className="diff-head"><FileDiff aria-hidden="true" size={15} /> 临时视图 · 尚未写入</div>
-            <code><span>- request_timeout: 3s</span><span>+ request_timeout: 5s</span></code>
-          </div>
-
-          <div className="approval-row">
-            <div>
-              <KeyRound aria-hidden="true" size={16} />
-              <span>确认后只保存编辑态草稿，不会发布。</span>
-            </div>
-            <button type="button" aria-label="界面示意，不执行真实操作" disabled>等待用户确认</button>
-          </div>
-        </div>
-
-        <div className="agent-copy">
-          <p className="overline">Human in the release loop</p>
-          <h2 id="agent-title">Agent 可以准备变更，但不能绕过发布人。</h2>
-          <p>
-            Pole Agent 已通过 OpenAI-compatible 模型网关和白名单 MCP 工具形成最小真实闭环。
-            当前配置修改会经过资源读取、不可变提案、预览哈希、并发检查和用户确认，最终只保存草稿。
-          </p>
-          <ul>
-            <li><Check size={16} /> 使用当前 Console 用户身份与权限</li>
-            <li><Check size={16} /> Secret 不进入模型上下文、diff 或日志</li>
-            <li><Check size={16} /> 发布、回滚与删除仍由确定性产品流程承担</li>
-          </ul>
-          <p className="boundary-note">
-            当前边界：写路径覆盖已有配置文件更新；治理规则写入、服务端会话持久化与流式输出仍在推进。
-          </p>
-        </div>
-      </section>
-
-      <section className="foundation section-frame" aria-labelledby="foundation-title">
-        <div className="section-intro foundation-intro">
-          <p className="overline">Operational foundation</p>
-          <h2 id="foundation-title">控制面自己，也必须可配置、可观测、可部署。</h2>
-        </div>
-        <div className="foundation-grid">
-          <article>
-            <span className="foundation-icon"><Server size={20} /></span>
-            <h3>类型化系统配置</h3>
-            <p>Server / Console 共 63 项显式目录，区分部署锁定、待重启和受控热更新。</p>
-            <small>Agent 配置支持版本、Secret 引用、发布前探活与 last-known-good。</small>
-          </article>
-          <article>
-            <span className="foundation-icon"><Gauge size={20} /></span>
-            <h3>OpenTelemetry 观测出口</h3>
-            <p>控制面指标经 Collector 进入共享 GreptimeDB，由 Console 提供平台概览和查询。</p>
-            <small>不把尚未落地的全链路 Trace / Event 能力包装成已完成。</small>
-          </article>
-          <article>
-            <span className="foundation-icon"><RadioTower size={20} /></span>
-            <h3>Kubernetes 与 Gateway</h3>
-            <p>提供本地 Kubernetes 部署栈，Console 通过 Gateway 暴露，Controller 连接集群资源。</p>
-            <small>同时保留 all、server 与 console 三种进程运行模式。</small>
-          </article>
-        </div>
-      </section>
-
-      <section className="architecture-strip" aria-label="控制面架构层次">
-        <div className="architecture-copy">
-          <span>PLUGIN-ORIENTED CONTROL PLANE</span>
-          <strong>协议接入</strong>
-          <i />
-          <strong>业务服务</strong>
-          <i />
-          <strong>增量缓存</strong>
-          <i />
-          <strong>可替换存储</strong>
-        </div>
-        <Link href="/docs/principles/architecture">
-          查看架构原理
-          <ArrowRight aria-hidden="true" size={16} />
-        </Link>
-      </section>
-
-      <section className="docs-hub section-frame" aria-labelledby="docs-title">
-        <div className="section-intro">
-          <p className="overline">Documentation</p>
-          <h2 id="docs-title">从产品能力进入，再按需下钻实现。</h2>
-        </div>
-        <div className="docs-list">
-          {docsSections.map((section, index) => (
-            <Link href={section.href} key={section.href}>
-              <span>{String(index + 1).padStart(2, '0')}</span>
-              <div>
-                <h3>{section.title}</h3>
-                <p>{section.summary}</p>
-              </div>
-              <ArrowRight aria-hidden="true" size={18} />
+            <Link
+              className={`${styles.finalCtaButton} ${styles.finalCtaSecondary}`}
+              href="https://github.com/lattice-hub/pole-control-plane"
+            >
+              查看 Pole Control Plane
+              <span aria-hidden="true">↗</span>
             </Link>
-          ))}
+          </div>
         </div>
       </section>
 
-      <section className="final-cta">
-        <span>Build from a shared control plane.</span>
-        <h2>先统一资源与发布语义，再扩展协议和运行时。</h2>
-        <div>
-          <Link className="button button-primary" href="/docs">
-            阅读文档
-            <ArrowRight aria-hidden="true" size={18} />
-          </Link>
-          <Link className="button button-secondary" href="https://github.com/lattice-hub">
-            GitHub
-          </Link>
+      <footer className={styles.footer}>
+        <div className={styles.footerInner}>
+          <div className={styles.footerTop}>
+            <Link className={styles.footerBrand} href="/">
+              <Image
+                alt=""
+                aria-hidden="true"
+                height={30}
+                loading="eager"
+                src={`${basePath}/lattice-hub-logo.png`}
+                width={30}
+              />
+              <span>Lattice.Hub</span>
+            </Link>
+            <nav className={styles.footerLinks} aria-label="页脚导航">
+              <Link href="/#capabilities">产品</Link>
+              <Link href="/#governance">治理</Link>
+              <Link href="/#agent">Pole Agent</Link>
+              <Link href="/components">组件</Link>
+              <Link href="/docs">文档</Link>
+              <Link href="https://github.com/lattice-hub/pole-control-plane">GitHub</Link>
+            </nav>
+          </div>
+          <div className={styles.footerBottom}>
+            <span>Open source service governance control plane.</span>
+            <span>Open source on GitHub.</span>
+          </div>
         </div>
-      </section>
-
-      <footer className="site-footer">
-        <div className="footer-brand">
-          <strong>Lattice Hub</strong>
-          <span>面向服务与 Agent 的云原生治理控制面。</span>
-        </div>
-        <div className="footer-links">
-          <Link href="/docs">文档</Link>
-          <Link href="/components">组件生态</Link>
-          <Link href="/docs/blog">博客</Link>
-          <Link href="/docs/reports">报告</Link>
-        </div>
-        <span className="footer-note">Service governance, capability registry, and control-plane operations.</span>
       </footer>
     </main>
   );

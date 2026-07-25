@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import {
   blogPosts,
   capabilityPillars,
@@ -17,7 +17,14 @@ import { resolveImageSrc } from '../src/mdx-components';
 test('site navigation exposes real site-level destinations', () => {
   assert.deepEqual(
     siteNav.map((item) => item.href),
-    ['/#capabilities', '/#governance', '/components', '/docs', 'https://github.com/lattice-hub'],
+    [
+      '/#capabilities',
+      '/#governance',
+      '/#agent',
+      '/components',
+      '/docs',
+      'https://github.com/lattice-hub/pole-control-plane',
+    ],
   );
   assert.ok(siteNav.every((item) => item.href.startsWith('/') || item.href.startsWith('https://')));
 });
@@ -44,22 +51,39 @@ test('docs routing exposes the five PRD landing destinations', () => {
   );
 });
 
-test('homepage leads with service governance and a product interface abstraction', () => {
+test('homepage uses the selected B+A direction and real product evidence', () => {
   const homepage = readFileSync('src/app/page.tsx', 'utf8');
   const hero = readFileSync('src/components/site/HomeHero.tsx', 'utf8');
+  const homeCss = readFileSync('src/components/site/HomePage.module.css', 'utf8');
   const globalCss = readFileSync('src/app/global.css', 'utf8');
 
-  assert.match(hero, /让服务治理/);
-  assert.match(hero, /console-preview/);
-  assert.match(hero, /配置差异已生成，确认后只保存草稿/);
-  assert.match(hero, /多协议/);
-  assert.doesNotMatch(hero, />24<|>186<|>03<|22 正常|3 隔离|canary 20%/);
-  assert.match(homepage, /get_config_file/);
-  assert.doesNotMatch(homepage, /pole\.config\.get_file|SESSION 08|Runtime ready/);
-  assert.match(homepage, /九类治理能力/);
-  assert.match(homepage, /Human in the release loop/);
-  assert.doesNotMatch(hero, /A2A Agent Registry 规划中/);
+  assert.match(hero, /把服务变化/);
+  assert.match(hero, /收进一个控制面/);
+  assert.match(hero, /next\/image/);
+  assert.match(hero, /console-platform-metrics\.webp/);
+  assert.match(homepage, /console-governance-scope\.webp/);
+  assert.match(homepage, /变更不是保存/);
+  assert.match(homepage, /Agent 准备变更/);
+  assert.match(homepage, /只保存编辑态草稿/);
+  assert.match(homepage, /governanceDomains\.map/);
+  assert.doesNotMatch(`${hero}\n${homepage}`, /console-preview|agent-workflow|fact-rail|get_config_file/);
+  assert.doesNotMatch(`${hero}\n${homepage}`, />24<|>186<|22 正常|3 隔离|canary 20%/);
+  assert.doesNotMatch(homepage, /负载均衡、超时、重试、节点熔断、故障转移/);
+  assert.doesNotMatch(homeCss, /:root\s*{/);
   assert.doesNotMatch(globalCss, /aurora|glass-card|backdrop-filter|radial-gradient/);
+});
+
+test('homepage product screenshots are checked-in optimized assets', () => {
+  const assets = [
+    'public/product/console-platform-metrics.webp',
+    'public/product/console-governance-scope.webp',
+  ];
+
+  for (const asset of assets) {
+    assert.ok(existsSync(asset), `missing homepage product asset: ${asset}`);
+    assert.ok(statSync(asset).size > 5_000, `homepage product asset is unexpectedly small: ${asset}`);
+    assert.ok(statSync(asset).size < 200_000, `homepage product asset should stay optimized: ${asset}`);
+  }
 });
 
 test('governance catalog covers the nine implemented domains', () => {

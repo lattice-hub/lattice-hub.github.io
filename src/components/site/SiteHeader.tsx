@@ -40,10 +40,6 @@ export function SiteHeader() {
               <span>GitHub</span>
             </Link>
           ) : null}
-          <Link className="nav-doc-button" href="/docs">
-            开始阅读
-            <span aria-hidden="true">→</span>
-          </Link>
           <button
             aria-controls="site-mobile-drawer"
             aria-expanded={open}
@@ -68,10 +64,6 @@ export function SiteHeader() {
             GitHub
           </Link>
         ) : null}
-        <Link className="drawer-primary" href="/docs" onClick={closeDrawer}>
-          开始阅读
-          <span aria-hidden="true">→</span>
-        </Link>
       </div>
     </header>
   );

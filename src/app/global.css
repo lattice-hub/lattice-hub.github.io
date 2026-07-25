@@ -43,9 +43,9 @@ nextjs-portal,
 }
 
 .site-shell {
-  --page: #f7f7f8;
+  --page: #f2f0eb;
   --surface: #ffffff;
-  --surface-subtle: #f1f2f4;
+  --surface-subtle: #e9e6df;
   --text: #242424;
   --text-secondary: #616161;
   --text-tertiary: #8a8886;
@@ -77,12 +77,12 @@ nextjs-portal,
   top: 0;
   z-index: 20;
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface);
+  background: var(--page);
 }
 
 .topnav-inner {
   display: flex;
-  min-height: 62px;
+  min-height: 64px;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
@@ -101,9 +101,7 @@ nextjs-portal,
   height: 30px;
   overflow: hidden;
   place-items: center;
-  border: 1px solid var(--border-subtle);
-  border-radius: 5px;
-  background: var(--surface);
+  background: transparent;
 }
 
 .glyph img {
@@ -122,7 +120,7 @@ nextjs-portal,
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 27px;
+  gap: 26px;
 }
 
 .nav-links a,
