@@ -463,7 +463,7 @@
 - [x] 统一官网与文档中的产品组件名为 Pole Sidecar，保留实现说明与既有 slug。
 - [x] 补充双语对称性、持续动画、reduced-motion 与命名回归测试。
 - [x] 完成 test、lint、生产构建、静态导出与多视口浏览器验证。
-- [ ] 提交、推送、发布并验证线上中英文页面。
+- [x] 提交、推送、发布并验证线上中英文页面。
 - [x] 在本节补充本地实现与发布 Review。
 
 ### 本地实现 Review
@@ -473,6 +473,14 @@
 - 首页「治理生效 / 组件协作」共用一套 3D 图结构，中英文节点、图例、说明与无障碍文本集中由 locale 字典提供；语言切换后当前主题保持不变。产品组件可见名统一为 `Pole Sidecar`，既有 `pingora-sidecar` 文档 slug 继续兼容。
 - 数据路径与节点反馈改为 6.4 秒错峰无限循环，使用非线性贝塞尔节奏；真实 Chrome 等待 7.2 秒后仍有 38 个无限动画处于运行态。`prefers-reduced-motion` 下运行动画为 0，数据包隐藏、完整连接保持可读。
 - 自动验证：17 项测试、ESLint、TypeScript、普通静态导出与 `/website` basePath 静态导出均通过，共生成 64 个页面。真实 Chrome 覆盖 1440px 与 390px：英文深链返回 200、页面正文无中文混排、`html lang="en"` 生效、语言按钮为 44×44px，两端均无横向溢出。
+
+### 发布 Review
+
+- 双语文档提交：`1c1befc feat(docs): add bilingual documentation`；架构图与持续动效提交：`99cac9e feat: localize continuous architecture flows`，均已推送到 `origin/main`。
+- GitHub Pages workflow run `30160446144` 的 build 与 deploy 均成功；流水线内测试、lint、64 页静态导出、Pages artifact 上传与生产部署全部通过。
+- 线上首页、`/docs/`、`/en/docs/` 与 `/en/docs/principles/architecture/` 均返回 200。英文架构原理页标题为 “Control-plane assembly”，正文无汉字混排，浏览器根语言为 `en`。
+- 线上首页语言切换后标题、帧说明和按钮状态同步改为英文；等待完整周期后仍有 38 个错峰无限动画运行。1440px 无横向溢出，未发现资源 404。
+- Workflow 仍有官方 action 从 Node.js 20 被平台强制运行到 Node.js 24 的非阻塞提示；本次构建与部署不受影响。
 
 ## 首页 AI Agent 治理视觉精修（2026-07-25）
 
