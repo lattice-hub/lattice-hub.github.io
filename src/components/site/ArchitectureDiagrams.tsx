@@ -3,6 +3,7 @@ import styles from './ArchitectureDiagrams.module.css';
 
 type DiagramKind = 'collaboration' | 'governance';
 type NodeTone = 'paper' | 'blue' | 'dark' | 'external';
+type FlowTone = 'governance' | 'traffic';
 
 function FlowPath({
   d,
@@ -10,12 +11,14 @@ function FlowPath({
   markerId,
   duration = 1.05,
   muted = false,
+  tone = 'governance',
 }: {
   d: string;
   delay: number;
   markerId: string;
   duration?: number;
   muted?: boolean;
+  tone?: FlowTone;
 }) {
   const timing = {
     '--path-delay': `${delay}s`,
@@ -25,21 +28,32 @@ function FlowPath({
   return (
     <>
       <path
-        className={`${styles.connection} ${muted ? styles.connectionMuted : ''}`}
+        className={`${styles.connection} ${tone === 'traffic' ? styles.connectionTraffic : ''} ${muted ? styles.connectionMuted : ''}`}
         d={d}
-        markerEnd={muted ? `url(#${markerId}-muted)` : undefined}
+        markerEnd={
+          muted
+            ? `url(#${markerId}-muted)`
+            : tone === 'traffic'
+              ? `url(#${markerId}-traffic)`
+              : undefined
+        }
         pathLength="1"
       />
       {!muted ? (
         <>
           <path
-            className={styles.connectionActive}
+            className={`${styles.connectionActive} ${tone === 'traffic' ? styles.connectionActiveTraffic : ''}`}
             d={d}
-            markerEnd={`url(#${markerId}-active)`}
+            markerEnd={`url(#${markerId}-${tone === 'traffic' ? 'traffic-active' : 'active'})`}
             pathLength="1"
             style={timing}
           />
-          <path className={styles.dataPacket} d={d} pathLength="1" style={timing} />
+          <path
+            className={`${styles.dataPacket} ${tone === 'traffic' ? styles.dataPacketTraffic : ''}`}
+            d={d}
+            pathLength="1"
+            style={timing}
+          />
         </>
       ) : null}
     </>
@@ -78,6 +92,28 @@ function DiagramDefs({ id, compact = false }: { id: string; compact?: boolean })
         viewBox="0 0 9 7"
       >
         <path className={styles.mutedArrow} d="M0 0 L9 3.5 L0 7 Z" />
+      </marker>
+      <marker
+        id={`${id}-traffic`}
+        markerHeight="7"
+        markerWidth="9"
+        orient="auto"
+        refX="8"
+        refY="3.5"
+        viewBox="0 0 9 7"
+      >
+        <path className={styles.trafficArrow} d="M0 0 L9 3.5 L0 7 Z" />
+      </marker>
+      <marker
+        id={`${id}-traffic-active`}
+        markerHeight="7"
+        markerWidth="9"
+        orient="auto"
+        refX="8"
+        refY="3.5"
+        viewBox="0 0 9 7"
+      >
+        <path className={styles.trafficActiveArrow} d="M0 0 L9 3.5 L0 7 Z" />
       </marker>
     </defs>
   );
@@ -245,12 +281,23 @@ function DiagramFrame({
     >
       {desktop}
       {mobile}
-      <span className={styles.legend} aria-hidden="true">
-        <i />
-        当前协作
-        <i />
-        契约 / 可选 / 演进接入
-      </span>
+      {kind === 'governance' ? (
+        <span className={styles.legend} aria-hidden="true">
+          <i className={styles.legendGovernance} />
+          治理视图
+          <i className={styles.legendTraffic} />
+          服务调用
+          <i className={styles.legendMuted} />
+          演进接入
+        </span>
+      ) : (
+        <span className={styles.legend} aria-hidden="true">
+          <i className={styles.legendGovernance} />
+          当前协作
+          <i className={styles.legendMuted} />
+          契约 / 可选 / 演进接入
+        </span>
+      )}
     </div>
   );
 }
@@ -349,40 +396,42 @@ function GovernanceExecutionDesktop() {
       <rect className={styles.diagramBackground} height="620" width="1200" />
       <rect fill={`url(#${markerId}-grid)`} height="620" width="1200" />
 
-      <PanoramaPlane height={300} index="01" label="MANAGEMENT" width={285} x={30} y={150} />
-      <PanoramaPlane height={390} index="02" label="GOVERNANCE CONTROL" width={350} x={340} y={100} />
-      <PanoramaPlane height={420} index="03" label="RUNTIME EXECUTION" width={440} x={720} y={70} />
+      <PanoramaPlane height={330} index="01" label="MANAGEMENT & CONTROL" width={315} x={28} y={130} />
+      <PanoramaPlane height={440} index="02" label="MULTI-LANGUAGE SERVICES · EXAMPLE" width={790} x={375} y={60} />
 
-      <FlowPath d="M 130 300 L 205 300" delay={0.1} markerId={markerId} />
-      <FlowPath d="M 283 300 L 350 300 L 420 300" delay={0.55} markerId={markerId} />
-      <FlowPath d="M 610 280 L 710 280 L 770 175" delay={1.5} markerId={markerId} />
-      <FlowPath d="M 610 310 L 770 310" delay={0} markerId={markerId} muted />
-      <FlowPath d="M 610 340 L 710 340 L 770 440" delay={2.15} markerId={markerId} />
-      <FlowPath d="M 860 175 L 955 175 L 1015 282" delay={2.75} markerId={markerId} />
-      <FlowPath d="M 860 310 L 1000 310" delay={0} markerId={markerId} muted />
-      <FlowPath d="M 860 440 L 955 440 L 1015 338" delay={3.35} markerId={markerId} />
+      <FlowPath d="M 142 225 L 208 225" delay={0.1} markerId={markerId} />
+      <FlowPath d="M 260 245 L 300 245 L 300 350 L 275 350" delay={0.55} markerId={markerId} />
+      <FlowPath d="M 275 350 L 350 350 L 350 118 L 1095 118" delay={1.15} markerId={markerId} />
+      <FlowPath d="M 520 118 L 520 230" delay={1.55} markerId={markerId} />
+      <FlowPath d="M 735 118 L 735 230" delay={1.85} markerId={markerId} />
+      <FlowPath d="M 950 118 L 950 230" delay={2.15} markerId={markerId} />
+      <FlowPath d="M 425 118 L 425 405 L 472 405" delay={2.45} markerId={markerId} />
 
-      <PlatformNode delay={0.05} label="Platform Engineer" mark="PE" meta="DEFINE · REVIEW" width={104} x={85} y={300} />
-      <PlatformNode delay={0.5} label="Console / API" mark="API" meta="PUBLISH" tone="blue" width={104} x={255} y={300} />
-      <ControlPlane x={515} y={305} />
-      <PlatformNode delay={1.45} label="Rust SDK" mark="SDK" meta="IN-PROCESS" tone="blue" width={96} x={815} y={175} />
-      <PlatformNode delay={1.8} label="Pingora Sidecar" mark="P" meta="EXTENSION PATH" width={106} x={815} y={310} />
-      <PlatformNode delay={2.1} label="Envoy / Gateway" mark="xDS" meta="DATA PLANE" width={108} x={815} y={440} />
-      <PlatformNode delay={2.7} label="SERVICE CALL" mark="→" meta="CALLER TO UPSTREAM" tone="dark" width={116} x={1065} y={310} />
+      <FlowPath d="M 568 270 L 687 270" delay={2.8} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 783 270 L 902 270" delay={3.15} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 998 270 L 1085 270 L 1085 405 L 568 405" delay={3.5} markerId={markerId} tone="traffic" />
+
+      <PlatformNode delay={0.05} label="Platform Engineer" mark="PE" meta="DEFINE · REVIEW" width={104} x={90} y={225} />
+      <PlatformNode delay={0.45} label="Console / API" mark="API" meta="PUBLISH ONCE" tone="blue" width={104} x={255} y={225} />
+      <ControlPlane compact width={176} x={185} y={350} />
+      <PlatformNode delay={1.5} label="Order Service" mark="JAVA" meta="SDK / PROXY" tone="blue" width={96} x={520} y={270} />
+      <PlatformNode delay={1.8} label="Inventory Service" mark="RUST" meta="RUST SDK" width={96} x={735} y={270} />
+      <PlatformNode delay={2.1} label="Payment Service" mark="GO" meta="SIDECAR" width={96} x={950} y={270} />
+      <PlatformNode delay={2.4} label="Risk Service" mark="PY" meta="ENVOY / xDS" tone="external" width={96} x={520} y={405} />
 
       <ContractBand
         dark
-        label="PUBLISHED HERE · ENFORCED THERE"
-        meta="CONTROL PLANE DISTRIBUTES · RUNTIME EXECUTES"
-        width={560}
-        x={360}
-        y={535}
+        label="PUBLISH ONCE · ENFORCE AT CONNECTED POINTS"
+        meta="SUPPORTED ROUTE · PROTECT · ACCESS CAPABILITIES"
+        width={590}
+        x={420}
+        y={530}
       />
 
-      <text className={styles.flowLabel} x="165" y="278">DEFINE</text>
-      <text className={styles.flowLabel} x="325" y="278">PUBLISH</text>
-      <text className={styles.flowLabel} x="640" y="262">DELIVER</text>
-      <text className={styles.flowLabel} x="930" y="292">ENFORCE</text>
+      <text className={styles.flowLabel} x="160" y="206">DEFINE</text>
+      <text className={styles.flowLabel} x="294" y="232">PUBLISH</text>
+      <text className={styles.flowLabel} x="610" y="101">GOVERNANCE VIEW</text>
+      <text className={`${styles.flowLabel} ${styles.flowLabelTraffic}`} x="610" y="252">SERVICE CALLS</text>
     </svg>
   );
 }
@@ -395,41 +444,47 @@ function GovernanceExecutionMobile() {
       aria-hidden="true"
       className={`${styles.diagram} ${styles.mobileDiagram}`}
       data-diagram-viewport="mobile"
-      viewBox="0 0 360 780"
+      viewBox="0 0 360 960"
     >
       <DiagramDefs compact id={markerId} />
-      <rect className={styles.diagramBackground} height="780" width="360" />
-      <rect fill={`url(#${markerId}-grid)`} height="780" width="360" />
+      <rect className={styles.diagramBackground} height="960" width="360" />
+      <rect fill={`url(#${markerId}-grid)`} height="960" width="360" />
 
       <PanoramaPlane height={165} index="01" label="MANAGEMENT" width={336} x={12} y={35} />
       <PanoramaPlane height={170} index="02" label="CONTROL PLANE" width={336} x={12} y={225} />
-      <PanoramaPlane height={280} index="03" label="RUNTIME EXECUTION" width={336} x={12} y={420} />
+      <PanoramaPlane height={420} index="03" label="MULTI-LANGUAGE SERVICES · EXAMPLE" width={336} x={12} y={420} />
 
-      <FlowPath d="M 85 125 L 225 125" delay={0.1} markerId={markerId} />
+      <FlowPath d="M 115 120 L 226 120" delay={0.1} markerId={markerId} />
       <FlowPath d="M 270 145 L 220 145 L 220 275" delay={0.5} markerId={markerId} />
-      <FlowPath d="M 180 352 L 180 480 L 125 480" delay={1.4} markerId={markerId} />
-      <FlowPath d="M 180 352 L 180 560 L 125 560" delay={0} markerId={markerId} muted />
-      <FlowPath d="M 180 352 L 180 640 L 125 640" delay={1.95} markerId={markerId} />
-      <FlowPath d="M 125 480 L 220 480 L 220 540 L 234 540" delay={2.55} markerId={markerId} />
-      <FlowPath d="M 125 560 L 234 560" delay={0} markerId={markerId} muted />
-      <FlowPath d="M 125 640 L 220 640 L 220 580 L 234 580" delay={3.1} markerId={markerId} />
+      <FlowPath d="M 145 345 L 68 345 L 68 790" delay={1.1} markerId={markerId} />
+      <FlowPath d="M 68 500 L 205 500" delay={1.45} markerId={markerId} />
+      <FlowPath d="M 68 590 L 205 590" delay={1.75} markerId={markerId} />
+      <FlowPath d="M 68 680 L 205 680" delay={2.05} markerId={markerId} />
+      <FlowPath d="M 68 770 L 205 770" delay={2.35} markerId={markerId} />
 
-      <PlatformNode delay={0.05} label="Engineer" mark="PE" meta="DEFINE" width={78} x={76} y={125} />
-      <PlatformNode delay={0.45} label="Console / API" mark="API" meta="PUBLISH" tone="blue" width={84} x={270} y={145} />
+      <FlowPath d="M 289 500 L 320 500 L 320 590 L 289 590" delay={2.75} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 289 590 L 320 590 L 320 680 L 289 680" delay={3.05} markerId={markerId} tone="traffic" />
+      <FlowPath d="M 289 680 L 320 680 L 320 770 L 289 770" delay={3.35} markerId={markerId} tone="traffic" />
+
+      <PlatformNode delay={0.05} label="Engineer" mark="PE" meta="DEFINE" width={78} x={76} y={120} />
+      <PlatformNode delay={0.45} label="Console / API" mark="API" meta="PUBLISH ONCE" tone="blue" width={84} x={270} y={145} />
       <ControlPlane compact width={178} x={180} y={310} />
-      <PlatformNode delay={1.35} label="Rust SDK" mark="SDK" meta="IN-PROCESS" tone="blue" width={78} x={78} y={470} />
-      <PlatformNode delay={1.7} label="Sidecar" mark="P" meta="EXTENSION" width={82} x={78} y={560} />
-      <PlatformNode delay={1.9} label="Envoy / Gateway" mark="xDS" meta="DATA PLANE" width={86} x={82} y={640} />
-      <PlatformNode delay={2.5} label="SERVICE CALL" mark="→" meta="REAL TRAFFIC" tone="dark" width={92} x={280} y={560} />
+      <PlatformNode delay={1.4} label="Order Service" mark="JAVA" meta="SDK / PROXY" tone="blue" width={78} x={250} y={500} />
+      <PlatformNode delay={1.7} label="Inventory Service" mark="RUST" meta="RUST SDK" width={78} x={250} y={590} />
+      <PlatformNode delay={2} label="Payment Service" mark="GO" meta="SIDECAR" width={78} x={250} y={680} />
+      <PlatformNode delay={2.3} label="Risk Service" mark="PY" meta="ENVOY / xDS" tone="external" width={78} x={250} y={770} />
 
       <ContractBand
         dark
-        label="PUBLISHED HERE"
-        meta="ENFORCED THERE"
-        width={270}
-        x={45}
-        y={710}
+        label="PUBLISH ONCE"
+        meta="ENFORCE WHERE SUPPORTED"
+        width={250}
+        x={55}
+        y={855}
       />
+
+      <text className={styles.flowLabel} x="80" y="405">GOVERNANCE VIEW</text>
+      <text className={`${styles.flowLabel} ${styles.flowLabelTraffic}`} x="321" y="636">CALL</text>
     </svg>
   );
 }
@@ -451,7 +506,7 @@ export function GovernanceExecutionDiagram({ large = false }: { large?: boolean 
     <DiagramFrame
       desktop={<GovernanceExecutionDesktop />}
       kind="governance"
-      label="治理能力沉浸式全景生效图：平台工程师通过 Console 或 API 发布治理规则，Lattice.Hub Control Plane 向 Rust SDK、Pingora Sidecar 或 Envoy 与 Gateway 交付治理视图，由已接入执行组件在真实服务调用路径中按支持范围执行。"
+      label="治理能力沉浸式全景生效示意图：平台工程师通过 Console 或 API 一次发布规则，Lattice.Hub Control Plane 将治理视图分发至示例性的 Java、Rust、Go 和 Python 服务接入点；SDK、Sidecar 或 Envoy 在已接入且支持对应能力的执行点落实治理，业务调用使用独立路径表达。"
       large={large}
       mobile={<GovernanceExecutionMobile />}
     />

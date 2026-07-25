@@ -10,20 +10,20 @@ import styles from './ArchitectureFlow.module.css';
 
 const slides = [
   {
-    id: 'collaboration',
+    id: 'governance',
     index: '01',
+    label: '治理生效',
+    title: '规则发布一次，在已接入的跨服务调用点生效。',
+    detail:
+      '以 Java、Rust、Go 与 Python 服务调用为示例：Control Plane 分发统一治理视图，SDK、Sidecar 或 Envoy 在已接入且支持对应能力的执行点落实路由、保护与访问策略。',
+  },
+  {
+    id: 'collaboration',
+    index: '02',
     label: '组件协作',
     title: '一个控制面，连接不同接入与执行组件。',
     detail:
       'Console 管理变化，Controller 连接 Kubernetes；已接入的 SDK 与代理运行时按部署形态消费控制面能力。',
-  },
-  {
-    id: 'governance',
-    index: '02',
-    label: '治理生效',
-    title: '规则在控制面发布，在运行时组件执行。',
-    detail:
-      'SDK 与 Envoy / Gateway 按当前支持范围执行治理；Sidecar 作为可扩展本地数据面，以虚线标出接入边界。',
   },
 ] as const;
 
@@ -41,7 +41,7 @@ export function ArchitectureFlow() {
         <div className={styles.header}>
           <div>
             <span className={styles.kicker}>ORGANIZATION ARCHITECTURE</span>
-            <strong id="architecture-flow-title">组件全景协作</strong>
+            <strong id="architecture-flow-title">治理与组件全景</strong>
           </div>
           <span className={styles.counter} aria-hidden="true">
             {activeSlide.index} / 02
@@ -67,6 +67,7 @@ export function ArchitectureFlow() {
 
       <div
         aria-label={`第 ${activeIndex + 1} / ${slides.length} 帧：${activeSlide.label}`}
+        aria-live="polite"
         className={styles.canvas}
         id="architecture-flow-canvas"
         key={activeSlide.id}

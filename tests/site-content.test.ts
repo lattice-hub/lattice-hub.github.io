@@ -132,6 +132,10 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   for (const keyword of ['组件协作', '治理生效', '查看完整架构', 'ArchitectureDiagrams']) {
     assert.ok(architectureFlow.includes(keyword), `missing architecture carousel fact: ${keyword}`);
   }
+  assert.ok(
+    architectureFlow.indexOf("id: 'governance'") < architectureFlow.indexOf("id: 'collaboration'"),
+    'governance execution should be the first architecture slide',
+  );
 
   for (const keyword of [
     'Console',
@@ -142,6 +146,17 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
     'Envoy / Gateway',
     'Specification',
     'SERVICE CALL',
+    'Order Service',
+    'Inventory Service',
+    'Payment Service',
+    'Risk Service',
+    'JAVA',
+    'RUST',
+    'GO',
+    'PY',
+    'GOVERNANCE VIEW',
+    'EXAMPLE',
+    'WHERE SUPPORTED',
   ]) {
     assert.ok(architectureDiagrams.includes(keyword), `missing component architecture fact: ${keyword}`);
   }

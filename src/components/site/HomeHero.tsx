@@ -12,8 +12,9 @@ export function HomeHero() {
           <span>收进一个控制面。</span>
         </h1>
         <p className={styles.heroLede}>
-          Lattice.Hub 让 Console、Kubernetes Controller、Rust SDK、Pingora Sidecar 与
-          Envoy / Gateway 围绕同一控制面协作；治理规则在控制面发布，由已接入的运行时组件按支持范围执行。
+          Lattice.Hub 将治理规则从控制面分发到多语言服务的执行点，让服务通过 SDK
+          或代理在已接入且支持对应能力的调用中执行同一治理意图；Console 与 Kubernetes
+          Controller 负责管理变化。
         </p>
         <div className={styles.heroActions}>
           <Link className={`${styles.button} ${styles.buttonPrimary}`} href="/docs">
