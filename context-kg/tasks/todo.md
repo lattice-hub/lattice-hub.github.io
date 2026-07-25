@@ -324,8 +324,8 @@
 - [x] 更新回归测试并运行 test、lint、生产构建与静态导出。
 - [x] 使用真实浏览器验证桌面、移动端、双帧切换与 reduced-motion。
 - [x] 完成视觉、事实、无障碍与性能终审。
-- [ ] 提交、发布并验证线上版本。
-- [ ] 在本节记录实现与发布 Review。
+- [x] 提交、发布并验证线上版本。
+- [x] 在本节记录实现与发布 Review。
 
 ### 本地实现 Review
 
@@ -335,6 +335,13 @@
 - 治理图用上、中、下三条空间走廊分别连接 Rust SDK、Sidecar 扩展与 Envoy / Gateway，最终汇入 Service Call；现行协作使用实线，契约共享或演进中的接入使用虚线。
 - 动画为一次性路径显现、数据单元移动和节点抬升；独立架构页保持静态，`prefers-reduced-motion` 与禁用 JavaScript 时停止所有运动，不使用无限循环。
 - 本地验证：15 项测试、lint、`git diff --check` 与带 `/website` base path 的静态导出均通过；真实 Chrome 覆盖桌面双帧、架构页和 390px 移动端，页面无横向溢出，移动端正确切换为独立 SVG，reduced-motion 下没有运行中的动画。
+
+### 发布 Review
+
+- 实现提交：`6e67f71 fix: restore isometric architecture visuals`，已推送到 `origin/main`。
+- GitHub Pages workflow run `30154852197` 的 build 与 deploy 均成功；workflow 内 15 项测试、lint、静态导出、Pages artifact 上传与生产部署全部通过。
+- 线上 `https://lattice-hub.github.io/` 与 `/architecture/` 均返回 200，并包含组件协作、治理生效、Control Plane 与 Rust SDK 等本次内容。
+- 公网桌面截图确认首页使用中央双层基座、立体组件节点、等距虚线区域与空间连线；CDP 以真实 390px 设备指标复核时 `innerWidth=390`、`scrollWidth=390`，移动导航与独立移动构图正常启用。
 
 ## 首页组件协作轮播与架构子页面（2026-07-25）
 
