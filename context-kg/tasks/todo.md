@@ -327,8 +327,8 @@
 - [x] 运行 test、lint、生产构建与静态导出。
 - [x] 使用真实浏览器验证桌面、移动端、键盘操作与 reduced-motion。
 - [x] 完成事实、视觉、无障碍与性能终审。
-- [ ] 提交、推送并验证线上发布。
-- [ ] 在本节记录实现与发布 Review。
+- [x] 提交、推送并验证线上发布。
+- [x] 在本节记录实现与发布 Review。
 
 ### 本地实现 Review
 
@@ -338,6 +338,14 @@
 - 新增 `/architecture` 组件架构页，完整说明七个组织组件、治理执行三段链与管理/控制/执行边界；顶栏仍严格保持“产品 / 组件 / 文档 / 体验”，架构页归入产品 active 状态。
 - 组件目录同步纠正事实层级：Pole Agent 归回 Console 工作模式，Observability 归回集成能力，新增 Limiter Server；Rust SDK、Controller、Pingora Sidecar 与 Specification 文案按相邻仓库当前事实收敛。
 - 15 项测试、lint、`git diff --check`、普通生产构建与 `/website` 静态导出均通过。真实 Chrome 覆盖首页桌面、390px 两个轮播帧与架构页；移动端 `innerWidth = scrollWidth = 390`、图片完整、切换稳定，reduced-motion 下关闭流动线与帧入场动画。
+
+### 发布 Review
+
+- 实现提交：`eb84ae3 feat: explain component collaboration architecture`，已推送到 `origin/main`。
+- GitHub Pages workflow run `30154118122` 的 build 与 deploy 均成功；workflow 内 15 项测试、lint、静态导出、Pages artifact 上传与生产部署全部通过。
+- 线上 `https://lattice-hub.github.io/`、`/architecture/` 与 `/components/` 均返回 200；首页 HTML 已包含“组件协作 / 治理生效”双主题和完整架构入口，架构页已包含 Limiter Server 与治理执行说明。
+- 线上 390px Chrome 实测首页与架构页 `innerWidth = scrollWidth = 390`，无横向溢出；双帧切换后 `aria-pressed` 与帧名称同步，reduced-motion 下流动线隐藏，架构页“产品”一级导航保持 active。所有实际加载图片完整，未捕获运行时异常或 4xx / 5xx 请求。
+- Workflow 仍有官方 action 从 Node.js 20 被平台强制运行到 Node.js 24，以及 `deploy-pages` timeout 上限的非阻塞提示；本次构建和部署结果不受影响。
 
 ## 首页等距架构拓扑动态图返工（2026-07-25）
 
