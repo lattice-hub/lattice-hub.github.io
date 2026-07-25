@@ -290,8 +290,8 @@
 - [x] 更新顶栏、移动抽屉与页脚，使一级入口全部指向独立页面。
 - [x] 更新测试并运行 test、lint、生产构建与 `/website` 静态导出。
 - [x] 使用真实浏览器验证新页面桌面/移动端、导航与 Fumadocs 隔离。
-- [ ] 双轴审查后提交、发布并验证线上路由。
-- [ ] 在本节记录 Review。
+- [x] 双轴审查后提交、发布并验证线上路由。
+- [x] 在本节记录 Review。
 
 ### 本地实现 Review
 
@@ -301,3 +301,11 @@
 - Spec 审查纠正了“所有资源都进入版本链”的事实扩张，并收敛 Sidecar、Controller、Pole MCP 与 A2A Registry 的职责；Standards 审查修复移动抽屉 resize 残留、页脚链接散落和移动导航 landmark；视觉审查修复 44px 点击目标、站内/外箭头、非交互假箭头和移动正文可读性。三轮复核均确认 blocker / important 已解决。
 - 本地验证：14 项测试、lint、普通生产构建、`/website` 静态导出和 `git diff --check` 均通过；静态浏览器覆盖首页、三个新页面、组件页与文档页，全部 200、无横向溢出、破图、空链接或浏览器错误。
 - Playwright 实际点击首页“产品”后到达 `/website/product/`；390px 移动抽屉展开后 `display=block`，拉宽到 1440px 后为 `display=none`；菜单点击目标为 44×44，站内次级 CTA 使用 `→`，Pole Agent 真实界面以 1600×1000 加载。
+
+### 发布 Review
+
+- 实现提交：`50be4be feat: add dedicated product navigation pages`，已推送到 `origin/main`。
+- GitHub Pages workflow run `30149106978` 的 build 与 deploy 均成功；workflow 内安装、14 项测试、lint、静态导出、Pages artifact 上传和生产部署全部通过。
+- 线上 `https://lattice-hub.github.io/`、`/product/`、`/governance/`、`/agent/`、`/components/`、`/docs/` 与 `/product/console-agent-readiness.webp` 均返回 200；六个页面无横向溢出或破图，浏览器未捕获 4xx / 5xx、控制台错误或页面异常。
+- 线上首页实际点击“产品”后进入 `/product/`；产品、治理和 Agent 页的 H1、Metadata 标题与真实产品证据均为本次发布内容。
+- Workflow 仍有官方 action 从 Node.js 20 被平台强制运行到 Node.js 24，以及 `deploy-pages` timeout 上限的非阻塞提示；本次构建和部署结果不受影响。
