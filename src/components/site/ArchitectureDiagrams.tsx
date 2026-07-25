@@ -7,11 +7,13 @@ type NodeTone = 'paper' | 'blue' | 'dark' | 'external';
 function FlowPath({
   d,
   delay,
-  duration = 1.1,
+  markerId,
+  duration = 1.05,
   muted = false,
 }: {
   d: string;
   delay: number;
+  markerId: string;
   duration?: number;
   muted?: boolean;
 }) {
@@ -22,10 +24,21 @@ function FlowPath({
 
   return (
     <>
-      <path className={`${styles.connection} ${muted ? styles.connectionMuted : ''}`} d={d} pathLength="1" />
+      <path
+        className={`${styles.connection} ${muted ? styles.connectionMuted : ''}`}
+        d={d}
+        markerEnd={muted ? `url(#${markerId}-muted)` : undefined}
+        pathLength="1"
+      />
       {!muted ? (
         <>
-          <path className={styles.connectionActive} d={d} pathLength="1" style={timing} />
+          <path
+            className={styles.connectionActive}
+            d={d}
+            markerEnd={`url(#${markerId}-active)`}
+            pathLength="1"
+            style={timing}
+          />
           <path className={styles.dataPacket} d={d} pathLength="1" style={timing} />
         </>
       ) : null}
@@ -33,54 +46,113 @@ function FlowPath({
   );
 }
 
-function IsoNode({
+function DiagramDefs({ id, compact = false }: { id: string; compact?: boolean }) {
+  return (
+    <defs>
+      <pattern
+        height={compact ? 22 : 30}
+        id={`${id}-grid`}
+        patternUnits="userSpaceOnUse"
+        width={compact ? 22 : 30}
+      >
+        <circle className={styles.gridDot} cx="1" cy="1" r="1" />
+      </pattern>
+      <marker
+        id={`${id}-active`}
+        markerHeight="7"
+        markerWidth="9"
+        orient="auto"
+        refX="8"
+        refY="3.5"
+        viewBox="0 0 9 7"
+      >
+        <path className={styles.activeArrow} d="M0 0 L9 3.5 L0 7 Z" />
+      </marker>
+      <marker
+        id={`${id}-muted`}
+        markerHeight="7"
+        markerWidth="9"
+        orient="auto"
+        refX="8"
+        refY="3.5"
+        viewBox="0 0 9 7"
+      >
+        <path className={styles.mutedArrow} d="M0 0 L9 3.5 L0 7 Z" />
+      </marker>
+    </defs>
+  );
+}
+
+function PanoramaPlane({
+  x,
+  y,
+  width,
+  height,
+  index,
+  label,
+}: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  index: string;
+  label: string;
+}) {
+  return (
+    <g className={styles.panoramaPlane}>
+      <rect className={styles.planeDepth} height={height} rx="20" width={width} x={x} y={y + 9} />
+      <rect className={styles.planeTop} height={height} rx="20" width={width} x={x} y={y} />
+      <text className={styles.planeIndex} x={x + 18} y={y + 27}>{index}</text>
+      <text className={styles.planeLabel} x={x + 48} y={y + 27}>{label}</text>
+    </g>
+  );
+}
+
+function PlatformNode({
   x,
   y,
   label,
+  mark,
   meta,
-  width = 76,
-  height = 34,
+  width = 92,
   depth = 10,
   delay = 0,
   tone = 'paper',
-  labelPlacement = 'below',
 }: {
   x: number;
   y: number;
   label: string;
+  mark: string;
   meta?: string;
   width?: number;
-  height?: number;
   depth?: number;
   delay?: number;
   tone?: NodeTone;
-  labelPlacement?: 'above' | 'below';
 }) {
-  const halfWidth = width / 2;
-  const halfHeight = height / 2;
-  const labelY = labelPlacement === 'above' ? -halfHeight - 14 : halfHeight + depth + 18;
-  const metaY = labelPlacement === 'above' ? labelY - 13 : labelY + 13;
+  const radiusX = width / 2;
+  const radiusY = Math.max(13, Math.round(width * 0.15));
   const timing = { '--node-delay': `${delay}s` } as CSSProperties;
+  const labelY = radiusY + depth + 25;
 
   return (
-    <g className={`${styles.isoNode} ${styles[`tone${tone}`]}`} transform={`translate(${x} ${y})`}>
+    <g
+      className={`${styles.platformNode} ${styles[`tone${tone}`]}`}
+      transform={`translate(${x} ${y})`}
+    >
       <g className={styles.nodeLift} style={timing}>
-        <polygon
-          className={styles.nodeLeft}
-          points={`${-halfWidth},0 0,${halfHeight} 0,${halfHeight + depth} ${-halfWidth},${depth}`}
+        <path
+          className={styles.nodeBody}
+          d={`M ${-radiusX} 0 A ${radiusX} ${radiusY} 0 0 0 ${radiusX} 0 L ${radiusX} ${depth} A ${radiusX} ${radiusY} 0 0 1 ${-radiusX} ${depth} Z`}
         />
-        <polygon
-          className={styles.nodeRight}
-          points={`0,${halfHeight} ${halfWidth},0 ${halfWidth},${depth} 0,${halfHeight + depth}`}
+        <ellipse className={styles.nodeTop} cx="0" cy="0" rx={radiusX} ry={radiusY} />
+        <path
+          className={styles.nodeRim}
+          d={`M ${-radiusX + 9} 0 A ${radiusX - 9} ${Math.max(7, radiusY - 5)} 0 0 0 ${radiusX - 9} 0`}
         />
-        <polygon
-          className={styles.nodeTop}
-          points={`0,${-halfHeight} ${halfWidth},0 0,${halfHeight} ${-halfWidth},0`}
-        />
-        <line className={styles.nodeSignature} x1={-halfWidth + 14} x2={-8} y1="-2" y2={-halfHeight + 7} />
+        <text className={styles.nodeMark} textAnchor="middle" y="5">{mark}</text>
       </g>
       <text className={styles.nodeLabel} textAnchor="middle" y={labelY}>{label}</text>
-      {meta ? <text className={styles.nodeMeta} textAnchor="middle" y={metaY}>{meta}</text> : null}
+      {meta ? <text className={styles.nodeMeta} textAnchor="middle" y={labelY + 17}>{meta}</text> : null}
     </g>
   );
 }
@@ -89,108 +161,65 @@ function ControlPlane({
   x,
   y,
   width = 190,
-  height = 92,
-  depth = 22,
+  depth = 24,
+  delay = 1.25,
   compact = false,
-  delay = 1.35,
 }: {
   x: number;
   y: number;
   width?: number;
-  height?: number;
   depth?: number;
-  compact?: boolean;
   delay?: number;
+  compact?: boolean;
 }) {
-  const halfWidth = width / 2;
-  const halfHeight = height / 2;
+  const radiusX = width / 2;
+  const radiusY = Math.round(width * 0.24);
   const timing = { '--node-delay': `${delay}s` } as CSSProperties;
 
   return (
     <g className={styles.controlPlane} transform={`translate(${x} ${y})`}>
       <g className={styles.coreLift} style={timing}>
-        <polygon
-          className={styles.coreLeft}
-          points={`${-halfWidth},0 0,${halfHeight} 0,${halfHeight + depth} ${-halfWidth},${depth}`}
+        <path
+          className={styles.coreBody}
+          d={`M ${-radiusX} 0 A ${radiusX} ${radiusY} 0 0 0 ${radiusX} 0 L ${radiusX} ${depth} A ${radiusX} ${radiusY} 0 0 1 ${-radiusX} ${depth} Z`}
         />
-        <polygon
-          className={styles.coreRight}
-          points={`0,${halfHeight} ${halfWidth},0 ${halfWidth},${depth} 0,${halfHeight + depth}`}
-        />
-        <polygon
-          className={styles.coreTop}
-          points={`0,${-halfHeight} ${halfWidth},0 0,${halfHeight} ${-halfWidth},0`}
-        />
-        <polygon
+        <ellipse className={styles.coreTop} cx="0" cy="0" rx={radiusX} ry={radiusY} />
+        <ellipse
           className={styles.coreInset}
-          points={`0,${-halfHeight + 15} ${halfWidth - 30},0 0,${halfHeight - 15} ${-halfWidth + 30},0`}
+          cx="0"
+          cy="0"
+          rx={radiusX - (compact ? 18 : 27)}
+          ry={radiusY - (compact ? 9 : 14)}
         />
       </g>
-      <text className={styles.coreEyebrow} textAnchor="middle" y={compact ? -8 : -11}>LATTICE.HUB</text>
-      <text className={styles.coreTitle} textAnchor="middle" y={compact ? 8 : 9}>Control Plane</text>
-      {!compact ? <text className={styles.coreMeta} textAnchor="middle" y="26">UNIFIED GOVERNANCE VIEW</text> : null}
+      <text className={styles.coreEyebrow} textAnchor="middle" y={compact ? -5 : -8}>LATTICE.HUB</text>
+      <text className={styles.coreTitle} textAnchor="middle" y={compact ? 11 : 13}>Control Plane</text>
     </g>
   );
 }
 
-function IsoRail({
+function ContractBand({
   x,
   y,
   width,
-  height = 38,
-  depth = 10,
   label,
   meta,
-  tone = 'paper',
+  dark = false,
 }: {
   x: number;
   y: number;
   width: number;
-  height?: number;
-  depth?: number;
   label: string;
-  meta?: string;
-  tone?: 'paper' | 'dark';
+  meta: string;
+  dark?: boolean;
 }) {
-  const halfWidth = width / 2;
-  const halfHeight = height / 2;
-
   return (
-    <g className={`${styles.isoRail} ${styles[`rail${tone}`]}`} transform={`translate(${x} ${y})`}>
-      <polygon
-        className={styles.railLeft}
-        points={`${-halfWidth},0 0,${halfHeight} 0,${halfHeight + depth} ${-halfWidth},${depth}`}
-      />
-      <polygon
-        className={styles.railRight}
-        points={`0,${halfHeight} ${halfWidth},0 ${halfWidth},${depth} 0,${halfHeight + depth}`}
-      />
-      <polygon
-        className={styles.railTop}
-        points={`0,${-halfHeight} ${halfWidth},0 0,${halfHeight} ${-halfWidth},0`}
-      />
-      <text className={styles.railLabel} textAnchor="middle" y="-1">{label}</text>
-      {meta ? <text className={styles.railMeta} textAnchor="middle" y="13">{meta}</text> : null}
+    <g className={`${styles.contractBand} ${dark ? styles.contractBandDark : ''}`}>
+      <rect className={styles.contractDepth} height="48" rx="14" width={width} x={x} y={y + 8} />
+      <rect className={styles.contractTop} height="48" rx="14" width={width} x={x} y={y} />
+      <text className={styles.contractLabel} textAnchor="middle" x={x + width / 2} y={y + 21}>{label}</text>
+      <text className={styles.contractMeta} textAnchor="middle" x={x + width / 2} y={y + 36}>{meta}</text>
     </g>
-  );
-}
-
-function IsoZone({
-  points,
-  label,
-  x,
-  y,
-}: {
-  points: string;
-  label: string;
-  x: number;
-  y: number;
-}) {
-  return (
-    <>
-      <polygon className={styles.zone} points={points} />
-      <text className={styles.zoneLabel} transform={`rotate(-28 ${x} ${y})`} x={x} y={y}>{label}</text>
-    </>
   );
 }
 
@@ -227,157 +256,180 @@ function DiagramFrame({
 }
 
 function ComponentCollaborationDesktop() {
+  const markerId = 'panorama-collaboration-desktop';
+
   return (
-    <svg aria-hidden="true" className={`${styles.diagram} ${styles.desktopDiagram}`} viewBox="0 0 960 520">
-      <defs>
-        <pattern height="28" id="iso-grid-collaboration-desktop" patternUnits="userSpaceOnUse" width="28">
-          <circle className={styles.gridDot} cx="1" cy="1" r="1" />
-        </pattern>
-      </defs>
-      <rect className={styles.diagramBackground} height="520" width="960" />
-      <rect fill="url(#iso-grid-collaboration-desktop)" height="520" width="960" />
+    <svg
+      aria-hidden="true"
+      className={`${styles.diagram} ${styles.desktopDiagram}`}
+      data-diagram-viewport="desktop"
+      viewBox="0 0 1200 620"
+    >
+      <DiagramDefs id={markerId} />
+      <rect className={styles.diagramBackground} height="620" width="1200" />
+      <rect fill={`url(#${markerId}-grid)`} height="620" width="1200" />
 
-      <IsoZone label="MANAGEMENT & CLUSTER" points="35,250 160,180 300,250 300,385 185,448 45,375" x={64} y={247} />
-      <IsoZone label="UNIFIED CONTROL PLANE" points="275,285 430,195 575,270 575,350 430,435 275,355" x={300} y={282} />
-      <IsoZone label="RUNTIME & INTEGRATION" points="555,220 700,105 915,215 915,355 750,455 555,350" x={585} y={218} />
+      <PanoramaPlane height={300} index="01" label="MANAGEMENT & CLUSTER" width={260} x={34} y={150} />
+      <PanoramaPlane height={390} index="02" label="UNIFIED CONTROL PLANE" width={350} x={324} y={100} />
+      <PanoramaPlane height={420} index="03" label="RUNTIME & INTEGRATION" width={452} x={712} y={70} />
 
-      <IsoRail
-        height={44}
-        label="SPECIFICATION"
-        meta="SHARED CONTRACT"
-        width={470}
-        x={575}
-        y={485}
-      />
+      <FlowPath d="M 183 230 L 320 230 L 405 278" delay={0.1} markerId={markerId} />
+      <FlowPath d="M 183 365 L 320 365 L 405 326" delay={0.5} markerId={markerId} />
+      <FlowPath d="M 595 282 L 705 282 L 760 180" delay={1.5} markerId={markerId} />
+      <FlowPath d="M 595 298 L 850 298 L 982 200" delay={1.9} markerId={markerId} />
+      <FlowPath d="M 595 316 L 705 316 L 760 350" delay={0} markerId={markerId} muted />
+      <FlowPath d="M 595 344 L 700 435 L 925 435 L 982 397" delay={2.3} markerId={markerId} />
 
-      <g>
-        <FlowPath d="M156 242 L250 294 L335 250" delay={0.15} />
-        <FlowPath d="M226 402 L315 449 L388 410 L410 335" delay={0.55} />
-        <FlowPath d="M516 238 L575 205 L630 234 L652 202" delay={1.65} />
-        <FlowPath d="M526 258 L665 184 L798 245" delay={2.05} />
-        <FlowPath d="M526 282 L640 343 L720 300" delay={0} muted />
-        <FlowPath d="M492 322 L548 352 L620 384" delay={2.45} />
-      </g>
+      <PlatformNode delay={0.05} label="Console" mark="C" meta="MANAGE · REVIEW" width={96} x={135} y={230} />
+      <PlatformNode delay={0.45} label="K8s Controller" mark="K8S" meta="RESOURCE SYNC" width={104} x={135} y={365} />
+      <ControlPlane x={500} y={305} />
+      <PlatformNode delay={1.45} label="Rust SDK" mark="SDK" meta="PROXYLESS" tone="blue" width={96} x={808} y={180} />
+      <PlatformNode delay={1.85} label="Envoy / Gateway" mark="xDS" meta="EXTERNAL RUNTIME" tone="external" width={108} x={1038} y={200} />
+      <PlatformNode delay={2.05} label="Pingora Sidecar" mark="P" meta="EXTENSION PATH" width={106} x={808} y={350} />
+      <PlatformNode delay={2.25} label="Limiter Server" mark="L" meta="DISTRIBUTED LIMITING" tone="dark" width={104} x={1038} y={385} />
 
-      <IsoNode delay={0.1} label="Console" meta="MANAGE · REVIEW" width={82} x={120} y={225} />
-      <IsoNode delay={0.5} label="K8s Controller" meta="SYNC · INJECT" width={92} x={190} y={390} />
-      <ControlPlane x={430} y={270} />
-      <IsoNode delay={1.6} label="Rust SDK" meta="PROXYLESS" tone="blue" width={78} x={690} y={150} />
-      <IsoNode labelPlacement="above" delay={2} label="Envoy / Gateway" meta="EXTERNAL · xDS v3" tone="external" width={94} x={840} y={245} />
-      <IsoNode delay={2.4} label="Limiter Server" meta="DISTRIBUTED LIMITING" tone="dark" width={92} x={650} y={390} />
-      <IsoNode delay={2.2} label="Pingora Sidecar" meta="DATA-PLANE SKELETON" width={92} x={760} y={305} />
+      <ContractBand label="SPECIFICATION" meta="SHARED CONTRACT ACROSS COMPONENTS" width={510} x={345} y={535} />
 
-      <text className={styles.pathLabel} x="205" y="263">MANAGEMENT API</text>
-      <text className={styles.pathLabel} x="286" y="432">RESOURCE SYNC</text>
-      <text className={styles.pathLabel} x="586" y="196">PROTOCOL VIEW</text>
+      <text className={styles.flowLabel} x="230" y="211">MANAGE</text>
+      <text className={styles.flowLabel} x="620" y="264">DISTRIBUTE</text>
+      <text className={styles.flowLabel} x="879" y="316">EXECUTE</text>
     </svg>
   );
 }
 
 function ComponentCollaborationMobile() {
+  const markerId = 'panorama-collaboration-mobile';
+
   return (
-    <svg aria-hidden="true" className={`${styles.diagram} ${styles.mobileDiagram}`} viewBox="0 0 390 410">
-      <defs>
-        <pattern height="22" id="iso-grid-collaboration-mobile" patternUnits="userSpaceOnUse" width="22">
-          <circle className={styles.gridDot} cx="1" cy="1" r="1" />
-        </pattern>
-      </defs>
-      <rect className={styles.diagramBackground} height="410" width="390" />
-      <rect fill="url(#iso-grid-collaboration-mobile)" height="410" width="390" />
+    <svg
+      aria-hidden="true"
+      className={`${styles.diagram} ${styles.mobileDiagram}`}
+      data-diagram-viewport="mobile"
+      viewBox="0 0 360 780"
+    >
+      <DiagramDefs compact id={markerId} />
+      <rect className={styles.diagramBackground} height="780" width="360" />
+      <rect fill={`url(#${markerId}-grid)`} height="780" width="360" />
 
-      <polygon className={styles.zone} points="14,100 72,66 130,98 130,205 70,238 14,205" />
-      <polygon className={styles.zone} points="118,212 196,166 271,207 271,285 195,329 118,285" />
-      <polygon className={styles.zone} points="255,90 322,52 380,84 380,300 322,334 255,302" />
+      <PanoramaPlane height={165} index="01" label="MANAGEMENT" width={336} x={12} y={35} />
+      <PanoramaPlane height={170} index="02" label="CONTROL PLANE" width={336} x={12} y={225} />
+      <PanoramaPlane height={250} index="03" label="RUNTIME" width={336} x={12} y={420} />
 
-      <IsoRail height={30} label="SPECIFICATION · SHARED CONTRACT" width={230} x={210} y={374} />
+      <FlowPath d="M 90 105 L 180 105 L 180 270" delay={0.1} markerId={markerId} />
+      <FlowPath d="M 270 145 L 220 145 L 220 275" delay={0.45} markerId={markerId} />
+      <FlowPath d="M 180 352 L 180 445 L 90 470" delay={1.4} markerId={markerId} />
+      <FlowPath d="M 200 352 L 200 480 L 270 505" delay={0} markerId={markerId} muted />
+      <FlowPath d="M 165 352 L 165 555 L 90 590" delay={1.85} markerId={markerId} />
+      <FlowPath d="M 205 352 L 205 585 L 270 625" delay={2.2} markerId={markerId} />
 
-      <FlowPath d="M82 102 L135 131 L151 195" delay={0.15} />
-      <FlowPath d="M93 196 L132 217 L151 239" delay={0.5} />
-      <FlowPath d="M239 207 L278 186 L297 111" delay={1.55} />
-      <FlowPath d="M241 225 L284 248 L310 229" delay={0} muted />
-      <FlowPath d="M220 277 L244 290 L281 323" delay={2.15} />
-      <FlowPath d="M239 215 L296 184 L334 142" delay={1.9} />
+      <PlatformNode delay={0.05} label="Console" mark="C" meta="MANAGE" width={78} x={76} y={105} />
+      <PlatformNode delay={0.4} label="Controller" mark="K8S" meta="SYNC" width={82} x={270} y={145} />
+      <ControlPlane compact width={178} x={180} y={310} />
+      <PlatformNode delay={1.35} label="Rust SDK" mark="SDK" meta="PROXYLESS" tone="blue" width={78} x={78} y={470} />
+      <PlatformNode delay={1.7} label="Sidecar" mark="P" meta="EXTENSION" width={82} x={270} y={505} />
+      <PlatformNode delay={1.9} label="Envoy / Gateway" mark="xDS" meta="EXTERNAL" tone="external" width={86} x={82} y={590} />
+      <PlatformNode delay={2.15} label="Limiter" mark="L" meta="RUNTIME" tone="dark" width={78} x={270} y={625} />
 
-      <IsoNode delay={0.1} label="Console" meta="MANAGE" width={60} x={58} y={88} />
-      <IsoNode delay={0.45} label="Controller" meta="SYNC" width={64} x={70} y={182} />
-      <ControlPlane compact height={66} width={138} x={195} y={225} />
-      <IsoNode delay={1.5} label="Rust SDK" labelPlacement="above" tone="blue" width={56} x={315} y={92} />
-      <IsoNode delay={1.85} label="Envoy" meta="xDS" tone="external" width={56} x={346} y={137} />
-      <IsoNode delay={2.1} label="Sidecar" meta="EXTENSION" width={58} x={330} y={220} />
-      <IsoNode delay={2.25} label="Limiter" meta="RUNTIME" tone="dark" width={60} x={300} y={315} />
+      <ContractBand label="SPECIFICATION" meta="SHARED CONTRACT" width={270} x={45} y={705} />
     </svg>
   );
 }
 
 function GovernanceExecutionDesktop() {
+  const markerId = 'panorama-governance-desktop';
+
   return (
-    <svg aria-hidden="true" className={`${styles.diagram} ${styles.desktopDiagram}`} viewBox="0 0 960 520">
-      <defs>
-        <pattern height="28" id="iso-grid-governance-desktop" patternUnits="userSpaceOnUse" width="28">
-          <circle className={styles.gridDot} cx="1" cy="1" r="1" />
-        </pattern>
-      </defs>
-      <rect className={styles.diagramBackground} height="520" width="960" />
-      <rect fill="url(#iso-grid-governance-desktop)" height="520" width="960" />
+    <svg
+      aria-hidden="true"
+      className={`${styles.diagram} ${styles.desktopDiagram}`}
+      data-diagram-viewport="desktop"
+      viewBox="0 0 1200 620"
+    >
+      <DiagramDefs id={markerId} />
+      <rect className={styles.diagramBackground} height="620" width="1200" />
+      <rect fill={`url(#${markerId}-grid)`} height="620" width="1200" />
 
-      <IsoZone label="MANAGEMENT PLANE" points="25,350 205,255 305,310 125,410" x={52} y={346} />
-      <IsoZone label="GOVERNANCE CONTROL" points="285,280 455,185 625,275 455,372" x={312} y={278} />
-      <IsoZone label="EXECUTION OPTIONS" points="590,220 705,120 830,175 855,300 715,410 600,350" x={615} y={216} />
+      <PanoramaPlane height={300} index="01" label="MANAGEMENT" width={285} x={30} y={150} />
+      <PanoramaPlane height={390} index="02" label="GOVERNANCE CONTROL" width={350} x={340} y={100} />
+      <PanoramaPlane height={420} index="03" label="RUNTIME EXECUTION" width={440} x={720} y={70} />
 
-      <FlowPath d="M109 350 L158 324 L164 324" delay={0.1} />
-      <FlowPath d="M248 308 L328 350 L379 322" delay={0.65} />
-      <FlowPath d="M538 232 L606 196 L654 170" delay={1.75} />
-      <FlowPath d="M543 260 L665 260 L714 260" delay={0} muted />
-      <FlowPath d="M538 288 L606 324 L648 348" delay={2.25} />
-      <FlowPath d="M726 155 L785 187 L842 238" delay={3.2} />
-      <FlowPath d="M786 260 L842 260" delay={0} muted />
-      <FlowPath d="M732 365 L790 333 L842 282" delay={3.7} />
+      <FlowPath d="M 130 300 L 205 300" delay={0.1} markerId={markerId} />
+      <FlowPath d="M 283 300 L 350 300 L 420 300" delay={0.55} markerId={markerId} />
+      <FlowPath d="M 610 280 L 710 280 L 770 175" delay={1.5} markerId={markerId} />
+      <FlowPath d="M 610 310 L 770 310" delay={0} markerId={markerId} muted />
+      <FlowPath d="M 610 340 L 710 340 L 770 440" delay={2.15} markerId={markerId} />
+      <FlowPath d="M 860 175 L 955 175 L 1015 282" delay={2.75} markerId={markerId} />
+      <FlowPath d="M 860 310 L 1000 310" delay={0} markerId={markerId} muted />
+      <FlowPath d="M 860 440 L 955 440 L 1015 338" delay={3.35} markerId={markerId} />
 
-      <IsoNode delay={0.1} label="Platform Engineer" meta="DEFINE · REVIEW" width={92} x={82} y={360} />
-      <IsoNode delay={0.6} label="Console / API" meta="PUBLISH" tone="blue" width={90} x={205} y={308} />
-      <ControlPlane delay={1.3} x={455} y={260} />
-      <IsoNode delay={1.7} label="Rust SDK" meta="IN-PROCESS" width={78} x={690} y={155} />
-      <IsoNode delay={2} label="Pingora Sidecar" meta="EXTENSION PATH" width={92} x={750} y={260} />
-      <IsoNode delay={2.2} label="Envoy / Gateway" meta="xDS DATA PLANE" width={94} x={690} y={365} />
-      <IsoRail height={52} label="SERVICE CALL" meta="CALLER → UPSTREAM" tone="dark" width={120} x={885} y={260} />
+      <PlatformNode delay={0.05} label="Platform Engineer" mark="PE" meta="DEFINE · REVIEW" width={104} x={85} y={300} />
+      <PlatformNode delay={0.5} label="Console / API" mark="API" meta="PUBLISH" tone="blue" width={104} x={255} y={300} />
+      <ControlPlane x={515} y={305} />
+      <PlatformNode delay={1.45} label="Rust SDK" mark="SDK" meta="IN-PROCESS" tone="blue" width={96} x={815} y={175} />
+      <PlatformNode delay={1.8} label="Pingora Sidecar" mark="P" meta="EXTENSION PATH" width={106} x={815} y={310} />
+      <PlatformNode delay={2.1} label="Envoy / Gateway" mark="xDS" meta="DATA PLANE" width={108} x={815} y={440} />
+      <PlatformNode delay={2.7} label="SERVICE CALL" mark="→" meta="CALLER TO UPSTREAM" tone="dark" width={116} x={1065} y={310} />
 
-      <text className={styles.pathLabel} x="272" y="326">PUBLISH GOVERNANCE</text>
-      <text className={styles.pathLabel} x="562" y="223">DELIVER VIEW</text>
-      <text className={styles.pathLabel} x="786" y="179">ENFORCE</text>
-      <text className={styles.resultLabel} textAnchor="middle" x="480" y="474">PUBLISHED HERE · ENFORCED THERE</text>
+      <ContractBand
+        dark
+        label="PUBLISHED HERE · ENFORCED THERE"
+        meta="CONTROL PLANE DISTRIBUTES · RUNTIME EXECUTES"
+        width={560}
+        x={360}
+        y={535}
+      />
+
+      <text className={styles.flowLabel} x="165" y="278">DEFINE</text>
+      <text className={styles.flowLabel} x="325" y="278">PUBLISH</text>
+      <text className={styles.flowLabel} x="640" y="262">DELIVER</text>
+      <text className={styles.flowLabel} x="930" y="292">ENFORCE</text>
     </svg>
   );
 }
 
 function GovernanceExecutionMobile() {
+  const markerId = 'panorama-governance-mobile';
+
   return (
-    <svg aria-hidden="true" className={`${styles.diagram} ${styles.mobileDiagram}`} viewBox="0 0 390 410">
-      <defs>
-        <pattern height="22" id="iso-grid-governance-mobile" patternUnits="userSpaceOnUse" width="22">
-          <circle className={styles.gridDot} cx="1" cy="1" r="1" />
-        </pattern>
-      </defs>
-      <rect className={styles.diagramBackground} height="410" width="390" />
-      <rect fill="url(#iso-grid-governance-mobile)" height="410" width="390" />
+    <svg
+      aria-hidden="true"
+      className={`${styles.diagram} ${styles.mobileDiagram}`}
+      data-diagram-viewport="mobile"
+      viewBox="0 0 360 780"
+    >
+      <DiagramDefs compact id={markerId} />
+      <rect className={styles.diagramBackground} height="780" width="360" />
+      <rect fill={`url(#${markerId}-grid)`} height="780" width="360" />
 
-      <polygon className={styles.zone} points="14,272 76,237 137,271 137,340 76,374 14,340" />
-      <polygon className={styles.zone} points="112,225 195,177 277,222 277,301 195,349 112,303" />
-      <polygon className={styles.zone} points="260,86 323,50 382,83 382,314 323,347 260,315" />
+      <PanoramaPlane height={165} index="01" label="MANAGEMENT" width={336} x={12} y={35} />
+      <PanoramaPlane height={170} index="02" label="CONTROL PLANE" width={336} x={12} y={225} />
+      <PanoramaPlane height={280} index="03" label="RUNTIME EXECUTION" width={336} x={12} y={420} />
 
-      <FlowPath d="M86 309 L130 333 L154 292" delay={0.2} />
-      <FlowPath d="M238 210 L281 186 L301 105" delay={1.6} />
-      <FlowPath d="M241 228 L291 255 L310 229" delay={0} muted />
-      <FlowPath d="M220 278 L253 296 L284 324" delay={2.1} />
-      <FlowPath d="M330 119 L352 131 L352 333" delay={2.9} />
-      <FlowPath d="M340 229 L352 236" delay={0} muted />
-      <FlowPath d="M319 324 L352 342" delay={3.4} />
+      <FlowPath d="M 85 125 L 225 125" delay={0.1} markerId={markerId} />
+      <FlowPath d="M 270 145 L 220 145 L 220 275" delay={0.5} markerId={markerId} />
+      <FlowPath d="M 180 352 L 180 480 L 125 480" delay={1.4} markerId={markerId} />
+      <FlowPath d="M 180 352 L 180 560 L 125 560" delay={0} markerId={markerId} muted />
+      <FlowPath d="M 180 352 L 180 640 L 125 640" delay={1.95} markerId={markerId} />
+      <FlowPath d="M 125 480 L 220 480 L 220 540 L 234 540" delay={2.55} markerId={markerId} />
+      <FlowPath d="M 125 560 L 234 560" delay={0} markerId={markerId} muted />
+      <FlowPath d="M 125 640 L 220 640 L 220 580 L 234 580" delay={3.1} markerId={markerId} />
 
-      <IsoNode delay={0.15} label="Engineer / Console" meta="DEFINE · PUBLISH" tone="blue" width={92} x={65} y={300} />
-      <ControlPlane compact height={68} width={142} x={195} y={235} />
-      <IsoNode delay={1.55} label="Rust SDK" labelPlacement="above" width={58} x={315} y={95} />
-      <IsoNode delay={1.9} label="Sidecar" meta="EXTENSION" width={60} x={330} y={220} />
-      <IsoNode delay={2.1} label="Envoy" meta="xDS" width={58} x={305} y={315} />
-      <IsoRail height={132} label="SERVICE" meta="CALL" tone="dark" width={42} x={360} y={230} />
+      <PlatformNode delay={0.05} label="Engineer" mark="PE" meta="DEFINE" width={78} x={76} y={125} />
+      <PlatformNode delay={0.45} label="Console / API" mark="API" meta="PUBLISH" tone="blue" width={84} x={270} y={145} />
+      <ControlPlane compact width={178} x={180} y={310} />
+      <PlatformNode delay={1.35} label="Rust SDK" mark="SDK" meta="IN-PROCESS" tone="blue" width={78} x={78} y={470} />
+      <PlatformNode delay={1.7} label="Sidecar" mark="P" meta="EXTENSION" width={82} x={78} y={560} />
+      <PlatformNode delay={1.9} label="Envoy / Gateway" mark="xDS" meta="DATA PLANE" width={86} x={82} y={640} />
+      <PlatformNode delay={2.5} label="SERVICE CALL" mark="→" meta="REAL TRAFFIC" tone="dark" width={92} x={280} y={560} />
+
+      <ContractBand
+        dark
+        label="PUBLISHED HERE"
+        meta="ENFORCED THERE"
+        width={270}
+        x={45}
+        y={710}
+      />
     </svg>
   );
 }
@@ -387,7 +439,7 @@ export function ComponentCollaborationDiagram({ large = false }: { large?: boole
     <DiagramFrame
       desktop={<ComponentCollaborationDesktop />}
       kind="collaboration"
-      label="Lattice.Hub 组织组件 3D 等距协作图：Console 和 Kubernetes Controller 连接 Control Plane；Rust SDK、Limiter Server 与 Envoy 或 Gateway 使用当前已接入路径；Pingora Sidecar 以虚线表示演进接入；Specification 是共享契约底座。"
+      label="Lattice.Hub 组织组件沉浸式全景协作图：Console 和 Kubernetes Controller 连接 Control Plane；Rust SDK、Limiter Server 与 Envoy 或 Gateway 使用当前已接入路径；Pingora Sidecar 以虚线表示演进接入；Specification 是共享契约底座。"
       large={large}
       mobile={<ComponentCollaborationMobile />}
     />
@@ -399,7 +451,7 @@ export function GovernanceExecutionDiagram({ large = false }: { large?: boolean 
     <DiagramFrame
       desktop={<GovernanceExecutionDesktop />}
       kind="governance"
-      label="治理能力 3D 等距生效图：平台工程师通过 Console 或 API 发布治理规则，Lattice.Hub Control Plane 向 Rust SDK、Pingora Sidecar 或 Envoy 与 Gateway 交付治理视图，由已接入执行组件在真实服务调用路径中按支持范围执行。"
+      label="治理能力沉浸式全景生效图：平台工程师通过 Console 或 API 发布治理规则，Lattice.Hub Control Plane 向 Rust SDK、Pingora Sidecar 或 Envoy 与 Gateway 交付治理视图，由已接入执行组件在真实服务调用路径中按支持范围执行。"
       large={large}
       mobile={<GovernanceExecutionMobile />}
     />

@@ -1,4 +1,3 @@
-.hero,
 .sectionInner,
 .systemStripInner,
 .finalCtaInner,
@@ -8,12 +7,22 @@
 }
 
 .hero {
+  width: min(1380px, calc(100% - 96px));
+  margin-inline: auto;
+}
+
+.hero {
+  display: block;
+  min-height: 920px;
+  padding-block: 96px 126px;
+}
+
+.heroCopy {
   display: grid;
-  grid-template-columns: minmax(400px, .82fr) minmax(620px, 1.18fr);
-  gap: 74px;
-  align-items: center;
-  min-height: 780px;
-  padding-block: 112px 128px;
+  grid-template-columns: minmax(480px, 1.08fr) minmax(420px, .92fr);
+  grid-template-rows: auto auto auto;
+  column-gap: 110px;
+  align-items: end;
 }
 
 .eyebrow,
@@ -28,12 +37,16 @@
 }
 
 .eyebrow {
+  grid-column: 1;
+  grid-row: 1;
   margin: 0 0 32px;
   color: #595a57;
   letter-spacing: .24em;
 }
 
 .hero h1 {
+  grid-column: 1;
+  grid-row: 2 / 4;
   max-width: 570px;
   margin: 0;
   font-size: clamp(58px, 5.1vw, 78px);
@@ -55,8 +68,10 @@
 }
 
 .heroLede {
+  grid-column: 2;
+  grid-row: 2;
   max-width: 500px;
-  margin: 34px 0 0;
+  margin: 0;
   color: #6b6c69;
   font-size: 18px;
   line-height: 1.75;
@@ -64,6 +79,8 @@
 }
 
 .heroActions {
+  grid-column: 2;
+  grid-row: 3;
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
@@ -136,6 +153,7 @@
 .heroVisual {
   position: relative;
   min-width: 0;
+  margin-top: 74px;
   animation-delay: 90ms;
 }
 
@@ -651,7 +669,6 @@
 }
 
 @media (max-width: 1200px) {
-  .hero,
   .sectionInner,
   .systemStripInner,
   .finalCtaInner,
@@ -660,9 +677,23 @@
   }
 
   .hero {
-    grid-template-columns: 1fr;
+    width: min(1060px, calc(100% - 56px));
     min-height: auto;
     padding-block: 92px 110px;
+  }
+
+  .heroCopy {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 0;
+  }
+
+  .eyebrow,
+  .hero h1,
+  .heroLede,
+  .heroActions {
+    grid-column: 1;
+    grid-row: auto;
   }
 
   .hero h1 {
@@ -671,10 +702,11 @@
 
   .heroLede {
     max-width: 650px;
+    margin-top: 34px;
   }
 
   .heroVisual {
-    margin-top: 24px;
+    margin-top: 64px;
   }
 
   .governanceLayout,
@@ -694,7 +726,6 @@
 }
 
 @media (max-width: 720px) {
-  .hero,
   .sectionInner,
   .systemStripInner,
   .finalCtaInner,
@@ -703,7 +734,7 @@
   }
 
   .hero {
-    gap: 46px;
+    width: calc(100% - 40px);
     padding-block: 68px 82px;
   }
 
@@ -726,8 +757,9 @@
   }
 
   .heroVisual {
-    width: calc(100vw - 20px);
-    margin-left: -10px;
+    width: 100%;
+    margin-top: 52px;
+    margin-left: 0;
   }
 
   .systemStripInner,

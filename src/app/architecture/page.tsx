@@ -105,7 +105,7 @@ export default function ArchitecturePage() {
               Specification 让各组件共享稳定契约。
             </p>
           </SectionHeading>
-          <div className={styles.diagramCard}>
+          <div className={styles.diagramStage}>
             <ComponentCollaborationDiagram large />
           </div>
           <p className={styles.diagramNote}>
@@ -147,7 +147,7 @@ export default function ArchitecturePage() {
               将可消费治理视图交给对应运行时；SDK、专用运行时或代理数据面只执行自身当前支持的能力。
             </p>
           </SectionHeading>
-          <div className={styles.diagramCard}>
+          <div className={styles.diagramStage}>
             <GovernanceExecutionDiagram large />
           </div>
           <div className={styles.executionNotes}>

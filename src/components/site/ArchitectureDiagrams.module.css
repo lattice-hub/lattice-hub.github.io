@@ -3,7 +3,6 @@
   width: 100%;
   min-width: 0;
   overflow: hidden;
-  background: #f7f6f1;
 }
 
 .diagram {
@@ -17,41 +16,52 @@
 }
 
 .diagramBackground {
-  fill: #f7f6f1;
+  fill: #f4f2ec;
 }
 
 .gridDot {
-  fill: #bcb8ae;
-  opacity: .25;
+  fill: #aaa89f;
+  opacity: .18;
 }
 
-.zone {
-  fill: rgba(255, 255, 255, .2);
-  stroke: #aaa79e;
-  stroke-dasharray: 5 7;
+.planeDepth {
+  fill: #d7d4cc;
+  opacity: .55;
+}
+
+.planeTop {
+  fill: rgba(255, 255, 255, .58);
+  stroke: #d2cfc7;
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
 
-.zoneLabel,
+.planeIndex,
+.planeLabel,
+.nodeMark,
 .nodeLabel,
 .nodeMeta,
 .coreEyebrow,
 .coreTitle,
-.coreMeta,
-.railLabel,
-.railMeta,
-.pathLabel,
-.resultLabel {
+.contractLabel,
+.contractMeta,
+.flowLabel {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   pointer-events: none;
 }
 
-.zoneLabel {
-  fill: #747570;
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: .14em;
+.planeIndex {
+  fill: #0f6cbd;
+  font-size: 11px;
+  font-weight: 760;
+  letter-spacing: .13em;
+}
+
+.planeLabel {
+  fill: #62635f;
+  font-size: 11px;
+  font-weight: 690;
+  letter-spacing: .12em;
 }
 
 .connection,
@@ -64,279 +74,246 @@
 }
 
 .connection {
-  stroke: #696b67;
-  stroke-width: 1.15;
+  stroke: #7f817c;
+  stroke-width: 1.25;
 }
 
 .connectionMuted {
-  stroke: #92938e;
-  stroke-dasharray: 5 5;
+  stroke: #979994;
+  stroke-dasharray: 6 6;
 }
 
 .connectionActive {
   stroke: #0f6cbd;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  stroke-width: 1.8;
+  stroke-width: 2;
   animation: path-reveal var(--path-duration) cubic-bezier(.16, 1, .3, 1) var(--path-delay) both;
 }
 
 .dataPacket {
   stroke: #0f6cbd;
-  stroke-dasharray: .025 .975;
+  stroke-dasharray: .02 .98;
   stroke-dashoffset: 1;
-  stroke-width: 5;
+  stroke-width: 6;
   animation: packet-travel var(--path-duration) cubic-bezier(.45, 0, .55, 1) var(--path-delay) both;
+}
+
+.activeArrow {
+  fill: #0f6cbd;
+}
+
+.mutedArrow {
+  fill: #92948f;
 }
 
 .nodeLift,
 .coreLift {
   transform-box: fill-box;
   transform-origin: center;
-  animation: node-receive .9s cubic-bezier(.16, 1, .3, 1) var(--node-delay) both;
+  animation: node-receive .78s cubic-bezier(.16, 1, .3, 1) var(--node-delay) both;
 }
 
+.nodeBody,
 .nodeTop,
-.nodeLeft,
-.nodeRight,
+.nodeRim,
+.coreBody,
 .coreTop,
-.coreLeft,
-.coreRight,
-.coreInset,
-.railTop,
-.railLeft,
-.railRight {
-  stroke-width: 1;
+.coreInset {
   vector-effect: non-scaling-stroke;
+}
+
+.nodeBody {
+  fill: #d5d2ca;
+  stroke: #979993;
+  stroke-width: 1;
 }
 
 .nodeTop {
-  fill: #fbfaf6;
-  stroke: #565852;
+  fill: #faf9f5;
+  stroke: #7d7f7a;
+  stroke-width: 1;
 }
 
-.nodeLeft {
-  fill: #c5c2b9;
-  stroke: #565852;
-}
-
-.nodeRight {
-  fill: #dfdcd3;
-  stroke: #565852;
-}
-
-.nodeSignature {
-  stroke: #0f6cbd;
-  stroke-linecap: round;
+.nodeRim {
+  fill: none;
+  stroke: #b9d8f1;
   stroke-width: 2;
-  vector-effect: non-scaling-stroke;
+}
+
+.nodeMark {
+  fill: #0f6cbd;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -.03em;
+}
+
+.toneblue .nodeBody {
+  fill: #0b5595;
+  stroke: #073f72;
 }
 
 .toneblue .nodeTop {
   fill: #0f6cbd;
-  stroke: #0a4b7f;
+  stroke: #073f72;
 }
 
-.toneblue .nodeLeft {
-  fill: #0a4a7d;
-  stroke: #083d68;
+.toneblue .nodeRim {
+  stroke: #a7d8ff;
 }
 
-.toneblue .nodeRight {
-  fill: #0c5a98;
-  stroke: #083d68;
+.toneblue .nodeMark,
+.tonedark .nodeMark {
+  fill: #fff;
 }
 
-.toneblue .nodeSignature {
-  stroke: #b9e1ff;
+.tonedark .nodeBody {
+  fill: #171918;
+  stroke: #0d0f0e;
 }
 
 .tonedark .nodeTop {
-  fill: #292c2d;
-  stroke: #151718;
+  fill: #252827;
+  stroke: #0d0f0e;
 }
 
-.tonedark .nodeLeft {
-  fill: #151718;
-  stroke: #151718;
+.tonedark .nodeRim {
+  stroke: #5a5e5d;
 }
 
-.tonedark .nodeRight {
-  fill: #3d4142;
-  stroke: #151718;
+.toneexternal .nodeBody,
+.toneexternal .nodeTop {
+  fill: rgba(255, 255, 255, .54);
+  stroke: #858782;
+  stroke-dasharray: 4 4;
 }
 
-.toneexternal .nodeTop,
-.toneexternal .nodeLeft,
-.toneexternal .nodeRight {
-  fill: rgba(255, 255, 255, .52);
-  stroke: #6f716d;
-  stroke-dasharray: 3 3;
+.toneexternal .nodeRim {
+  stroke-dasharray: 4 4;
 }
 
 .nodeLabel {
   fill: #202120;
-  font-size: 11px;
-  font-weight: 680;
-  letter-spacing: .01em;
+  font-size: 13px;
+  font-weight: 740;
+  letter-spacing: -.02em;
 }
 
 .nodeMeta {
-  fill: #646662;
-  font-size: 8px;
+  fill: #696b66;
+  font-size: 9px;
   font-weight: 650;
-  letter-spacing: .07em;
+  letter-spacing: .08em;
 }
 
 .controlPlane {
-  filter: drop-shadow(0 9px 10px rgba(32, 33, 32, .14));
+  filter: drop-shadow(0 11px 12px rgba(32, 33, 32, .12));
 }
 
-.coreTop,
-.coreLeft,
-.coreRight,
-.coreInset {
-  stroke: #202120;
+.coreBody {
+  fill: #252827;
+  stroke: #191b1a;
+  stroke-width: 1;
 }
 
 .coreTop {
-  fill: #ebe8df;
-}
-
-.coreLeft {
-  fill: #252827;
-}
-
-.coreRight {
-  fill: #50534f;
+  fill: #e8e5dc;
+  stroke: #6a6c67;
+  stroke-width: 1.2;
 }
 
 .coreInset {
   fill: #faf9f5;
   stroke: #0f6cbd;
+  stroke-width: 1.5;
 }
 
 .coreEyebrow {
   fill: #0f6cbd;
-  font-size: 8px;
-  font-weight: 750;
+  font-size: 9px;
+  font-weight: 780;
   letter-spacing: .14em;
 }
 
 .coreTitle {
   fill: #202120;
-  font-size: 15px;
-  font-weight: 720;
-  letter-spacing: -.03em;
+  font-size: 17px;
+  font-weight: 760;
+  letter-spacing: -.04em;
 }
 
-.coreMeta {
-  fill: #60625e;
-  font-size: 7.5px;
-  font-weight: 650;
-  letter-spacing: .07em;
+.contractDepth {
+  fill: #cac7be;
 }
 
-.railTop {
-  fill: #fbfaf6;
-  stroke: #747670;
-  stroke-dasharray: 4 4;
+.contractTop {
+  fill: #faf9f5;
+  stroke: #858782;
+  stroke-dasharray: 5 5;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
 }
 
-.railLeft {
-  fill: #c8c5bc;
-  stroke: #747670;
-  stroke-dasharray: 4 4;
-}
-
-.railRight {
-  fill: #dfdcd3;
-  stroke: #747670;
-  stroke-dasharray: 4 4;
-}
-
-.raildark .railTop {
-  fill: #202324;
-  stroke: #151718;
-  stroke-dasharray: none;
-}
-
-.raildark .railLeft {
-  fill: #111314;
-  stroke: #151718;
-  stroke-dasharray: none;
-}
-
-.raildark .railRight {
-  fill: #3d4142;
-  stroke: #151718;
-  stroke-dasharray: none;
-}
-
-.railLabel {
+.contractLabel {
   fill: #303230;
-  font-size: 9px;
-  font-weight: 720;
+  font-size: 11px;
+  font-weight: 760;
+  letter-spacing: .12em;
+}
+
+.contractMeta {
+  fill: #6f716d;
+  font-size: 8px;
+  font-weight: 650;
   letter-spacing: .08em;
 }
 
-.railMeta {
-  fill: #6e706b;
-  font-size: 7px;
-  font-weight: 620;
-  letter-spacing: .06em;
+.contractBandDark .contractDepth {
+  fill: #0d0f0e;
 }
 
-.raildark .railLabel {
+.contractBandDark .contractTop {
+  fill: #252827;
+  stroke: #171918;
+  stroke-dasharray: none;
+}
+
+.contractBandDark .contractLabel {
   fill: #fff;
 }
 
-.raildark .railMeta {
-  fill: #b9bec0;
+.contractBandDark .contractMeta {
+  fill: #c7cbca;
 }
 
-.junction {
-  fill: #454844;
-  stroke: #202120;
-  stroke-width: 1;
-}
-
-.pathLabel {
-  fill: #6f716d;
-  font-size: 7.5px;
-  font-weight: 650;
-  letter-spacing: .07em;
-}
-
-.resultLabel {
+.flowLabel {
   fill: #0f6cbd;
   font-size: 9px;
-  font-weight: 750;
-  letter-spacing: .14em;
+  font-weight: 760;
+  letter-spacing: .13em;
 }
 
 .legend {
   position: absolute;
   right: 18px;
-  bottom: 12px;
+  bottom: 10px;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #777873;
+  color: #6e706b;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 650;
-  letter-spacing: .04em;
 }
 
 .legend i {
   display: block;
-  width: 18px;
-  border-top: 1.5px solid #0f6cbd;
+  width: 24px;
+  border-top: 2px solid #0f6cbd;
 }
 
 .legend i:last-of-type {
-  border-color: #92938e;
+  border-color: #92948f;
   border-top-style: dashed;
 }
 
@@ -369,11 +346,11 @@
 
 @keyframes node-receive {
   0%,
-  55% {
+  56% {
     transform: translateY(0);
   }
 
-  74% {
+  76% {
     transform: translateY(-5px);
   }
 
@@ -393,38 +370,42 @@
 
   .legend {
     right: 12px;
-    bottom: 8px;
+    bottom: 5px;
     gap: 6px;
     font-size: 7px;
   }
 
   .legend i {
-    width: 14px;
+    width: 15px;
   }
 
-  .nodeLabel {
+  .planeIndex,
+  .planeLabel {
     font-size: 9px;
   }
 
-  .nodeMeta {
-    font-size: 6.5px;
-  }
-
-  .coreTitle {
+  .nodeLabel {
     font-size: 11px;
   }
 
-  .coreEyebrow,
-  .coreMeta {
-    font-size: 6px;
+  .nodeMeta {
+    font-size: 8px;
   }
 
-  .railLabel {
+  .coreTitle {
+    font-size: 14px;
+  }
+
+  .coreEyebrow {
     font-size: 7px;
   }
 
-  .railMeta {
-    font-size: 5.5px;
+  .contractLabel {
+    font-size: 9px;
+  }
+
+  .contractMeta {
+    font-size: 7px;
   }
 }
 

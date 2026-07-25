@@ -37,30 +37,32 @@ export function ArchitectureFlow() {
       aria-labelledby="architecture-flow-title"
       className={styles.architectureFlow}
     >
-      <div className={styles.header}>
-        <div>
-          <span className={styles.kicker}>ORGANIZATION ARCHITECTURE</span>
-          <strong id="architecture-flow-title">组件如何协作</strong>
+      <div className={styles.topbar}>
+        <div className={styles.header}>
+          <div>
+            <span className={styles.kicker}>ORGANIZATION ARCHITECTURE</span>
+            <strong id="architecture-flow-title">组件全景协作</strong>
+          </div>
+          <span className={styles.counter} aria-hidden="true">
+            {activeSlide.index} / 02
+          </span>
         </div>
-        <span className={styles.counter} aria-hidden="true">
-          {activeSlide.index} / 02
-        </span>
-      </div>
 
-      <div className={styles.switcher} aria-label="选择架构主题">
-        {slides.map((slide, index) => (
-          <button
-            aria-controls="architecture-flow-canvas"
-            aria-pressed={activeIndex === index}
-            className={styles.switchButton}
-            key={slide.id}
-            onClick={() => setActiveIndex(index)}
-            type="button"
-          >
-            <span>{slide.index}</span>
-            {slide.label}
-          </button>
-        ))}
+        <div className={styles.switcher} aria-label="选择架构主题">
+          {slides.map((slide, index) => (
+            <button
+              aria-controls="architecture-flow-canvas"
+              aria-pressed={activeIndex === index}
+              className={styles.switchButton}
+              key={slide.id}
+              onClick={() => setActiveIndex(index)}
+              type="button"
+            >
+              <span>{slide.index}</span>
+              {slide.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div

@@ -3,17 +3,13 @@
 }
 
 .sectionInner {
-  width: min(1180px, calc(100% - 96px));
+  width: min(1280px, calc(100% - 96px));
   margin-inline: auto;
 }
 
-.diagramCard {
+.diagramStage {
   overflow: hidden;
   margin-top: 68px;
-  border: 1px solid #d3d1ca;
-  border-radius: 18px;
-  background: #f7f6f1;
-  box-shadow: 0 28px 70px rgba(35, 38, 39, .09);
 }
 
 .diagramNote {
@@ -242,12 +238,11 @@
   }
 
   .sectionInner {
-    width: min(100% - 40px, 1180px);
+    width: min(100% - 40px, 1280px);
   }
 
-  .diagramCard {
+  .diagramStage {
     margin-top: 42px;
-    border-radius: 12px;
   }
 
   .componentGrid {

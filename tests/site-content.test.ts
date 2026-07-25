@@ -152,7 +152,8 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.match(architectureFlow, /GovernanceExecutionDiagram/);
   assert.match(architectureDiagrams, /<svg/);
   assert.match(architectureDiagrams, /<FlowPath/);
-  assert.match(architectureDiagrams, /<IsoNode/);
+  assert.match(architectureDiagrams, /<PanoramaPlane/);
+  assert.match(architectureDiagrams, /<PlatformNode/);
   assert.match(architectureDiagrams, /<ControlPlane/);
   assert.match(architectureDiagrams, /desktopDiagram/);
   assert.match(architectureDiagrams, /mobileDiagram/);
@@ -162,6 +163,7 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.match(architectureDiagramCss, /scripting: none/);
   assert.match(architectureDiagramCss, /node-receive/);
   assert.match(architectureDiagramCss, /path-reveal/);
+  assert.doesNotMatch(architectureCss, /border-radius|box-shadow/);
   assert.doesNotMatch(architectureDiagramCss, /infinite|linear/);
   assert.doesNotMatch(
     `${architectureFlow}\n${architectureDiagrams}`,
@@ -187,6 +189,9 @@ test('architecture page explains organization components without control-plane i
   assert.match(architecturePage, /自身当前支持的能力/);
   assert.doesNotMatch(architecturePage, /MySQL|CacheManager|EventHub|内部存储层|增量缓存/);
   assert.match(architectureCss, /prefers-reduced-motion: reduce/);
+  assert.match(architecturePage, /diagramStage/);
+  assert.doesNotMatch(architectureCss, /\.diagramStage\s*{[^}]*border-radius/s);
+  assert.doesNotMatch(architectureCss, /\.diagramStage\s*{[^}]*box-shadow/s);
 });
 
 test('website product screenshots are checked-in optimized assets', () => {
