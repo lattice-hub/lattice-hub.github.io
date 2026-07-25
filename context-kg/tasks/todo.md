@@ -539,7 +539,7 @@
 - [x] 定义治理视图下发、执行点与多服务调用的无交叉布局。
 - [x] 调整轮播顺序并重构治理生效桌面与移动图。
 - [x] 完成测试、构建和桌面移动端视觉验收。
-- [ ] 提交、发布并验证线上版本。
+- [x] 提交、发布并验证线上版本。
 - [x] 在本节记录实现与发布 Review。
 
 ### 本地实现 Review
@@ -551,3 +551,11 @@
 - 移动端使用独立纵向布局：治理视图走左侧蓝色轨道，服务调用走右侧深色轨道并从节点侧边进入，避免路径穿过节点名称；390px 视口 `scrollWidth = innerWidth = 390`。
 - 图例拆分为「治理视图 / 服务调用 / 演进接入」，桌面与移动均保持水平标签和 3D 基座语言；无头 Chrome 像素复核未发现路径穿字、节点越界或横向溢出。
 - 本地验证：15 项测试、lint、生产构建与 `git diff --check` 全部通过。
+
+### 发布 Review
+
+- 实现提交：`5661826 feat: show governance across service calls`，已推送到 `origin/main`。
+- GitHub Pages workflow run `30156755552` 的 build 与 deploy 均成功；workflow 内测试、lint、静态导出、Pages artifact 上传与生产部署全部通过。
+- 线上 `https://lattice-hub.github.io/` 返回 200；页面默认激活「01 治理生效」，包含多语言示例拓扑与“已接入的跨服务调用点”事实边界。
+- 线上 390px 浏览器复核 `scrollWidth = innerWidth = 390`，治理图完整使用移动布局，未出现横向溢出。
+- Workflow 仍有官方 action 从 Node.js 20 被平台强制运行到 Node.js 24 的非阻塞提示；本次构建和部署结果不受影响。
