@@ -9,7 +9,7 @@
 - [x] 用流量路径、限流状态、身份鉴权与结果反馈表达治理收益，完成中英文和移动端适配。
 - [x] 在顶部导航右侧增加 GitHub 组织外链入口，并同步移动导航与回归测试。
 - [x] 运行测试、lint、静态构建和真实浏览器视觉验收。
-- [ ] 提交、推送、发布并验证线上页面，在本节补充 Review。
+- [x] 提交、推送、发布并验证线上页面，在本节补充 Review。
 
 ### 本地实现 Review
 
@@ -19,6 +19,13 @@
 - 中英文、桌面和移动端共享同一组结构与 locale 字段；390px 移动端保留 A/B 与 BLUE/GREEN 双路径，不再使用合并的 `B/G` 节点。
 - 顶部右侧新增 GitHub 组织入口，桌面与移动抽屉均指向 `https://github.com/lattice-hub`，新窗口打开并带清晰的无障碍名称。
 - 验证结果：18/18 测试、lint、静态生产构建和 `git diff --check` 均通过；1440px 与 390px 真实 Chrome 无横向溢出。动画运行 13.5 秒后仍为 `running`；reduced-motion 下动画为 `none` 并静态显示主拓扑。
+
+### 发布 Review
+
+- 实现提交：`0ed61e4 feat: clarify governed blue-green journeys`，已推送到 `origin/main`。
+- GitHub Pages workflow run `30166197255` 的 build 与 deploy 均成功；workflow 内 18 项测试、lint、静态导出、artifact 上传与生产部署全部通过。
+- 线上 `https://lattice-hub.github.io/` 与 `/docs/` 均返回 200；首页 HTML 已包含“两类用户，两条版本路径，同一个 Agent Service”、User A、GREEN 体验版本和 GitHub 组织地址。
+- 线上 390px Chrome 验证 `scrollWidth = innerWidth = 390`，同时存在 User A、User B 和“同一逻辑服务”边界，移动 GitHub 入口准确指向 `https://github.com/lattice-hub`。
 
 ## 文档返回官网入口修复（2026-07-26）
 
