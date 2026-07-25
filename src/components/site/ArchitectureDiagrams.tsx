@@ -7,7 +7,7 @@ import {
 import styles from './ArchitectureDiagrams.module.css';
 
 type DiagramKind = 'collaboration' | 'governance';
-type NodeTone = 'paper' | 'blue' | 'dark' | 'external';
+type NodeTone = 'paper' | 'blue' | 'green' | 'dark' | 'external';
 type NodeShape = 'disc' | 'slab';
 type FlowTone = 'governance' | 'traffic' | 'shadow';
 type ArchitectureCopy = ReturnType<typeof getArchitectureCopy>;
@@ -501,8 +501,8 @@ function GovernanceExecutionDesktop({ copy }: { copy: ArchitectureCopy }) {
       />
       <PlatformNode delay={1.85} label={content.nodes.userRequest.label} mark="REQ" meta={content.nodes.userRequest.meta} shape="disc" width={88} x={430} y={265} />
       <PlatformNode delay={2.05} label={content.nodes.agentGateway.label} mark="GW" meta={content.nodes.agentGateway.meta} tone="blue" width={104} x={590} y={265} />
-      <PlatformNode delay={2.25} label={content.nodes.agentServiceA.label} mark="A" meta={content.nodes.agentServiceA.meta} width={94} x={780} y={215} />
-      <PlatformNode delay={2.5} label={content.nodes.agentServiceB.label} mark="B" meta={content.nodes.agentServiceB.meta} width={94} x={780} y={325} />
+      <PlatformNode delay={2.25} label={content.nodes.agentServiceA.label} mark="BLUE" meta={content.nodes.agentServiceA.meta} tone="blue" width={104} x={780} y={215} />
+      <PlatformNode delay={2.5} label={content.nodes.agentServiceB.label} mark="GREEN" meta={content.nodes.agentServiceB.meta} tone="green" width={104} x={780} y={325} />
       <PlatformNode delay={2.75} label={content.nodes.providerAdapter.label} mark="ADP" meta={content.nodes.providerAdapter.meta} width={104} x={960} y={265} />
       <PlatformNode delay={3.15} label={content.nodes.primaryModel.label} mark="LLM" meta={content.nodes.primaryModel.meta} tone="external" width={96} x={1090} y={215} />
       <PlatformNode delay={3.4} label={content.nodes.fallbackModel.label} mark="FB" meta={content.nodes.fallbackModel.meta} tone="external" width={96} x={1090} y={340} />
@@ -527,6 +527,9 @@ function GovernanceExecutionDesktop({ copy }: { copy: ArchitectureCopy }) {
 
       <text className={styles.flowLabel} x="360" y="178">{content.flow.governanceView}</text>
       <text className={`${styles.flowLabel} ${styles.flowLabelTraffic}`} x="485" y="247">{content.flow.request}</text>
+      <text className={styles.ratioLabel} textAnchor="end" x="724" y="199">{content.flow.blueTraffic}</text>
+      <text className={styles.ratioLabel} textAnchor="end" x="724" y="345">{content.flow.greenTraffic}</text>
+      <text className={styles.authLabel} textAnchor="middle" x="870" y="184">{content.flow.serviceAuth}</text>
       <text className={`${styles.flowLabel} ${styles.flowLabelShadow}`} x="603" y="366">{content.flow.mirrorMock}</text>
       <text className={styles.boundaryLabel} textAnchor="end" x="1135" y="490">{content.boundary.desktop}</text>
     </svg>
@@ -573,7 +576,7 @@ function GovernanceExecutionMobile({ copy }: { copy: ArchitectureCopy }) {
       />
       <PlatformNode delay={1.7} label={content.nodes.userRequest.label} mark="REQ" meta={content.nodes.userRequest.shortMeta} shape="disc" width={78} x={75} y={445} />
       <PlatformNode delay={1.95} label={content.nodes.agentGateway.label} mark="GW" meta={content.nodes.agentGateway.shortMeta} tone="blue" width={84} x={265} y={445} />
-      <PlatformNode delay={2.3} label={content.nodes.agentService.label} mark="A/B" meta={content.nodes.agentService.shortMeta} width={80} x={180} y={545} />
+      <PlatformNode delay={2.3} label={content.nodes.agentService.label} mark="B/G" meta={content.nodes.agentService.shortMeta} width={94} x={180} y={545} />
       <PlatformNode delay={2.65} label={content.nodes.providerAdapter.label} mark="ADP" meta={content.nodes.providerAdapter.shortMeta} width={86} x={180} y={655} />
       <PlatformNode delay={2.95} label={content.nodes.primaryModel.label} mark="LLM" meta={content.nodes.primaryModel.shortMeta} tone="external" width={78} x={80} y={765} />
       <PlatformNode delay={3.25} label={content.nodes.fallbackModel.label} mark="FB" meta={content.nodes.fallbackModel.shortMeta} tone="external" width={82} x={280} y={765} />
@@ -595,6 +598,7 @@ function GovernanceExecutionMobile({ copy }: { copy: ArchitectureCopy }) {
       />
 
       <text className={styles.flowLabel} x="84" y="282">{content.flow.governanceView}</text>
+      <text className={styles.authLabel} textAnchor="end" x="292" y="610">{content.flow.serviceAuthShort}</text>
       <text className={styles.boundaryLabel} textAnchor="middle" x="180" y="405">
         <tspan x="180">{content.boundary.mobileLine1}</tspan>
         <tspan x="180" dy="12">{content.boundary.mobileLine2}</tspan>

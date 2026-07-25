@@ -170,15 +170,17 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
     'Envoy / Gateway',
     'Specification',
     'Agent Gateway',
-    'Agent Service A',
-    'Agent Service B',
+    'Agent Service',
+    'BLUE 80%',
+    'GREEN 20%',
+    'PERSONALIZED LIMIT',
+    'SERVICE IDENTITY AUTH',
     'Provider Adapter',
     'Primary Model',
     'Fallback Model',
     'Shadow Eval',
     'Mock Response',
-    'A/B ROUTE',
-    'RATE LIMIT',
+    'BLUE-GREEN ROUTE',
     'CIRCUIT BREAK',
     'POLE AGENT PROMPT',
     'POLE SECRET',
@@ -191,6 +193,9 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
       `missing component architecture fact: ${keyword}`,
     );
   }
+  assert.doesNotMatch(architectureLocale, /Agent Service [AB]/);
+  assert.match(architectureLocale, /同一 Agent Service 的蓝绿版本/);
+  assert.match(architectureLocale, /服务身份调用鉴权/);
 
   assert.match(architectureFlow, /aria-pressed/);
   assert.match(architectureFlow, /aria-controls="architecture-flow-canvas"/);
@@ -348,6 +353,10 @@ test('architecture diagram locale copy is symmetric and brand-safe', () => {
   const chinese = getArchitectureCopy('zh-CN');
   const english = getArchitectureCopy('en');
   const flowSource = readFileSync('src/components/site/ArchitectureFlow.tsx', 'utf8');
+  const architectureDiagrams = readFileSync(
+    'src/components/site/ArchitectureDiagrams.tsx',
+    'utf8',
+  );
   const visibleCopy = [
     'src/app/page.tsx',
     'src/app/product/page.tsx',
@@ -370,6 +379,20 @@ test('architecture diagram locale copy is symmetric and brand-safe', () => {
   assert.doesNotMatch(JSON.stringify(english), /\p{Script=Han}/u);
   assert.equal(chinese.collaboration.nodes.sidecar.label, 'Pole Sidecar');
   assert.equal(english.collaboration.nodes.sidecar.label, 'Pole Sidecar');
+  assert.match(chinese.governance.nodes.agentGateway.meta, /千人千面限流/);
+  assert.match(english.governance.nodes.agentGateway.meta, /PERSONALIZED LIMIT/);
+  assert.equal(chinese.governance.nodes.agentServiceA.label, 'Agent Service');
+  assert.equal(chinese.governance.nodes.agentServiceB.label, 'Agent Service');
+  assert.match(chinese.governance.nodes.agentServiceA.meta, /蓝版本 · 示例 80%/);
+  assert.match(chinese.governance.nodes.agentServiceB.meta, /绿版本 · 示例 20%/);
+  assert.equal(chinese.governance.flow.serviceAuth, '服务身份调用鉴权');
+  assert.equal(english.governance.flow.serviceAuth, 'SERVICE IDENTITY AUTH');
+  assert.equal(chinese.governance.nodes.agentService.shortMeta, '蓝 80% · 绿 20%');
+  assert.equal(english.governance.nodes.agentService.shortMeta, 'BLUE 80% · GREEN 20%');
+  assert.match(architectureDiagrams, /content\.flow\.blueTraffic/);
+  assert.match(architectureDiagrams, /content\.flow\.greenTraffic/);
+  assert.match(architectureDiagrams, /content\.flow\.serviceAuth/);
+  assert.match(architectureDiagrams, /content\.flow\.serviceAuthShort/);
   assert.match(flowSource, /aria-pressed=\{locale === option\}/);
   assert.match(flowSource, /option === 'zh-CN' \? '中' : 'EN'/);
   assert.doesNotMatch(visibleCopy, /Pingora Sidecar|Local Proxy\s*\/\s*Sidecar/);

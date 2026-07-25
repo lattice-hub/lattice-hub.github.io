@@ -15,9 +15,9 @@ const architectureCopy = {
       slides: {
         governance: {
           label: '治理生效',
-          title: '让已接入的 AI 服务，沿调用链执行同一套治理意图。',
+          title: '让 Gateway 在同一 Agent 服务的蓝绿版本间执行精细治理。',
           detail:
-            '以承载 Agent 的 Pole Service 为例：A/B 路由、限流、熔断、镜像与 Mock 由已接入数据面按支持范围执行；Pole Agent 的 Prompt 与模型凭据则独立发布和托管。',
+            'Gateway 按身份与租户维度执行千人千面限流，并按比例把请求分配到同一 Agent Service 的蓝绿版本；版本调用 Provider Adapter 时执行服务身份鉴权。',
         },
         collaboration: {
           label: '组件协作',
@@ -62,7 +62,7 @@ const architectureCopy = {
     },
     governance: {
       aria:
-        'AI 服务治理沉浸式全景生效示意图：平台工程师通过 Console 或 API 发布治理视图；示例性的 Agent Gateway 经已接入 SDK 或代理执行条件与权重路由、限流和熔断，并按执行组件支持范围旁路镜像流量、返回 Mock 或切换降级路径。Pole Agent 的 Prompt 使用版本化发布；模型凭据由 Pole Secret 托管，只在 Provider Adapter 运行时解析，不进入浏览器、日志或模型上下文。A2A Registry 不承载 Agent 任务流量。',
+        'AI 服务治理沉浸式全景生效示意图：平台工程师通过 Console 或 API 发布治理视图；Agent Gateway 按服务身份、用户或租户维度执行千人千面限流，并把同一个 Agent Service 的请求按示例比例分配到蓝绿版本。服务版本调用 Provider Adapter 时执行服务身份鉴权；镜像、Mock 与降级能力按已接入数据面支持范围生效。Pole Secret 只在 Provider Adapter 运行时解析，不进入浏览器、日志或模型上下文。',
       planes: {
         managementControl: '管理与控制',
         aiTrafficExample: 'AI 服务流量 · 示例',
@@ -71,10 +71,10 @@ const architectureCopy = {
         engineer: { label: '平台工程师', shortLabel: '工程师', meta: '定义 · 审阅', shortMeta: '定义' },
         consoleApi: { label: 'Console / API', meta: '统一发布', shortMeta: '发布' },
         userRequest: { label: '用户请求', meta: 'AGENT 调用', shortMeta: 'AGENT 调用' },
-        agentGateway: { label: 'Agent 网关', meta: 'POLE SERVICE · SDK / 代理', shortMeta: 'POLE SERVICE' },
-        agentServiceA: { label: 'Agent 服务 A', meta: 'POLE SERVICE · 稳定版', shortMeta: '稳定版' },
-        agentServiceB: { label: 'Agent 服务 B', meta: 'POLE SERVICE · 候选版', shortMeta: '候选版' },
-        agentService: { label: 'Agent 服务', meta: 'POLE SERVICE · 多版本', shortMeta: '多版本' },
+        agentGateway: { label: 'Agent Gateway', meta: '千人千面限流 · 身份 / 租户', shortMeta: '千人千面限流' },
+        agentServiceA: { label: 'Agent Service', meta: '蓝版本 · 示例 80%', shortMeta: '蓝 · 80%' },
+        agentServiceB: { label: 'Agent Service', meta: '绿版本 · 示例 20%', shortMeta: '绿 · 20%' },
+        agentService: { label: 'Agent Service', meta: '同一服务 · 蓝绿版本', shortMeta: '蓝 80% · 绿 20%' },
         providerAdapter: { label: '模型适配器', meta: '运行时边界', shortMeta: '运行时' },
         primaryModel: { label: '主模型', meta: '主路径', shortMeta: '主路径' },
         fallbackModel: { label: '备用模型', meta: '按能力支持', shortMeta: '按需' },
@@ -82,10 +82,10 @@ const architectureCopy = {
         mockResponse: { label: 'Mock 响应', meta: '按能力支持', shortMeta: '按需' },
       },
       governanceBand: {
-        label: 'A/B 路由 · 限流 · 熔断 · 镜像 · MOCK',
-        shortLabel: 'A/B · 限流 · 熔断',
-        meta: '服务治理 · 执行范围取决于已接入数据面',
-        shortMeta: '镜像 · MOCK · 数据面支持',
+        label: '蓝绿路由 · 千人千面限流 @ GW · 熔断 · 镜像 · MOCK',
+        shortLabel: '蓝绿路由 · GW 限流',
+        meta: '服务治理 · 比例为示例 · 执行范围取决于已接入数据面',
+        shortMeta: '比例示例 · 熔断 · 镜像 · MOCK',
       },
       promptBand: {
         label: 'POLE AGENT PROMPT → 版本化发布',
@@ -103,6 +103,10 @@ const architectureCopy = {
         governanceView: '治理视图',
         request: '请求',
         mirrorMock: '镜像 / MOCK',
+        blueTraffic: '蓝 80% · 示例',
+        greenTraffic: '绿 20% · 示例',
+        serviceAuth: '服务身份调用鉴权',
+        serviceAuthShort: '身份鉴权',
       },
       boundary: {
         desktop: 'A2A REGISTRY · 仅用于发现 · 不进入请求路径',
@@ -111,7 +115,7 @@ const architectureCopy = {
       },
       legend: {
         governance: '治理视图',
-        traffic: '请求流量',
+        traffic: '请求 / 鉴权调用',
         shadow: '镜像 / 旁路',
       },
     },
@@ -128,9 +132,9 @@ const architectureCopy = {
       slides: {
         governance: {
           label: 'Governance flow',
-          title: 'Apply one governance intent across connected AI service calls.',
+          title: 'Apply precise governance across blue-green versions of one Agent service.',
           detail:
-            'For an Agent hosted by Pole Service, connected data planes apply A/B routing, rate limiting, circuit breaking, mirroring, and mocks within their supported scope. Pole Agent prompts and model credentials follow separate release and custody paths.',
+            'The Gateway applies identity- and tenant-aware rate limits, then distributes requests by percentage across blue-green versions of one Agent Service. Service identity authorization protects each call into the Provider Adapter.',
         },
         collaboration: {
           label: 'Components',
@@ -175,7 +179,7 @@ const architectureCopy = {
     },
     governance: {
       aria:
-        'Immersive AI service governance panorama. A platform engineer publishes a governance view through Console or API. A sample Agent Gateway uses a connected SDK or proxy to apply conditional and weighted routing, rate limiting, and circuit breaking, with mirroring, mocks, or fallback paths where supported. Pole Agent prompts use versioned release. Pole Secret credentials resolve only inside the Provider Adapter and never enter the browser, logs, or model context. A2A Registry does not carry Agent task traffic.',
+        'Immersive AI service governance panorama. A platform engineer publishes a governance view through Console or API. Agent Gateway applies per-identity or per-tenant rate limits and distributes requests between blue and green versions of the same Agent Service using illustrative percentages. Service identity authorization protects calls from each version to the Provider Adapter. Mirroring, mocks, and fallback paths apply where the connected data plane supports them. Pole Secret credentials resolve only inside the Provider Adapter and never enter the browser, logs, or model context.',
       planes: {
         managementControl: 'MANAGEMENT & CONTROL',
         aiTrafficExample: 'AI SERVICE TRAFFIC · EXAMPLE',
@@ -184,10 +188,10 @@ const architectureCopy = {
         engineer: { label: 'Platform Engineer', shortLabel: 'Engineer', meta: 'DEFINE · REVIEW', shortMeta: 'DEFINE' },
         consoleApi: { label: 'Console / API', meta: 'PUBLISH ONCE', shortMeta: 'PUBLISH ONCE' },
         userRequest: { label: 'User Request', meta: 'AGENT CALL', shortMeta: 'AGENT CALL' },
-        agentGateway: { label: 'Agent Gateway', meta: 'POLE SERVICE · SDK / PROXY', shortMeta: 'POLE SERVICE' },
-        agentServiceA: { label: 'Agent Service A', meta: 'POLE SERVICE · STABLE', shortMeta: 'STABLE' },
-        agentServiceB: { label: 'Agent Service B', meta: 'POLE SERVICE · CANDIDATE', shortMeta: 'CANDIDATE' },
-        agentService: { label: 'Agent Service', meta: 'POLE SERVICE · VERSIONS', shortMeta: 'VERSIONS' },
+        agentGateway: { label: 'Agent Gateway', meta: 'PERSONALIZED LIMIT · ID / TENANT', shortMeta: 'PERSONALIZED LIMIT' },
+        agentServiceA: { label: 'Agent Service', meta: 'BLUE · SAMPLE 80%', shortMeta: 'BLUE · 80%' },
+        agentServiceB: { label: 'Agent Service', meta: 'GREEN · SAMPLE 20%', shortMeta: 'GREEN · 20%' },
+        agentService: { label: 'Agent Service', meta: 'ONE SERVICE · BLUE / GREEN', shortMeta: 'BLUE 80% · GREEN 20%' },
         providerAdapter: { label: 'Provider Adapter', meta: 'RUNTIME BOUNDARY', shortMeta: 'RUNTIME ONLY' },
         primaryModel: { label: 'Primary Model', meta: 'PRIMARY', shortMeta: 'PRIMARY' },
         fallbackModel: { label: 'Fallback Model', meta: 'WHEN SUPPORTED', shortMeta: 'SUPPORTED' },
@@ -195,10 +199,10 @@ const architectureCopy = {
         mockResponse: { label: 'Mock Response', meta: 'WHEN SUPPORTED', shortMeta: 'SUPPORTED' },
       },
       governanceBand: {
-        label: 'A/B ROUTE · RATE LIMIT · CIRCUIT BREAK · MIRROR · MOCK',
-        shortLabel: 'A/B · LIMIT · BREAK',
-        meta: 'SERVICE GOVERNANCE · EXECUTION DEPENDS ON CONNECTED DATA PLANE',
-        shortMeta: 'MIRROR · MOCK · DATA PLANE SUPPORT',
+        label: 'BLUE-GREEN ROUTE · PERSONALIZED LIMIT @ GW · CIRCUIT BREAK · MIRROR · MOCK',
+        shortLabel: 'BLUE-GREEN · GW LIMIT',
+        meta: 'SERVICE GOVERNANCE · SAMPLE SPLIT · CONNECTED DATA-PLANE SUPPORT',
+        shortMeta: 'SAMPLE SPLIT · CIRCUIT BREAK · MIRROR · MOCK',
       },
       promptBand: {
         label: 'POLE AGENT PROMPT → VERSIONED RELEASE',
@@ -216,6 +220,10 @@ const architectureCopy = {
         governanceView: 'GOVERNANCE VIEW',
         request: 'REQUEST',
         mirrorMock: 'MIRROR / MOCK',
+        blueTraffic: 'BLUE 80% · SAMPLE',
+        greenTraffic: 'GREEN 20% · SAMPLE',
+        serviceAuth: 'SERVICE IDENTITY AUTH',
+        serviceAuthShort: 'ID AUTH',
       },
       boundary: {
         desktop: 'A2A REGISTRY · DISCOVERY ONLY · NOT REQUEST PATH',
@@ -224,7 +232,7 @@ const architectureCopy = {
       },
       legend: {
         governance: 'Governance view',
-        traffic: 'Request traffic',
+        traffic: 'Request / auth call',
         shadow: 'Mirror / side path',
       },
     },

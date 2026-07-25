@@ -50,6 +50,8 @@
 .contractLabel,
 .contractMeta,
 .flowLabel,
+.ratioLabel,
+.authLabel,
 .boundaryLabel {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   pointer-events: none;
@@ -219,8 +221,23 @@
 }
 
 .toneblue .nodeMark,
+.tonegreen .nodeMark,
 .tonedark .nodeMark {
   fill: #fff;
+}
+
+.tonegreen .nodeBody {
+  fill: #315846;
+  stroke: #244536;
+}
+
+.tonegreen .nodeTop {
+  fill: #47745f;
+  stroke: #244536;
+}
+
+.tonegreen .nodeRim {
+  stroke: #b7dcc9;
 }
 
 .tonedark .nodeBody {
@@ -355,6 +372,21 @@
 
 .flowLabelShadow {
   fill: #777a76;
+}
+
+.ratioLabel,
+.authLabel {
+  font-size: 8.5px;
+  font-weight: 760;
+  letter-spacing: .08em;
+}
+
+.ratioLabel {
+  fill: #4f5350;
+}
+
+.authLabel {
+  fill: #0f6cbd;
 }
 
 .boundaryLabel {
@@ -538,6 +570,12 @@
 
   .flowLabel {
     font-size: 9px;
+  }
+
+  .ratioLabel,
+  .authLabel {
+    font-size: 8px;
+    letter-spacing: .04em;
   }
 }
 
