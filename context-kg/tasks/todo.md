@@ -188,9 +188,9 @@
 - [x] 确认当前分支、远端仓库和待发布差异。
 - [x] 对相对 `HEAD` 的工作区差异执行 Standards / Spec 双轴审查。
 - [x] 处理审查发现并重新运行 test、lint、build 与静态导出。
-- [ ] 提交并推送 `main`。
-- [ ] 等待 GitHub Pages workflow 完成，验证首页、组件页、文档页和关键静态资源。
-- [ ] 在本节补充发布 Review。
+- [x] 提交并推送 `main`。
+- [x] 等待 GitHub Pages workflow 完成，验证首页、组件页、文档页和关键静态资源。
+- [x] 在本节补充发布 Review。
 
 ### 发布前 Review
 
@@ -199,3 +199,12 @@
 - 已移除顶栏 `backdrop-filter`，补齐能力行、文档行和组件行的 pressed 状态。
 - 最终本地验证：`npm test` 12/12 通过，`npm run lint` 通过，普通生产构建与 `/website` 静态导出均通过。
 - Playwright 覆盖 `/`、`/components`、`/docs` 的 1440px 与 390px 视口：全部返回 200、无页面级横向溢出、无浏览器错误；移动端导航展开后 `aria-expanded=true`。
+
+### 发布 Review
+
+- 官网更新提交：`39af616 feat: align website with latest control plane`，已推送到 `origin/main`。
+- GitHub Pages workflow run `30142042161` 的 build 与 deploy 均成功；workflow 内 test、lint、静态导出与 Pages artifact 上传全部通过。
+- 线上 `https://lattice-hub.github.io/`、`/components/`、`/docs/`、`/docs/principles/ai-registry/` 与 `/lattice-hub-logo.png` 均返回 200。
+- 线上 HTML 已包含“让服务治理”“九类治理能力”“配置差异已生成”和 `get_config_file`，AI Registry 文档已包含 A2A 当前 Registry 边界。
+- 线上 Playwright 再验：首页桌面与 390px 移动端、组件页移动端、文档页移动端均无横向溢出或浏览器错误，移动端导航可正常展开。
+- workflow 有一条非阻塞平台提示：GitHub Actions 正将部分基于 Node.js 20 的官方 action 强制运行在 Node.js 24；本轮部署不受影响，后续可随官方 action 主版本更新处理。
