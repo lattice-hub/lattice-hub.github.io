@@ -360,7 +360,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 28);
+  assert.equal(chinese.length, 31);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
@@ -449,13 +449,14 @@ test('global styles do not override fumadocs document theming', () => {
   assert.match(globalCss, /\.site-shell\s*{[\s\S]*font-family:/, 'homepage typography should be scoped to the homepage shell');
 });
 
-test('docs layout uses fumadocs section switcher for docs blog and reports', () => {
+test('docs layout uses fumadocs section switcher for docs blog reports and developers', () => {
   assert.deepEqual(
     docsLayoutTabs.map((tab) => ({ title: tab.title, url: tab.url })),
     [
       { title: '文档', url: '/docs' },
       { title: '博客', url: '/docs/blog' },
       { title: '报告', url: '/docs/reports' },
+      { title: '开发者', url: '/docs/developers' },
     ],
   );
 
@@ -523,6 +524,15 @@ test('docs layout uses fumadocs section switcher for docs blog and reports', () 
         index: { type: 'page', name: '报告', url: '/docs/reports' },
         children: [{ type: 'page', name: '性能', url: '/docs/reports/performance' }],
       },
+      {
+        type: 'folder',
+        name: '开发者',
+        index: { type: 'page', name: '开发者', url: '/docs/developers' },
+        children: [
+          { type: 'page', name: 'Maintainers', url: '/docs/developers/maintainers' },
+          { type: 'page', name: 'Committers', url: '/docs/developers/committers' },
+        ],
+      },
     ],
   };
 
@@ -533,6 +543,10 @@ test('docs layout uses fumadocs section switcher for docs blog and reports', () 
   assert.deepEqual(
     getDocsSectionTree(tree, ['reports', 'performance']).children.map((node) => node.name),
     ['报告', '性能'],
+  );
+  assert.deepEqual(
+    getDocsSectionTree(tree, ['developers']).children.map((node) => node.name),
+    ['开发者', 'Maintainers', 'Committers'],
   );
   assert.deepEqual(
     getDocsSectionTree(tree, ['principles', 'architecture']).children.map((node) => node.name),

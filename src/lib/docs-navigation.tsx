@@ -1,9 +1,9 @@
-import { BarChart3, BookOpen, Newspaper } from 'lucide-react';
+import { BarChart3, BookOpen, Newspaper, Users } from 'lucide-react';
 import type { LayoutTab } from 'fumadocs-ui/layouts/shared';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import type { DocsLocale } from '@/lib/source';
 
-type DocsSection = 'docs' | 'blog' | 'reports';
+type DocsSection = 'docs' | 'blog' | 'reports' | 'developers';
 type DocsPageAlias = {
   slugs: string[];
   name: string;
@@ -15,6 +15,7 @@ const navigationCopy = {
       docs: { title: '文档', description: '产品能力、原理和组件说明' },
       blog: { title: '博客', description: '最佳实践和接入经验' },
       reports: { title: '报告', description: '性能、配置和验证报告' },
+      developers: { title: '开发者', description: 'Maintainer、Committer 与社区角色' },
     },
     folders: {
       overview: 'Lattice Hub 是什么',
@@ -49,6 +50,7 @@ const navigationCopy = {
       docs: { title: 'Docs', description: 'Product capabilities, principles, and components' },
       blog: { title: 'Blog', description: 'Practices and integration notes' },
       reports: { title: 'Reports', description: 'Performance and verification reports' },
+      developers: { title: 'Developers', description: 'Maintainers, committers, and community roles' },
     },
     folders: {
       overview: 'What is Lattice Hub?',
@@ -92,6 +94,7 @@ function getSectionConfig(locale: DocsLocale) {
     docs: { ...copy.docs, url: getLocalizedDocsUrl(locale) },
     blog: { ...copy.blog, url: getLocalizedDocsUrl(locale, ['blog']) },
     reports: { ...copy.reports, url: getLocalizedDocsUrl(locale, ['reports']) },
+    developers: { ...copy.developers, url: getLocalizedDocsUrl(locale, ['developers']) },
   } satisfies Record<DocsSection, { title: string; url: string; description: string }>;
 }
 
@@ -102,6 +105,7 @@ export function getDocsLayoutTabs(locale: DocsLocale): LayoutTab[] {
     { ...sectionConfig.docs, icon: <BookOpen /> },
     { ...sectionConfig.blog, icon: <Newspaper /> },
     { ...sectionConfig.reports, icon: <BarChart3 /> },
+    { ...sectionConfig.developers, icon: <Users /> },
   ];
 }
 
@@ -114,6 +118,10 @@ function getDocsSection(slug: string[] = []): DocsSection {
 
   if (slug[0] === 'reports') {
     return 'reports';
+  }
+
+  if (slug[0] === 'developers') {
+    return 'developers';
   }
 
   return 'docs';
@@ -243,7 +251,7 @@ export function getDocsSectionTree(
 ): PageTree.Root {
   const section = getDocsSection(slug);
 
-  if (section === 'blog' || section === 'reports') {
+  if (section === 'blog' || section === 'reports' || section === 'developers') {
     const folder = findSectionFolder(tree, section, locale);
     return folder ? treeFromFolder(folder) : tree;
   }
