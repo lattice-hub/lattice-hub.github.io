@@ -5,6 +5,10 @@
   overflow: hidden;
 }
 
+.diagramLarge {
+  isolation: isolate;
+}
+
 .diagram {
   display: block;
   width: 100%;
@@ -96,11 +100,13 @@
 }
 
 .connectionActive {
+  opacity: 0;
   stroke: #0f6cbd;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   stroke-width: 2;
-  animation: path-reveal var(--path-duration) cubic-bezier(.16, 1, .3, 1) var(--path-delay) both;
+  animation: path-reveal var(--flow-cycle) cubic-bezier(.16, 1, .3, 1) var(--path-delay) infinite both;
+  will-change: opacity, stroke-dashoffset;
 }
 
 .connectionActiveTraffic {
@@ -113,11 +119,13 @@
 }
 
 .dataPacket {
+  opacity: 0;
   stroke: #0f6cbd;
   stroke-dasharray: .02 .98;
   stroke-dashoffset: 1;
   stroke-width: 6;
-  animation: packet-travel var(--path-duration) cubic-bezier(.45, 0, .55, 1) var(--path-delay) both;
+  animation: packet-travel var(--flow-cycle) cubic-bezier(.45, 0, .2, 1) var(--path-delay) infinite both;
+  will-change: opacity, stroke-dashoffset;
 }
 
 .dataPacketTraffic {
@@ -150,7 +158,8 @@
 .coreLift {
   transform-box: fill-box;
   transform-origin: center;
-  animation: node-receive .78s cubic-bezier(.16, 1, .3, 1) var(--node-delay) both;
+  animation: node-receive var(--node-cycle) cubic-bezier(.16, 1, .3, 1) var(--node-delay) infinite both;
+  will-change: transform;
 }
 
 .nodeBody,
@@ -392,45 +401,83 @@
   border-top-style: dashed;
 }
 
-.staticDiagram .nodeLift,
-.staticDiagram .coreLift,
-.staticDiagram .connectionActive,
-.staticDiagram .dataPacket {
-  animation: none;
-}
-
-.staticDiagram .connectionActive {
-  stroke-dashoffset: 0;
-}
-
-.staticDiagram .dataPacket {
-  display: none;
-}
-
 @keyframes path-reveal {
-  to {
+  0%,
+  7% {
+    opacity: 0;
+    stroke-dashoffset: 1;
+  }
+
+  13% {
+    opacity: .34;
+  }
+
+  38% {
+    opacity: .92;
+    stroke-dashoffset: 0;
+  }
+
+  48%,
+  100% {
+    opacity: 0;
     stroke-dashoffset: 0;
   }
 }
 
 @keyframes packet-travel {
-  to {
+  0%,
+  9% {
+    opacity: 0;
+    stroke-dashoffset: 1;
+  }
+
+  14% {
+    opacity: .92;
+  }
+
+  37% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+
+  45%,
+  100% {
+    opacity: 0;
     stroke-dashoffset: 0;
   }
 }
 
 @keyframes node-receive {
   0%,
-  56% {
-    transform: translateY(0);
-  }
-
-  76% {
-    transform: translateY(-5px);
-  }
-
+  26%,
   100% {
     transform: translateY(0);
+  }
+
+  32% {
+    transform: translateY(-4px);
+  }
+
+  40% {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nodeLift,
+  .coreLift,
+  .connectionActive,
+  .dataPacket {
+    animation: none;
+  }
+
+  .connectionActive {
+    opacity: .7;
+    stroke-dashoffset: 0;
+  }
+
+  .dataPacket {
+    display: none;
   }
 }
 
@@ -518,23 +565,6 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .nodeLift,
-  .coreLift,
-  .connectionActive,
-  .dataPacket {
-    animation: none;
-  }
-
-  .connectionActive {
-    stroke-dashoffset: 0;
-  }
-
-  .dataPacket {
-    display: none;
-  }
-}
-
 @media (scripting: none) {
   .nodeLift,
   .coreLift,
@@ -544,6 +574,7 @@
   }
 
   .connectionActive {
+    opacity: .7;
     stroke-dashoffset: 0;
   }
 

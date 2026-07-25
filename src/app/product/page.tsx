@@ -24,7 +24,7 @@ const releaseFlow = [
   ['01 / CONNECT', '接入', '保留 Polaris、Nacos、Apollo、Eureka 与 Envoy xDS v3 等已有客户端入口。'],
   ['02 / MODEL', '建模', '把服务、配置、治理、身份与能力目录放入明确的运行环境边界。'],
   ['03 / RELEASE', '发布', '配置与治理变化经过确认后形成发布版本，再通过灰度或全量流程进入运行态。'],
-  ['04 / CONSUME', '消费', 'Thin SDK、Sidecar 与 Gateway 消费治理视图；Controller 同步资源并编排接入。'],
+  ['04 / CONSUME', '消费', 'Thin SDK、Pole Sidecar 与 Gateway 消费治理视图；Controller 同步资源并编排接入。'],
 ] as const;
 
 const capabilities = [
@@ -46,7 +46,7 @@ const protocols = [
 
 const runtimes = [
   ['01', 'Thin SDK', '应用内直接读取治理视图'],
-  ['02', 'Local Proxy / Sidecar', '在本地代理层执行治理'],
+  ['02', 'Pole Sidecar', '在本地代理层执行治理'],
   ['03', 'Proxy Mesh / Gateway', '在集中或网格数据面消费策略'],
   ['04', 'Kubernetes Controller', '连接集群资源与控制面模型'],
 ] as const;

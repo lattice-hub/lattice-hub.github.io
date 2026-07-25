@@ -24,7 +24,7 @@ text{font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft
 <text x="88" y="233" class="node-sub" text-anchor="start">服务、配置、治理发布</text>
 <rect x="70" y="278" width="230" height="70" rx="0" class="node"/>
 <text x="88" y="308" class="node-title" text-anchor="start">Kubernetes Controller</text>
-<text x="88" y="333" class="node-sub" text-anchor="start">Service 同步、Sidecar 注入</text>
+<text x="88" y="333" class="node-sub" text-anchor="start">Service 同步、Pole Sidecar 注入</text>
 <rect x="70" y="378" width="230" height="70" rx="0" class="node"/>
 <text x="88" y="408" class="node-title" text-anchor="start">MCP / A2A 注册</text>
 <text x="88" y="433" class="node-sub" text-anchor="start">Server、Agent、Skill</text>
@@ -68,7 +68,7 @@ text{font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft
 <text x="1018" y="208" class="node-title" text-anchor="start">Thin Client SDK</text>
 <text x="1018" y="233" class="node-sub" text-anchor="start">订阅发现、配置、治理视图</text>
 <rect x="1000" y="278" width="230" height="70" rx="0" class="node"/>
-<text x="1018" y="308" class="node-title" text-anchor="start">Local Proxy / Sidecar</text>
+<text x="1018" y="308" class="node-title" text-anchor="start">Pole Sidecar</text>
 <text x="1018" y="333" class="node-sub" text-anchor="start">本地转发、负载均衡、拦截</text>
 <rect x="1000" y="378" width="230" height="70" rx="0" class="node"/>
 <text x="1018" y="408" class="node-title" text-anchor="start">Proxy Mesh / Gateway</text>

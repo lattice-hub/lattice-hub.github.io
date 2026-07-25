@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     absolute: '组件架构｜Lattice.Hub',
   },
   description:
-    '了解 Lattice.Hub 的 Control Plane、Console、Kubernetes Controller、Rust SDK、Pingora Sidecar、Limiter Server 与 Specification 如何协作，以及治理能力如何进入运行时执行。',
+    '了解 Lattice.Hub 的 Control Plane、Console、Kubernetes Controller、Rust SDK、Pole Sidecar、Limiter Server 与 Specification 如何协作，以及治理能力如何进入运行时执行。',
 };
 
 const components = [
@@ -39,7 +39,7 @@ const components = [
     index: '03',
     name: 'Kubernetes Controller',
     role: '集群集成',
-    detail: '同步 Service、Endpoints、Namespace 与 ConfigMap，并按配置注入 Sidecar、Java Agent 或 Envoy。',
+    detail: '同步 Service、Endpoints、Namespace 与 ConfigMap，并按配置注入 Pole Sidecar、Java Agent 或 Envoy。',
     href: '/docs/components/kubernetes-controller',
   },
   {
@@ -51,7 +51,7 @@ const components = [
   },
   {
     index: '05',
-    name: 'Pingora Sidecar',
+    name: 'Pole Sidecar',
     role: '本地数据面',
     detail: '当前是支持 HTTP、HTTP/2、gRPC-h2c 转发、前缀路由与轮询的轻量数据面骨架。',
     href: '/docs/components/pingora-sidecar',
@@ -76,7 +76,7 @@ const responsibilityRows = [
   ['管理面', 'Console · Pole Agent', '准备、审阅和决定变化；不执行真实服务请求。'],
   ['控制面', 'Lattice.Hub · Controller', '管理统一资源视图，并连接 Kubernetes 等外部运行环境。'],
   ['执行面', 'Rust SDK · Limiter Server · Envoy / Gateway', '在各自已支持的协议和能力范围内影响服务调用。'],
-  ['扩展数据面', 'Pingora Sidecar', '当前提供代理骨架；动态治理接入与更多执行能力按实现进度演进。'],
+  ['扩展数据面', 'Pole Sidecar', '当前提供代理骨架；动态治理接入与更多执行能力按实现进度演进。'],
 ] as const;
 
 export default function ArchitecturePage() {

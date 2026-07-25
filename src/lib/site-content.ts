@@ -152,12 +152,12 @@ export const docsSections: ContentEntry[] = [
   {
     title: '组件生态',
     href: '/components',
-    summary: 'Control Plane、Console、Controller、SDK、Sidecar 与规范。',
+    summary: 'Control Plane、Console、Controller、SDK、Pole Sidecar 与规范。',
   },
   {
     title: '工程实践',
     href: '/docs/practices/gray-release',
-    summary: '灰度发布、Kubernetes 同步、Agent 发现和 Sidecar 数据面。',
+    summary: '灰度发布、Kubernetes 同步、Agent 发现和 Pole Sidecar 数据面。',
   },
   {
     title: '报告',
@@ -192,11 +192,11 @@ export const componentGroups: ComponentGroup[] = [
     name: 'Kubernetes Controller',
     href: '/docs/components/kubernetes-controller',
     summary: '连接 Kubernetes 与控制面，同步 Service、Endpoints、Namespace 与 ConfigMap。',
-    details: ['全量 / 按需与配置双向同步', 'Sidecar、Java Agent 与 Envoy 注入'],
+    details: ['全量 / 按需与配置双向同步', 'Pole Sidecar、Java Agent 与 Envoy 注入'],
     icon: Workflow,
   },
   {
-    name: 'Pingora Sidecar',
+    name: 'Pole Sidecar',
     href: '/docs/components/pingora-sidecar',
     summary: '基于 Pingora 的轻量数据面骨架，支持 HTTP、HTTP/2 与 gRPC-h2c 转发。',
     details: ['前缀路由与轮询负载均衡', '动态治理接入仍按路线演进'],
@@ -253,7 +253,7 @@ export const blogPosts: ContentEntry[] = [
     summary: '对比全量同步、按需同步、annotation 与服务别名的使用场景。',
   },
   {
-    title: 'Pingora Sidecar 的轻量数据面路线',
+    title: 'Pole Sidecar 的轻量数据面路线',
     href: '/docs/blog/pingora-sidecar',
     summary: '说明 HTTP/2、gRPC-h2c、路由、负载均衡与拦截器骨架的演进空间。',
   },

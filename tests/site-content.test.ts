@@ -16,6 +16,24 @@ import {
 } from '../src/lib/site-content';
 import { docsLayoutTabs, getDocsSectionTree } from '../src/lib/docs-navigation';
 import { resolveImageSrc } from '../src/mdx-components';
+import { getArchitectureCopy } from '../src/components/site/architectureLocale';
+
+function collectMdxRelativePaths(root: string, current = ''): string[] {
+  const directory = current ? `${root}/${current}` : root;
+
+  return readdirSync(directory)
+    .flatMap((name) => {
+      const relative = current ? `${current}/${name}` : name;
+      const path = `${root}/${relative}`;
+
+      if (statSync(path).isDirectory()) {
+        return collectMdxRelativePaths(root, relative);
+      }
+
+      return name.endsWith('.mdx') ? [relative] : [];
+    })
+    .sort();
+}
 
 test('site navigation exposes real site-level destinations', () => {
   assert.deepEqual(
@@ -87,7 +105,7 @@ test('component matrix covers the Lattice Hub ecosystem', () => {
     'Console',
     'Rust SDK',
     'Kubernetes Controller',
-    'Pingora Sidecar',
+    'Pole Sidecar',
     'Limiter Server',
     'Specification',
   ]);
@@ -105,6 +123,7 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   const hero = readFileSync('src/components/site/HomeHero.tsx', 'utf8');
   const architectureFlow = readFileSync('src/components/site/ArchitectureFlow.tsx', 'utf8');
   const architectureDiagrams = readFileSync('src/components/site/ArchitectureDiagrams.tsx', 'utf8');
+  const architectureLocale = readFileSync('src/components/site/architectureLocale.ts', 'utf8');
   const architectureCss = readFileSync('src/components/site/ArchitectureFlow.module.css', 'utf8');
   const architectureDiagramCss = readFileSync(
     'src/components/site/ArchitectureDiagrams.module.css',
@@ -122,7 +141,7 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.match(homepage, /变更不是保存/);
   assert.match(homepage, /Agent 准备变更/);
   assert.match(homepage, /只保存编辑态草稿/);
-  assert.match(homepage, /Rust SDK、Local Proxy \/ Sidecar 与 Proxy Mesh \/ Gateway/);
+  assert.match(homepage, /Rust SDK、Pole Sidecar 与 Proxy Mesh \/ Gateway/);
   assert.doesNotMatch(homepage, /Thin SDK/);
   assert.match(homepage, /governanceDomains\.map/);
   assert.doesNotMatch(`${hero}\n${homepage}`, /console-preview|agent-workflow|fact-rail|get_config_file/);
@@ -132,7 +151,10 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.doesNotMatch(globalCss, /aurora|glass-card|backdrop-filter|radial-gradient/);
 
   for (const keyword of ['组件协作', '治理生效', '查看完整架构', 'ArchitectureDiagrams']) {
-    assert.ok(architectureFlow.includes(keyword), `missing architecture carousel fact: ${keyword}`);
+    assert.ok(
+      `${architectureFlow}\n${architectureLocale}`.includes(keyword),
+      `missing architecture carousel fact: ${keyword}`,
+    );
   }
   assert.ok(
     architectureFlow.indexOf("id: 'governance'") < architectureFlow.indexOf("id: 'collaboration'"),
@@ -144,7 +166,7 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
     'Kubernetes Controller',
     'Control Plane',
     'Rust SDK',
-    'Pingora Sidecar',
+    'Pole Sidecar',
     'Envoy / Gateway',
     'Specification',
     'Agent Gateway',
@@ -164,7 +186,10 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
     'GOVERNANCE VIEW',
     'EXAMPLE',
   ]) {
-    assert.ok(architectureDiagrams.includes(keyword), `missing component architecture fact: ${keyword}`);
+    assert.ok(
+      `${architectureDiagrams}\n${architectureLocale}`.includes(keyword),
+      `missing component architecture fact: ${keyword}`,
+    );
   }
 
   assert.match(architectureFlow, /aria-pressed/);
@@ -184,9 +209,21 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.match(architectureDiagramCss, /scripting: none/);
   assert.match(architectureDiagramCss, /node-receive/);
   assert.match(architectureDiagramCss, /path-reveal/);
-  assert.match(architectureDiagrams, /A2A REGISTRY · DISCOVERY ONLY · NOT REQUEST PATH/);
-  assert.doesNotMatch(architectureCss, /border-radius|box-shadow/);
-  assert.doesNotMatch(architectureDiagramCss, /infinite|linear/);
+  assert.match(architectureLocale, /A2A REGISTRY · DISCOVERY ONLY · NOT REQUEST PATH/);
+  assert.doesNotMatch(
+    architectureCss,
+    /\.canvas\s*{[^}]*border-radius|\.canvas\s*{[^}]*box-shadow/s,
+  );
+  assert.match(architectureDiagramCss, /\.dataPacket[\s\S]*animation:[^;]*infinite/);
+  assert.doesNotMatch(architectureDiagramCss, /\slinear(?:\s|;|,)/);
+  assert.match(
+    architectureDiagramCss,
+    /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.dataPacket[\s\S]*animation:\s*none/,
+  );
+  assert.match(
+    architectureDiagramCss,
+    /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.dataPacket[\s\S]*display:\s*none/,
+  );
   assert.doesNotMatch(
     `${architectureFlow}\n${architectureDiagrams}`,
     /MySQL|CacheManager|EventHub|CONFIG \+ GOVERNANCE ONLY|setInterval|Math\.random|requests per second|latency|uptime/,
@@ -249,7 +286,7 @@ test('docs include principles and blog seed content', () => {
 });
 
 test('docs index is a product capability overview', () => {
-  const docsIndex = readFileSync('content/docs/index.mdx', 'utf8');
+  const docsIndex = readFileSync('content/docs/zh-CN/index.mdx', 'utf8');
 
   assert.match(docsIndex, /title: 产品能力总览/);
   for (const keyword of ['运行环境', '服务注册发现', '流量治理', '配置中心', 'AI Registry', 'Pole Agent']) {
@@ -260,13 +297,13 @@ test('docs index is a product capability overview', () => {
 
 test('docs diagrams use compact static SVG assets', () => {
   const docsFiles = [
-    'content/docs/index.mdx',
-    'content/docs/principles/architecture.mdx',
-    'content/docs/principles/cache-eventhub.mdx',
-    'content/docs/principles/governance-release.mdx',
-    'content/docs/principles/auth-protocols.mdx',
-    'content/docs/principles/ai-registry.mdx',
-    'content/docs/principles/observability-chain.mdx',
+    'content/docs/zh-CN/index.mdx',
+    'content/docs/zh-CN/principles/architecture.mdx',
+    'content/docs/zh-CN/principles/cache-eventhub.mdx',
+    'content/docs/zh-CN/principles/governance-release.mdx',
+    'content/docs/zh-CN/principles/auth-protocols.mdx',
+    'content/docs/zh-CN/principles/ai-registry.mdx',
+    'content/docs/zh-CN/principles/observability-chain.mdx',
   ];
 
   const combined = docsFiles.map((file) => readFileSync(file, 'utf8')).join('\n');
@@ -275,6 +312,67 @@ test('docs diagrams use compact static SVG assets', () => {
   assert.doesNotMatch(combined, /```mermaid/);
   assert.match(combined, /\/diagrams\/control-plane-startup\.svg/);
   assert.ok(svgAssets.length >= 20, 'expected generated SVG diagrams for docs architecture content');
+});
+
+test('docs expose complete and symmetric Chinese and English content', () => {
+  const chinese = collectMdxRelativePaths('content/docs/zh-CN');
+  const english = collectMdxRelativePaths('content/docs/en');
+  const englishContent = english
+    .map((relative) => readFileSync(`content/docs/en/${relative}`, 'utf8'))
+    .join('\n');
+  const sourceConfig = readFileSync('src/lib/source.ts', 'utf8');
+  const docsPage = readFileSync('src/app/docs/[[...slug]]/page.tsx', 'utf8');
+  const englishDocsPage = readFileSync('src/app/en/docs/[[...slug]]/page.tsx', 'utf8');
+  const languageSwitch = readFileSync(
+    'src/app/docs/_components/DocsLanguageSwitch.tsx',
+    'utf8',
+  );
+  const documentLanguage = readFileSync(
+    'src/app/docs/_components/DocsDocumentLanguage.tsx',
+    'utf8',
+  );
+
+  assert.equal(chinese.length, 28);
+  assert.deepEqual(english, chinese);
+  assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
+  assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
+  assert.match(sourceConfig, /hideLocale: 'default-locale'/);
+  assert.match(docsPage, /generateDocsStaticParams\('zh-CN'\)/);
+  assert.match(englishDocsPage, /generateDocsStaticParams\('en'\)/);
+  assert.match(languageSwitch, /中文/);
+  assert.match(languageSwitch, />\s*EN\s*</);
+  assert.match(documentLanguage, /document\.documentElement\.lang = locale/);
+});
+
+test('architecture diagram locale copy is symmetric and brand-safe', () => {
+  const chinese = getArchitectureCopy('zh-CN');
+  const english = getArchitectureCopy('en');
+  const flowSource = readFileSync('src/components/site/ArchitectureFlow.tsx', 'utf8');
+  const visibleCopy = [
+    'src/app/page.tsx',
+    'src/app/product/page.tsx',
+    'src/app/components/page.tsx',
+    'src/app/governance/page.tsx',
+    'src/app/architecture/page.tsx',
+    'src/components/site/architectureLocale.ts',
+    'src/lib/site-content.ts',
+    ...collectMdxRelativePaths('content/docs/zh-CN').map(
+      (relative) => `content/docs/zh-CN/${relative}`,
+    ),
+    ...collectMdxRelativePaths('content/docs/en').map(
+      (relative) => `content/docs/en/${relative}`,
+    ),
+  ]
+    .map((file) => readFileSync(file, 'utf8'))
+    .join('\n');
+
+  assert.deepEqual(Object.keys(english), Object.keys(chinese));
+  assert.doesNotMatch(JSON.stringify(english), /\p{Script=Han}/u);
+  assert.equal(chinese.collaboration.nodes.sidecar.label, 'Pole Sidecar');
+  assert.equal(english.collaboration.nodes.sidecar.label, 'Pole Sidecar');
+  assert.match(flowSource, /aria-pressed=\{locale === option\}/);
+  assert.match(flowSource, /option === 'zh-CN' \? '中' : 'EN'/);
+  assert.doesNotMatch(visibleCopy, /Pingora Sidecar|Local Proxy\s*\/\s*Sidecar/);
 });
 
 test('mdx image component resolves structured image src objects', () => {
@@ -345,7 +443,7 @@ test('docs layout uses fumadocs section switcher for docs blog and reports', () 
         children: [
           { type: 'page', name: 'Rust SDK', url: '/docs/components/rust-sdk' },
           { type: 'page', name: 'Kubernetes Controller', url: '/docs/components/kubernetes-controller' },
-          { type: 'page', name: 'Pingora Sidecar', url: '/docs/components/pingora-sidecar' },
+          { type: 'page', name: 'Pole Sidecar', url: '/docs/components/pingora-sidecar' },
           { type: 'page', name: 'Specification', url: '/docs/components/specification' },
         ],
       },
@@ -356,7 +454,7 @@ test('docs layout uses fumadocs section switcher for docs blog and reports', () 
           { type: 'page', name: '灰度', url: '/docs/practices/gray-release' },
           { type: 'page', name: 'K8s', url: '/docs/practices/kubernetes-sync' },
           { type: 'page', name: 'Agent', url: '/docs/practices/agent-discovery' },
-          { type: 'page', name: 'Sidecar', url: '/docs/practices/sidecar-data-plane' },
+          { type: 'page', name: 'Pole Sidecar', url: '/docs/practices/sidecar-data-plane' },
         ],
       },
       {
@@ -398,12 +496,12 @@ test('docs layout uses fumadocs section switcher for docs blog and reports', () 
       '控制台使用',
       'Rust SDK 接入',
       'K8s 和 Controller',
-      'Sidecar 和网格代理',
+      'Pole Sidecar',
       '协议与网关',
       '灰度发布',
       'K8s 相关实践',
       'Agent 能力发现',
-      'Sidecar 数据面',
+      'Pole Sidecar 数据面',
       '控制面装配架构',
       '增量缓存与事件流',
       '治理规则与灰度发布',
