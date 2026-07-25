@@ -1,177 +1,121 @@
-'use client';
-
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import type { CSSProperties } from 'react';
-import { governanceRules } from '@/lib/site-content';
-import { GovernanceRuleCarousel } from './GovernanceRuleCarousel';
-
-const AGENT_DURATION = 6000;
-const RULE_DURATION = 2300;
-
-const tracks = [
-  {
-    id: 'agent-discovery',
-    label: 'Agent Discovery',
-    eyebrow: 'Agent Discovery · Agent 发现',
-    title: 'Agent 能力，\n注册即可发现。',
-    subtitle: 'MCP / A2A 能力目录统一注册、发现与治理，让 Agent 像服务一样被纳管。',
-    status: ['MCP Registry 已支持', 'A2A Agent Registry 规划中'],
-  },
-  {
-    id: 'traffic-governance',
-    label: 'Traffic Governance',
-    eyebrow: 'Traffic Governance · 流量治理',
-    title: '治理规则，\n沿链路生效。',
-    subtitle: '路由、泳道、限流、熔断、镜像、Mock 与鉴权，在同一条控制面链路上改变流量路径。',
-    status: ['七类治理规则统一拓扑', 'HTTP / gRPC / xDS 多协议入口'],
-  },
-];
+import { ArrowRight, Check, ChevronDown, GitBranch, Search, ShieldCheck } from 'lucide-react';
 
 export function HomeHero() {
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const track = tracks[active];
-
-  const go = (direction: -1 | 1) => {
-    setActive((current) => (current + direction + tracks.length) % tracks.length);
-  };
-
-  useEffect(() => {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (paused || reducedMotion) {
-      return undefined;
-    }
-
-    const timeout = window.setTimeout(
-      () => setActive((current) => (current + 1) % tracks.length),
-      active === 0 ? AGENT_DURATION : RULE_DURATION * governanceRules.length,
-    );
-
-    return () => window.clearTimeout(timeout);
-  }, [active, paused]);
-
   return (
-    <section
-      className="hero hxc"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
-      <button className="hero-arrow hero-arrow-left" type="button" aria-label="上一屏" onClick={() => go(-1)}>
-        ‹
-      </button>
-      <button className="hero-arrow hero-arrow-right" type="button" aria-label="下一屏" onClick={() => go(1)}>
-        ›
-      </button>
-
+    <section className="hero" aria-labelledby="home-title">
       <div className="hero-copy">
-        <span className="hero-brand">Lattice Hub</span>
-        <p className="eyebrow">{track.eyebrow}</p>
-        <h1>{track.title}</h1>
-        <p className="hero-subtitle">{track.subtitle}</p>
+        <p className="overline">Cloud native service governance</p>
+        <h1 id="home-title">
+          让服务治理，
+          <br />
+          拥有同一个控制面。
+        </h1>
+        <p className="hero-subtitle">
+          Lattice Hub 统一运行环境、服务发现、配置发布、流量治理、身份与平台观测。
+          兼容已有协议，也让控制面能力被 Agent 安全调用。
+        </p>
         <div className="hero-actions">
-          <Link className="button-primary btn btn-primary btn-arrow" data-magnetic href="/docs">
-            <span>阅读文档</span>
-            <ArrowRight size={22} strokeWidth={2.6} />
+          <Link className="button button-primary" href="/docs">
+            开始阅读
+            <ArrowRight aria-hidden="true" size={18} />
           </Link>
-          <Link className="button-secondary btn btn-secondary" data-magnetic href="/components">
-            <span aria-hidden="true">↗</span>
-            浏览组件生态
+          <Link className="button button-secondary" href="/components">
+            查看组件生态
           </Link>
         </div>
-        <div className="hero-status" aria-label="当前进度">
-          {track.status.map((item) => (
-            <span key={item}>{item}</span>
-          ))}
+        <div className="hero-proof" aria-label="已实现能力">
+          <span>多协议接入</span>
+          <span>九类治理能力</span>
+          <span>MCP / A2A Registry</span>
         </div>
       </div>
 
-      <div className="hero-product" aria-label="双主线产品展示">
-        {active === 0 ? <AgentRegistryVisual /> : <GovernanceRuleCarousel paused={paused} />}
-      </div>
+      <div className="console-preview" aria-label="Lattice Hub 控制台产品界面示意">
+        <div className="console-titlebar">
+          <div className="console-brand">
+            <span className="console-glyph" aria-hidden="true">L</span>
+            <strong>Lattice.Hub</strong>
+          </div>
+          <div className="environment-switch">
+            <span className="status-dot" aria-hidden="true" />
+            运行环境
+            <ChevronDown aria-hidden="true" size={13} />
+          </div>
+        </div>
 
-      <div className="hero-pager" role="tablist" aria-label="首页双主线">
-        {tracks.map((item, index) => (
-          <button
-            aria-label={`切换到${item.label}`}
-            aria-selected={index === active}
-            className="hero-page-dot"
-            style={{ '--hx-dur': `${index === 0 ? AGENT_DURATION : RULE_DURATION * governanceRules.length}ms` } as CSSProperties}
-            key={item.id}
-            onClick={() => setActive(index)}
-            role="tab"
-            type="button"
-          />
-        ))}
-      </div>
+        <div className="console-layout">
+          <aside className="console-sidebar" aria-label="控制台导航示意">
+            <span className="side-label">CONTROL PLANE</span>
+            <span className="side-item is-active">服务概览</span>
+            <span className="side-item">治理工作台</span>
+            <span className="side-item">配置管理</span>
+            <span className="side-item">平台监控</span>
+            <span className="side-label">AI NATIVE</span>
+            <span className="side-item">MCP 服务</span>
+            <span className="side-item">A2A Agent</span>
+          </aside>
 
-      <div className="track-tabs sr-only" role="tablist" aria-label="首页双主线备用标签">
-          {tracks.map((track, index) => (
-            <button
-              aria-controls={`${track.id}-panel`}
-              aria-selected={index === active}
-              className="track-tab"
-              id={`${track.id}-tab`}
-              key={track.id}
-              onClick={() => setActive(index)}
-              role="tab"
-              type="button"
-            >
-              {track.label}
-            </button>
-          ))}
+          <div className="console-canvas">
+            <div className="canvas-heading">
+              <div>
+                <span>运行环境 / Namespace</span>
+                <h2>服务概览</h2>
+              </div>
+              <span className="preview-search"><Search aria-hidden="true" size={14} /> 搜索资源</span>
+            </div>
+
+            <div className="console-metrics">
+              <article>
+                <span>服务接入</span>
+                <strong>多协议</strong>
+                <small>注册 · 发现</small>
+              </article>
+              <article>
+                <span>实例状态</span>
+                <strong>双探测</strong>
+                <small>心跳 · 主动探测</small>
+              </article>
+              <article>
+                <span>发布模型</span>
+                <strong>版本化</strong>
+                <small>灰度 · 回滚</small>
+              </article>
+            </div>
+
+            <div className="release-panel">
+              <div className="release-panel-head">
+                <div>
+                  <span className="panel-label">GOVERNANCE RELEASE</span>
+                  <h3>路由规则发布</h3>
+                </div>
+                <span className="release-state">编辑态与发布态分离</span>
+              </div>
+              <div className="release-track" aria-label="治理发布进度">
+                <span className="is-done"><Check size={12} /> 草稿</span>
+                <i />
+                <span className="is-done"><Check size={12} /> 校验</span>
+                <i />
+                <span>灰度 / 全量</span>
+              </div>
+              <div className="rule-summary">
+                <GitBranch aria-hidden="true" size={16} />
+                <span>请求匹配条件</span>
+                <strong>按目标实例分流</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="agent-strip">
+          <div className="agent-strip-icon"><ShieldCheck aria-hidden="true" size={18} /></div>
+          <div className="agent-strip-copy">
+            <span>Pole Agent · 安全操作模式</span>
+            <strong>配置差异已生成，确认后只保存草稿。</strong>
+          </div>
+          <span className="agent-strip-state">等待你确认</span>
+        </div>
       </div>
     </section>
-  );
-}
-
-function AgentRegistryVisual() {
-  return (
-    <div className="agent-graph hx-art" aria-label="Agent Registry 关系图" data-spotlight>
-      <svg viewBox="0 0 720 420" role="img" aria-labelledby="agent-graph-title">
-        <title id="agent-graph-title">MCP 与 A2A 能力注册到 Registry 后被 Agent 发现</title>
-        <defs>
-          <filter id="nodeShadow" x="-20%" y="-40%" width="140%" height="180%">
-            <feDropShadow dx="0" dy="16" floodColor="#2f5dff" floodOpacity="0.08" stdDeviation="18" />
-          </filter>
-        </defs>
-
-        <path className="flow-line" d="M174 112 C276 112 296 202 360 202" />
-        <path className="flow-dash" d="M174 112 C276 112 296 202 360 202" />
-        <path className="flow-line" d="M174 308 C276 308 296 218 360 218" />
-        <path className="flow-dash" d="M174 308 C276 308 296 218 360 218" />
-        <path className="flow-line" d="M546 112 C444 112 424 202 360 202" />
-        <path className="flow-dash" d="M546 112 C444 112 424 202 360 202" />
-        <path className="flow-line" d="M546 308 C444 308 424 218 360 218" />
-        <path className="flow-dash" d="M546 308 C444 308 424 218 360 218" />
-
-        <g className="dg-node" filter="url(#nodeShadow)" transform="translate(42 74)">
-          <rect width="132" height="76" />
-          <text x="24" y="33">search</text>
-          <text className="muted" x="24" y="56">MCP Server</text>
-        </g>
-        <g className="dg-node" filter="url(#nodeShadow)" transform="translate(42 270)">
-          <rect width="132" height="76" />
-          <text x="24" y="33">database</text>
-          <text className="muted" x="24" y="56">MCP Server</text>
-        </g>
-        <g className="dg-node is-dashed" filter="url(#nodeShadow)" transform="translate(546 74)">
-          <rect width="132" height="76" />
-          <text x="24" y="33">planner</text>
-          <text className="muted" x="24" y="56">A2A · 规划</text>
-        </g>
-        <g className="dg-node is-dashed" filter="url(#nodeShadow)" transform="translate(546 270)">
-          <rect width="132" height="76" />
-          <text x="24" y="33">worker</text>
-          <text className="muted" x="24" y="56">A2A · 规划</text>
-        </g>
-        <g className="registry-core" filter="url(#nodeShadow)" transform="translate(292 166)">
-          <rect width="136" height="108" />
-          <text x="68" y="48" textAnchor="middle">Registry</text>
-          <text className="muted" x="68" y="72" textAnchor="middle">capability index</text>
-        </g>
-      </svg>
-    </div>
   );
 }

@@ -1,6 +1,6 @@
 ---
-title: AI Registry 实现原理
-description: MCP Server 与 A2A Agent 如何作为控制面资源接入 HTTP、缓存和存储链路。
+title: AI Registry 与 Pole Agent
+description: MCP Server、A2A Agent 如何进入控制面资源链路，以及 Pole Agent 如何在人工确认边界内操作资源。
 ---
 
 Lattice Hub 的 AI Native 能力不是独立于服务治理之外的演示入口。`pole-control-plane` 已经把 MCP Server 与 A2A Agent 注册为控制面资源：它们有存储接口、缓存接口、HTTP API 入口，并复用 `CacheManager` 的增量刷新机制。
@@ -94,9 +94,26 @@ AI Registry 复用控制面已有结构：
 
 因此官网里应把 MCP/A2A 表达为“能力目录接入控制面”，而不是“外挂 AI 页面”。
 
+## Pole Agent 的真实运行边界
+
+Pole Agent 是 Console 内的独立一级工作模式，不是 A2A Registry 中的一条注册记录。当前已落地的最小闭环包含：
+
+1. Console 后端加载版本化 System Prompt，并连接 OpenAI-compatible LLM Gateway。
+2. Agent 以当前 Console 用户身份连接 Pole MCP，只导入白名单工具。
+3. 模型与工具调用最多运行 8 轮；运行时探针会同时检查模型配置与 MCP 连接，未就绪时 fail closed。
+4. 配置更新不向模型开放自由写 API，而是由内部 `ChangeApprovalKernel` 生成不可变提案。
+5. 用户看到 diff 后确认，内核再次检查 preview hash、基线、权限、幂等与并发状态。
+6. 确认成功只保存编辑态草稿并返回 `waiting_for_publish`；正式发布仍回到配置中心完成。
+
+Agent 的 LLM Gateway、模型、Prompt、MCP 白名单和 write-only API key 已进入 System Settings 的版本化配置。发布前会重新探测模型与 MCP，成功后当前实例原子切换；失败时保留 last-known-good。
+
+当前写路径只覆盖已有配置文件更新。服务与治理规则写入、create、流式输出和服务端会话持久化尚未完成，不能把 Pole Agent 表述为“可以自然语言管理所有控制面资源”。
+
 ## 设计边界
 
 - MCP Server 和 A2A Agent 目前是控制面资源缓存，不等同于运行时执行调度器。
 - MCP SSE Server 提供协议入口，真实资源仍来自 store/cache。
 - A2A Agent Card 是对已注册 Agent 的描述输出，不代表 Agent 本体运行在控制面。
+- A2A 当前只承担 Agent Card、技能、协议接口和能力元数据的注册与发现，不提供 task proxy、SSE 转发或 push broker。
+- Pole Agent 不能读取 Secret，也没有发布、回滚、删除或修改自身 System Configuration 的工具。
 - 后续如果补齐更细粒度权限，应沿用现有 `AuthChecker` 和 `ResourceType` 映射模式，而不是另建独立鉴权。

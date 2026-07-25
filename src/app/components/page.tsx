@@ -13,17 +13,17 @@ export default function ComponentsPage() {
     <main className="site-shell">
       <SiteHeader />
       <section className="page-hero">
-        <p className="eyebrow">Component ecosystem</p>
-        <h1>组件矩阵围绕同一个控制面协作</h1>
+        <p className="overline">Component ecosystem</p>
+        <h1>从控制面到运行时，组件围绕同一套资源模型协作。</h1>
         <p>
-          Control Plane 提供治理模型和多协议入口，Console、Controller、Sidecar、SDK 与
-          Specification 分别覆盖可视化管理、Kubernetes 接入、数据面执行、Proxyless 接入和开放标准。
+          Control Plane 定义治理模型和多协议入口；Console、Pole Agent、Controller、Sidecar、SDK、
+          Observability 与 Specification 分别承担操作、接入、执行、观测和开放契约。
         </p>
         <div className="hero-actions">
           {componentPageActions.map((action) => {
             const Icon = action.icon;
             return (
-              <Link className="button-secondary" href={action.href} key={action.href}>
+              <Link className="button button-secondary" href={action.href} key={action.href}>
                 <Icon size={17} />
                 {action.title}
               </Link>
@@ -32,27 +32,46 @@ export default function ComponentsPage() {
         </div>
       </section>
 
-      <section className="section-band">
-        <div className="component-grid">
-          {componentGroups.map((component) => {
+      <section className="component-directory section-frame">
+        <div className="component-directory-head">
+          <span>COMPONENT</span>
+          <span>RESPONSIBILITY</span>
+          <span>IMPLEMENTATION NOTES</span>
+        </div>
+        <div className="component-list">
+          {componentGroups.map((component, index) => {
             const Icon = component.icon;
             return (
-              <Link className="component-card" href={component.href} key={component.name}>
+              <Link className="component-row" href={component.href} key={component.name}>
                 <span className="card-icon">
                   <Icon size={20} />
                 </span>
-                <h2>{component.name}</h2>
+                <div className="component-name">
+                  <small>{String(index + 1).padStart(2, '0')}</small>
+                  <h2>{component.name}</h2>
+                </div>
                 <p>{component.summary}</p>
-                <ul>
-                  {component.details.map((detail) => (
-                    <li key={detail}>{detail}</li>
-                  ))}
-                </ul>
+                <div className="component-details">
+                  {component.details.map((detail) => <span key={detail}>{detail}</span>)}
+                </div>
+                <span className="component-arrow" aria-hidden="true">→</span>
               </Link>
             );
           })}
         </div>
       </section>
+
+      <footer className="site-footer compact-footer">
+        <div className="footer-brand">
+          <strong>Lattice Hub</strong>
+          <span>面向服务与 Agent 的云原生治理控制面。</span>
+        </div>
+        <div className="footer-links">
+          <Link href="/">首页</Link>
+          <Link href="/docs">文档</Link>
+          <Link href="https://github.com/lattice-hub">GitHub</Link>
+        </div>
+      </footer>
     </main>
   );
 }

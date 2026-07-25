@@ -153,7 +153,9 @@ function getProductDocsTree(tree: PageTree.Root): PageTree.Root {
       folder('原理细节', [
         pageAlias(tree, { name: '控制面装配架构', url: '/docs/principles/architecture' }),
         pageAlias(tree, { name: '增量缓存与事件流', url: '/docs/principles/cache-eventhub' }),
+        pageAlias(tree, { name: '治理规则与灰度发布', url: '/docs/principles/governance-release' }),
         pageAlias(tree, { name: '鉴权链与资源映射', url: '/docs/principles/auth-protocols' }),
+        pageAlias(tree, { name: 'AI Registry 与 Pole Agent', url: '/docs/principles/ai-registry' }),
         pageAlias(tree, { name: '观测链路', url: '/docs/principles/observability-chain' }),
       ]),
     ],

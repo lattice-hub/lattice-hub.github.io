@@ -22,7 +22,7 @@ export function SiteHeader() {
           <span className="glyph">
             <Image alt="" aria-hidden="true" height={32} priority src={`${basePath}/lattice-hub-logo.png`} width={32} />
           </span>
-          <span className="brand-name">Lattice Hub</span>
+          <span className="brand-name">Lattice.Hub</span>
         </Link>
 
         <nav className="nav-links" aria-label="主导航">
@@ -40,8 +40,9 @@ export function SiteHeader() {
               <span>GitHub</span>
             </Link>
           ) : null}
-          <Link className="nav-doc-button btn btn-primary btn-arrow" data-magnetic href="/docs">
-            阅读文档
+          <Link className="nav-doc-button" href="/docs">
+            开始阅读
+            <span aria-hidden="true">→</span>
           </Link>
           <button
             aria-controls="site-mobile-drawer"
@@ -67,8 +68,9 @@ export function SiteHeader() {
             GitHub
           </Link>
         ) : null}
-        <Link className="btn btn-primary btn-arrow" data-magnetic href="/docs" onClick={closeDrawer}>
-          阅读文档
+        <Link className="drawer-primary" href="/docs" onClick={closeDrawer}>
+          开始阅读
+          <span aria-hidden="true">→</span>
         </Link>
       </div>
     </header>

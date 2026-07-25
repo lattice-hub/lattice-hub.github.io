@@ -146,3 +146,56 @@
 - 本轮部署：提交 `d82e61a fix: isolate fumadocs document theme` 并推送到 `origin/main`；GitHub Actions Pages run `28590223259` 成功；线上 `/docs/reports/performance/` 返回 200，light/dark 截图均显示 Fumadocs 文档文字、表格和侧栏正常。
 - 根据用户指出「文档、博客、报告应该在 Fumadocs 左侧顶部切换」，已确认 `DocsLayout` 原生支持 `tabs` 和 sidebar dropdown；新增 `docs-navigation` 将三个分区作为 tabs 接入，并按当前 slug 过滤左侧目录树。
 - 本轮本地验证：`npm test`、`npm run lint`、`npm run build`、`NEXT_OUTPUT=export npm run build` 均通过；Playwright 截图验证 `/docs` 显示「文档」并只展示产品能力/原理/组件，`/docs/blog` 显示「博客」并只展示博客文章，`/docs/reports/performance` 显示「报告」并只展示报告目录。
+
+## 官网同步最新 Control Plane 设计与知识（2026-07-25）
+
+### 目标与设计规格
+
+- 以 `../pole-control-plane` 当前知识库、近期提交和 Console 实现为唯一事实来源，移除官网中过时的“A2A 规划中”“七类治理规则”等表述。
+- 首页主张从“Agent Registry 优先”收敛为“服务治理控制面”，首屏同时呈现服务发现、治理发布、配置与 Pole Agent，但 AI 能力不支配整体视觉。
+- 视觉语言与最新 Console 的 Fluent 迁移保持同源：企业蓝、冷灰背景、白色内容表面、细边框和克制圆角；删除极光、蓝图网格、玻璃拟态、磁吸与无业务意义的漂浮动效。
+- 首屏右侧使用可读的真实产品界面抽象，不伪造控制台截图：展示环境、服务、治理发布状态与受控 Agent 变更链，所有数字和状态都来自已确认实现。
+- 首页信息架构调整为：产品主张 → 控制面能力地图 → 九类治理与发布语义 → Pole Agent 安全操作闭环 → 运行与观测底座 → 文档分流。
+- 保留 Next.js + Fumadocs 现有技术栈，不迁移框架；首页样式继续限定在 `.site-shell`，不得污染 Fumadocs light/dark token。
+- 桌面与 390px 移动端都不得出现页面级横向滚动；交互元素必须具备 hover、pressed、focus-visible 和 reduced-motion 降级。
+
+### 计划
+
+- [x] 回顾 `context-kg/tasks/lessons.md`、仓库状态、现有首页和测试约束。
+- [x] 审计当前首屏截图，确认现有极光、网格、玻璃卡和 Agent-first 主张已偏离最新 Console 设计。
+- [x] 提炼 control-plane 最新能力、实现状态和可公开事实，形成内容映射。
+- [x] 更新首页组件、站点内容模型、组件页与关键文档内容。
+- [x] 收敛首页 CSS 和交互代码，删除不再使用的旧轮播、玻璃和磁吸样式。
+- [x] 更新测试，约束九类治理规则、Pole Agent 真实运行边界、63 项系统配置和 Fluent 同源视觉。
+- [x] 运行 test、lint、build、静态导出并检查导出内容。
+- [x] 使用真实浏览器检查桌面与 390px 移动端截图、横向溢出和运行时错误。
+- [x] 在本节补充 Review，记录事实来源、改动范围与验证结果。
+
+### Review
+
+- 事实来源为 `../pole-control-plane` 当前实现、知识文档和近期提交：官网已按六类协议、九类治理能力、草稿/发布/灰度/回滚语义、MCP 与 A2A 双 Registry、63 项类型化系统配置更新，不再把 A2A Registry 写成规划能力。
+- Pole Agent 的公开边界已收敛为真实实现：完成理解、工具调用、预览差异、哈希与并发校验、用户确认、保存草稿的最小闭环；Agent 不直接发布配置，A2A 目前只承担 Agent Registry。
+- 首页从 Agent-first 极光玻璃视觉改为与最新 Console 同源的 Fluent 产品表达，以服务治理控制面为主叙事；首屏、能力地图、九类治理、Agent 安全变更链、运行底座和文档分流均已重构。
+- 同步更新组件目录和关键文档，补充 Pole Agent、Observability、治理发布与 AI Registry 阅读入口；性能页移除容易失真的固定缓存类别数量，仅保留当前可确认的刷新语义。
+- 删除三个不再使用的旧轮播/交互组件，首页改为服务端静态产品界面抽象，减少无业务意义动效和客户端代码。
+- 验证结果：`npm test` 12/12 通过，`npm run lint` 通过，`npm run build` 通过，`NEXT_OUTPUT=export NEXT_PUBLIC_BASE_PATH=/website npm run build` 通过，导出页面内部资源路径均带 `/website` 前缀。
+- 浏览器验证覆盖 `/`、`/components`、`/docs` 的 1440px 与 390px 视口：页面无横向溢出、控制台与页面错误为空，移动端导航可展开；桌面与移动端截图已人工检查，验证产物未纳入工作区。
+
+## 官网更新发布（2026-07-25）
+
+### 计划
+
+- [x] 确认当前分支、远端仓库和待发布差异。
+- [x] 对相对 `HEAD` 的工作区差异执行 Standards / Spec 双轴审查。
+- [x] 处理审查发现并重新运行 test、lint、build 与静态导出。
+- [ ] 提交并推送 `main`。
+- [ ] 等待 GitHub Pages workflow 完成，验证首页、组件页、文档页和关键静态资源。
+- [ ] 在本节补充发布 Review。
+
+### 发布前 Review
+
+- Standards 审查发现官网字体和 `.container` 仍可能污染 Fumadocs，已将字体、容器和顶栏样式收敛到 `.site-shell`，并新增回归断言；页脚结构重复属于非阻塞判断项，本次遵循最小影响原则不扩展重构。
+- Spec 审查发现首屏产品抽象使用了未经确认的服务/实例数字和虚构运行状态，已改为多协议、双探测、版本化等已确认能力语义；工具轨迹由展示别名修正为真实 MCP 工具名 `get_config_file`。
+- 已移除顶栏 `backdrop-filter`，补齐能力行、文档行和组件行的 pressed 状态。
+- 最终本地验证：`npm test` 12/12 通过，`npm run lint` 通过，普通生产构建与 `/website` 静态导出均通过。
+- Playwright 覆盖 `/`、`/components`、`/docs` 的 1440px 与 390px 视口：全部返回 200、无页面级横向溢出、无浏览器错误；移动端导航展开后 `aria-expanded=true`。

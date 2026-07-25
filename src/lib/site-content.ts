@@ -1,4 +1,6 @@
 import {
+  Activity,
+  Bot,
   Boxes,
   Braces,
   Cpu,
@@ -28,152 +30,109 @@ export type ContentEntry = {
   summary: string;
 };
 
-export type AgentCapability = {
-  name: string;
-  protocol: string;
-  status: string;
-  summary: string;
-};
-
-export type GovernanceRule = {
+export type GovernanceDomain = {
   id: string;
   name: string;
   summary: string;
-  clientLabel: string;
-  controlLabel: string;
-  upstreamA: string;
-  upstreamB: string;
-  edgeA: string;
-  edgeB: string;
-  variant: 'route' | 'lane' | 'limit' | 'circuit' | 'mirror' | 'mock' | 'auth';
+  group: '流量路径' | '稳定性' | '安全与测试';
+};
+
+export type CapabilityPillar = {
+  index: string;
+  title: string;
+  summary: string;
+  detail: string;
+  href: string;
+  accent: string;
 };
 
 export const siteNav: SiteNavItem[] = [
-  { label: '文档', href: '/docs' },
+  { label: '产品能力', href: '/#capabilities' },
+  { label: '治理工作台', href: '/#governance' },
   { label: '组件生态', href: '/components' },
-  { label: '博客', href: '/docs/blog' },
-  { label: '报告', href: '/docs/reports' },
+  { label: '文档', href: '/docs' },
   { label: 'GitHub', href: 'https://github.com/lattice-hub' },
 ];
 
-export const heroSignals = [
-  'HTTP / gRPC / xDS',
-  'Nacos / Apollo / Eureka',
-  'MCP / A2A Registry',
-  '治理规则统一拓扑',
+export const capabilityPillars: CapabilityPillar[] = [
+  {
+    index: '01',
+    title: '运行环境，而不是资源文件夹',
+    summary: 'Namespace 把同一逻辑资源的开发、预发与生产实例放在各自的发布边界内。',
+    detail: '服务、配置和治理规则都按环境维护内容、版本与发布状态。',
+    href: '/docs/what-is/features',
+    accent: 'environment',
+  },
+  {
+    index: '02',
+    title: '兼容已有注册与配置协议',
+    summary: '从 Polaris、Nacos、Apollo、Eureka 到 Envoy xDS，让客户端沿现有协议接入统一控制面。',
+    detail: '注册发现、配置监听、批量心跳和空推保护由同一套领域模型承载。',
+    href: '/docs/what-is/access',
+    accent: 'protocol',
+  },
+  {
+    index: '03',
+    title: '编辑、发布与回滚明确分离',
+    summary: '配置和治理规则先形成草稿，再通过不可变版本、灰度发布和历史回滚进入运行态。',
+    detail: '写入并不等于生效，发布状态始终可解释。',
+    href: '/docs/principles/governance-release',
+    accent: 'release',
+  },
+  {
+    index: '04',
+    title: '身份与权限进入控制面模型',
+    summary: '管理面细粒度资源授权与数据面托管服务身份分别解决“谁能改”和“谁在调用”。',
+    detail: '短期服务凭证不让控制面进入每次业务调用的同步热路径。',
+    href: '/docs/principles/auth-protocols',
+    accent: 'identity',
+  },
 ];
 
-export const agentCapabilities: AgentCapability[] = [
-  {
-    name: 'MCP Registry',
-    protocol: 'MCP',
-    status: 'ready',
-    summary: '把服务、配置和治理资源登记为可发现能力。',
-  },
-  {
-    name: 'A2A Capability Index',
-    protocol: 'A2A',
-    status: 'design',
-    summary: '为 Agent 间协作提供能力目录和接入状态。',
-  },
-  {
-    name: 'Protocol Discovery',
-    protocol: 'xDS / Nacos / Apollo',
-    status: 'mapped',
-    summary: '把多协议入口映射到统一控制面资源。',
-  },
-  {
-    name: 'Access Scope',
-    protocol: 'Auth',
-    status: 'guarded',
-    summary: '能力发现必须经过资源权限和策略边界。',
-  },
+export const governanceDomains: GovernanceDomain[] = [
+  { id: 'route', name: '路由', summary: '按标签、权重和请求条件选择目标版本。', group: '流量路径' },
+  { id: 'lane', name: '泳道', summary: '让一组关联服务沿同一环境标识闭环。', group: '流量路径' },
+  { id: 'mirror', name: '流量镜像', summary: '复制请求到影子服务，不改变主链路结果。', group: '流量路径' },
+  { id: 'rate-limit', name: '限流', summary: '按请求维度和配额约束流量入口。', group: '稳定性' },
+  { id: 'circuit-breaker', name: '熔断', summary: '在异常阈值触发后隔离不健康调用。', group: '稳定性' },
+  { id: 'fault-detect', name: '故障探测', summary: '用主动与被动信号识别异常实例。', group: '稳定性' },
+  { id: 'lossless', name: '无损上下线', summary: '在实例生命周期变化时保护在途请求。', group: '稳定性' },
+  { id: 'auth', name: '调用鉴权', summary: '按服务身份与请求条件执行访问策略。', group: '安全与测试' },
+  { id: 'mock', name: '流量 Mock', summary: '按规则直接返回受控响应，用于联调与演练。', group: '安全与测试' },
 ];
 
-export const governanceRules: GovernanceRule[] = [
+export const platformFacts = [
+  { value: '6', label: '类协议服务端', note: 'HTTP / gRPC / xDS / Nacos / Apollo / Eureka' },
+  { value: '9', label: '类治理能力', note: '结构化查看、编辑、版本与灰度发布' },
+  { value: '63', label: '项系统配置目录', note: '区分部署锁定、待重启与受控热更新' },
+  { value: '1s', label: '增量缓存周期', note: '以回退时间窗保护变更扫描' },
+];
+
+export const docsSections: ContentEntry[] = [
   {
-    id: 'routing',
-    name: '路由',
-    summary: '按权重拆分 stable 与 canary 路径。',
-    clientLabel: 'client',
-    controlLabel: 'route policy',
-    upstreamA: 'stable',
-    upstreamB: 'canary',
-    edgeA: 'stable 80%',
-    edgeB: 'canary 20%',
-    variant: 'route',
+    title: '产品概览',
+    href: '/docs',
+    summary: '从运行环境、服务发现到治理、配置、权限与 Agent 的能力全景。',
   },
   {
-    id: 'lane',
-    name: '泳道',
-    summary: '带 `x-env: gray` 标签的请求进入灰度泳道。',
-    clientLabel: 'x-env: gray',
-    controlLabel: 'lane rule',
-    upstreamA: 'stable',
-    upstreamB: 'gray lane',
-    edgeA: 'default',
-    edgeB: 'highlight',
-    variant: 'lane',
+    title: '架构原理',
+    href: '/docs/principles/architecture',
+    summary: '协议接入、业务服务、缓存事件流、存储与发布链如何协作。',
   },
   {
-    id: 'rate-limit',
-    name: '限流',
-    summary: '入口边限制为 ≤1000 rps，溢出进入 429 闸门。',
-    clientLabel: 'client',
-    controlLabel: 'rate limit',
-    upstreamA: 'service',
-    upstreamB: '429 gate',
-    edgeA: '≤1000 rps',
-    edgeB: 'overflow',
-    variant: 'limit',
+    title: '组件生态',
+    href: '/components',
+    summary: 'Control Plane、Console、Controller、SDK、Sidecar 与规范。',
   },
   {
-    id: 'circuit-breaker',
-    name: '熔断',
-    summary: 'svc-A 边断开，流量改由 svc-B 接管。',
-    clientLabel: 'client',
-    controlLabel: 'circuit breaker',
-    upstreamA: 'svc-A open',
-    upstreamB: 'svc-B takeover',
-    edgeA: 'open',
-    edgeB: 'fallback',
-    variant: 'circuit',
+    title: '工程实践',
+    href: '/docs/practices/gray-release',
+    summary: '灰度发布、Kubernetes 同步、Agent 发现和 Sidecar 数据面。',
   },
   {
-    id: 'mirror',
-    name: '镜像',
-    summary: '主链路保持实线，同时 copy 虚线旁路到影子集群。',
-    clientLabel: 'client',
-    controlLabel: 'mirror rule',
-    upstreamA: 'primary',
-    upstreamB: 'shadow',
-    edgeA: 'main',
-    edgeB: 'copy',
-    variant: 'mirror',
-  },
-  {
-    id: 'mock',
-    name: 'Mock',
-    summary: '控制面直接回流 200 JSON，上游路径灰显绕过。',
-    clientLabel: 'client',
-    controlLabel: 'mock response',
-    upstreamA: '200 JSON',
-    upstreamB: 'upstream bypass',
-    edgeA: 'return',
-    edgeB: 'bypass',
-    variant: 'mock',
-  },
-  {
-    id: 'auth',
-    name: '鉴权',
-    summary: '策略门后分允许放行与拒绝阻断两条边。',
-    clientLabel: 'token',
-    controlLabel: 'auth gate',
-    upstreamA: 'allow',
-    upstreamB: 'deny',
-    edgeA: 'pass',
-    edgeB: 'block',
-    variant: 'auth',
+    title: '报告',
+    href: '/docs/reports',
+    summary: '只记录已验证事实、测试配置与仍待补齐的性能证据。',
   },
 ];
 
@@ -181,79 +140,58 @@ export const componentGroups: ComponentGroup[] = [
   {
     name: 'Control Plane',
     href: '/docs/components/control-plane',
-    summary: '核心控制面，负责服务发现、配置中心、治理规则、命名空间和多协议入口。',
-    details: ['HTTP / gRPC / xDS / Nacos / Apollo / Eureka', '规则版本化、灰度下发、细粒度鉴权'],
+    summary: '统一服务发现、配置、治理、身份、Registry 与多协议接入。',
+    details: ['插件化四层架构', '增量缓存与版本化发布'],
     icon: ServerCog,
   },
   {
     name: 'Console',
     href: '/docs/components/console',
-    summary: '面向运维与平台团队的控制台，管理服务、命名空间、配置、用户与权限策略。',
-    details: ['TDesign React + Vite', '服务治理资源的可视化入口'],
+    summary: '基于 Fluent UI 的企业控制台，覆盖资源管理、治理工作台、系统配置和平台观测。',
+    details: ['亮色 / 暗色企业界面', '草稿、发布、历史与审计入口'],
     icon: Boxes,
+  },
+  {
+    name: 'Pole Agent',
+    href: '/docs/principles/ai-registry',
+    summary: 'Console 内的一等对话工作模式，通过白名单 MCP 工具安全读取资源和准备变更。',
+    details: ['真实 LLM / MCP 最小闭环', '预览、确认、草稿、人工发布'],
+    icon: Bot,
   },
   {
     name: 'Rust SDK',
     href: '/docs/components/rust-sdk',
-    summary: 'Proxyless Service Governance 的 Rust 接入方式，覆盖注册发现、配置中心与治理验证。',
+    summary: 'Proxyless Service Governance 的 Rust 接入，覆盖注册发现、配置与治理验证。',
     details: ['crate: pole_rust = "0.2.0"', 'Rust >= 1.63.0'],
     icon: Braces,
   },
   {
     name: 'Kubernetes Controller',
     href: '/docs/components/kubernetes-controller',
-    summary: '连接 Kubernetes 与 Lattice Hub，支持 Service 同步与 Sidecar 自动注入。',
-    details: ['全量 / 按需同步', 'dns / mesh 两种 sidecar 模式'],
+    summary: '连接 Kubernetes 与控制面，支持 Service 同步和 Sidecar 自动注入。',
+    details: ['全量 / 按需同步', 'Gateway 与本地部署链路'],
     icon: Workflow,
   },
   {
     name: 'Pingora Sidecar',
     href: '/docs/components/pingora-sidecar',
-    summary: '基于 Pingora 的轻量数据面，提供 HTTP、HTTP/2、gRPC-h2c 转发与治理扩展点。',
-    details: ['前缀路由与轮询负载均衡', 'ACL、限流、熔断、指标扩展骨架'],
+    summary: '基于 Pingora 的轻量数据面，为 HTTP、HTTP/2 与 gRPC-h2c 提供治理执行点。',
+    details: ['前缀路由与轮询负载均衡', 'ACL、限流、熔断与指标扩展'],
     icon: Network,
+  },
+  {
+    name: 'Observability',
+    href: '/docs/principles/observability-chain',
+    summary: '以 OpenTelemetry、Collector 与共享 GreptimeDB 承载控制面指标和平台概览。',
+    details: ['标准语义与 Pole 领域指标', 'Kubernetes 观测部署闭环'],
+    icon: Activity,
   },
   {
     name: 'Specification',
     href: '/docs/components/specification',
-    summary: '服务治理标准与 protobuf 协议定义，覆盖服务管理、流量治理、容错、安全与 AI Native。',
-    details: ['Java / Go / Rust 生成入口', 'MCP server proto'],
+    summary: '开放的服务治理与 protobuf 协议定义，覆盖治理、安全和 AI Registry。',
+    details: ['Java / Go / Rust 生成入口', 'MCP / A2A 契约边界'],
     icon: Cpu,
-  },
-];
-
-export const architectureFacts = [
-  { label: '架构层次', value: 'API 服务层 / 业务逻辑层 / 缓存层 / 存储层' },
-  { label: '缓存刷新', value: '19 类缓存，后台 1s 增量刷新，lastMtime - 5s 查询窗口' },
-  { label: '配置限制', value: '分页上限 100，配置内容上限 20,000 字符' },
-  { label: '批处理示例', value: '队列 10000，等待 32ms，最大批量 128，并发 128' },
-];
-
-export const docsSections: ContentEntry[] = [
-  {
-    title: '概览',
-    href: '/docs',
-    summary: '服务发现、治理规则、配置、权限、AI Registry 与运行时接入的完整能力总览。',
-  },
-  {
-    title: 'Principles',
-    href: '/docs/principles/architecture',
-    summary: '架构原理、缓存事件流、治理发布和鉴权链。',
-  },
-  {
-    title: 'Components',
-    href: '/components',
-    summary: '官网级组件矩阵，并继续链接到 docs 组件说明。',
-  },
-  {
-    title: 'Blog',
-    href: '/docs/blog',
-    summary: '服务治理、Kubernetes 同步、Sidecar 与 Agent Registry 实践。',
-  },
-  {
-    title: 'Reports',
-    href: '/docs/reports',
-    summary: '性能报告入口，只记录已有事实和待实测计划。',
   },
 ];
 
@@ -301,13 +239,6 @@ export const blogPosts: ContentEntry[] = [
     href: '/docs/blog/config-rollout',
     summary: '从配置中心事实出发，整理灰度发布和监听链路的实践边界。',
   },
-];
-
-export const trustMetrics = [
-  { value: '19', label: '类控制面缓存' },
-  { value: '1s', label: '增量刷新周期' },
-  { value: '20k', label: '配置内容字符上限' },
-  { value: '6+', label: '组件与协议入口' },
 ];
 
 export const componentPageActions = [

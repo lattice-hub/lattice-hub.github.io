@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import {
   blogPosts,
+  capabilityPillars,
   componentGroups,
   docsSections,
-  governanceRules,
+  governanceDomains,
+  platformFacts,
   principles,
   siteNav,
 } from '../src/lib/site-content';
@@ -15,9 +17,9 @@ import { resolveImageSrc } from '../src/mdx-components';
 test('site navigation exposes real site-level destinations', () => {
   assert.deepEqual(
     siteNav.map((item) => item.href),
-    ['/docs', '/components', '/docs/blog', '/docs/reports', 'https://github.com/lattice-hub'],
+    ['/#capabilities', '/#governance', '/components', '/docs', 'https://github.com/lattice-hub'],
   );
-  assert.ok(siteNav.every((item) => !item.href.startsWith('#')), 'navigation must not use homepage anchors');
+  assert.ok(siteNav.every((item) => item.href.startsWith('/') || item.href.startsWith('https://')));
 });
 
 test('component matrix covers the Lattice Hub ecosystem', () => {
@@ -26,9 +28,11 @@ test('component matrix covers the Lattice Hub ecosystem', () => {
   assert.deepEqual(componentNames, [
     'Control Plane',
     'Console',
+    'Pole Agent',
     'Rust SDK',
     'Kubernetes Controller',
     'Pingora Sidecar',
+    'Observability',
     'Specification',
   ]);
 });
@@ -36,49 +40,39 @@ test('component matrix covers the Lattice Hub ecosystem', () => {
 test('docs routing exposes the five PRD landing destinations', () => {
   assert.deepEqual(
     docsSections.map((section) => section.href),
-    ['/docs', '/docs/principles/architecture', '/components', '/docs/blog', '/docs/reports'],
+    ['/docs', '/docs/principles/architecture', '/components', '/docs/practices/gray-release', '/docs/reports'],
   );
 });
 
-test('homepage capability section uses generated work architecture diagram', () => {
+test('homepage leads with service governance and a product interface abstraction', () => {
   const homepage = readFileSync('src/app/page.tsx', 'utf8');
+  const hero = readFileSync('src/components/site/HomeHero.tsx', 'utf8');
   const globalCss = readFileSync('src/app/global.css', 'utf8');
-  const diagram = readFileSync('public/diagrams/lattice-hub-work-architecture.svg', 'utf8');
 
-  assert.match(homepage, /work-architecture-figure/);
-  assert.match(homepage, /\/diagrams\/lattice-hub-work-architecture\.svg/);
-  assert.doesNotMatch(homepage, /home-line-grid/);
-  assert.doesNotMatch(homepage, /服务 A|服务 B|服务 C/);
-  assert.doesNotMatch(globalCss, /runtime-service|capability-domain|function-architecture/);
-
-  for (const keyword of [
-    '入口与变更源',
-    'Lattice Hub 控制面',
-    '协议入口层',
-    '领域服务层',
-    '运行时视图层',
-    '客户端轻量接入层',
-    'Thin Client SDK',
-    'Local Proxy / Sidecar',
-    'Proxy Mesh / Gateway',
-    'Agent / Client',
-  ]) {
-    assert.match(diagram, new RegExp(keyword));
-  }
-  assert.doesNotMatch(diagram, /服务 A|服务 B|服务 C/);
+  assert.match(hero, /让服务治理/);
+  assert.match(hero, /console-preview/);
+  assert.match(hero, /配置差异已生成，确认后只保存草稿/);
+  assert.match(hero, /多协议/);
+  assert.doesNotMatch(hero, />24<|>186<|>03<|22 正常|3 隔离|canary 20%/);
+  assert.match(homepage, /get_config_file/);
+  assert.doesNotMatch(homepage, /pole\.config\.get_file|SESSION 08|Runtime ready/);
+  assert.match(homepage, /九类治理能力/);
+  assert.match(homepage, /Human in the release loop/);
+  assert.doesNotMatch(hero, /A2A Agent Registry 规划中/);
+  assert.doesNotMatch(globalCss, /aurora|glass-card|backdrop-filter|radial-gradient/);
 });
 
-test('governance carousel keeps seven unified topology rules', () => {
+test('governance catalog covers the nine implemented domains', () => {
   assert.deepEqual(
-    governanceRules.map((rule) => rule.id),
-    ['routing', 'lane', 'rate-limit', 'circuit-breaker', 'mirror', 'mock', 'auth'],
+    governanceDomains.map((rule) => rule.id),
+    ['route', 'lane', 'mirror', 'rate-limit', 'circuit-breaker', 'fault-detect', 'lossless', 'auth', 'mock'],
   );
-  assert.ok(
-    governanceRules.every(
-      (rule) => rule.clientLabel && rule.controlLabel && rule.upstreamA && rule.upstreamB && rule.edgeA && rule.edgeB,
-    ),
-    'each rule needs client, control, upstream, and edge labels',
-  );
+  assert.equal(new Set(governanceDomains.map((rule) => rule.group)).size, 3);
+});
+
+test('homepage facts reflect the latest typed configuration catalog', () => {
+  assert.deepEqual(platformFacts.map((fact) => fact.value), ['6', '9', '63', '1s']);
+  assert.ok(capabilityPillars.some((item) => item.title.includes('运行环境')));
 });
 
 test('docs include principles and blog seed content', () => {
@@ -90,7 +84,7 @@ test('docs index is a product capability overview', () => {
   const docsIndex = readFileSync('content/docs/index.mdx', 'utf8');
 
   assert.match(docsIndex, /title: 产品能力总览/);
-  for (const keyword of ['服务发现', '流量治理', '配置中心', '权限审计', 'AI Registry', '多运行时接入']) {
+  for (const keyword of ['运行环境', '服务注册发现', '流量治理', '配置中心', 'AI Registry', 'Pole Agent']) {
     assert.match(docsIndex, new RegExp(keyword));
   }
   assert.doesNotMatch(docsIndex, /title: .*fumadocs 目录组织/);
@@ -129,8 +123,10 @@ test('global styles do not override fumadocs document theming', () => {
   assert.doesNotMatch(globalCss, /:root\s*{[\s\S]*--radius(?:-lg)?:/, 'Fumadocs radius tokens must stay intact');
   assert.doesNotMatch(globalCss, /body\s*{[^}]*background:\s*var\(--bg\)/, 'body background should follow Fumadocs');
   assert.doesNotMatch(globalCss, /body\s*{[^}]*color:\s*var\(--fg\)/, 'body text color should follow Fumadocs');
+  assert.doesNotMatch(globalCss, /body\s*{[^}]*font-family:/, 'body typography should follow Fumadocs');
   assert.doesNotMatch(globalCss, /^article img\s*{/m, 'docs images must not be styled through a global article selector');
-  assert.match(globalCss, /\.site-shell\s*{[\s\S]*--bg:/, 'homepage design tokens should be scoped to the homepage shell');
+  assert.match(globalCss, /\.site-shell\s*{[\s\S]*--page:/, 'homepage design tokens should be scoped to the homepage shell');
+  assert.match(globalCss, /\.site-shell\s*{[\s\S]*font-family:/, 'homepage typography should be scoped to the homepage shell');
 });
 
 test('docs layout uses fumadocs section switcher for docs blog and reports', () => {
@@ -171,6 +167,8 @@ test('docs layout uses fumadocs section switcher for docs blog and reports', () 
           { type: 'page', name: '缓存', url: '/docs/principles/cache-eventhub' },
           { type: 'page', name: '鉴权', url: '/docs/principles/auth-protocols' },
           { type: 'page', name: '观测', url: '/docs/principles/observability-chain' },
+          { type: 'page', name: '治理发布', url: '/docs/principles/governance-release' },
+          { type: 'page', name: 'AI Registry', url: '/docs/principles/ai-registry' },
         ],
       },
       {
@@ -240,7 +238,9 @@ test('docs layout uses fumadocs section switcher for docs blog and reports', () 
       'Sidecar 数据面',
       '控制面装配架构',
       '增量缓存与事件流',
+      '治理规则与灰度发布',
       '鉴权链与资源映射',
+      'AI Registry 与 Pole Agent',
       '观测链路',
     ],
   );
