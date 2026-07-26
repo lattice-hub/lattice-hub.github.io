@@ -40,7 +40,7 @@
   grid-column: 1;
   grid-row: 1;
   margin: 0 0 26px;
-  color: #595a57;
+  color: var(--text-soft);
   letter-spacing: .24em;
 }
 
@@ -59,7 +59,7 @@
 .hero h1 span {
   display: block;
   padding-top: 5px;
-  color: #0f6cbd;
+  color: var(--brand);
   font-family: "Songti SC", STSong, "Noto Serif SC", serif;
   font-size: .97em;
   font-style: italic;
@@ -72,7 +72,7 @@
   grid-row: 2;
   max-width: 500px;
   margin: 0;
-  color: #6b6c69;
+  color: var(--text-muted);
   font-size: 17px;
   line-height: 1.72;
   text-wrap: pretty;
@@ -94,7 +94,7 @@
   align-items: center;
   justify-content: center;
   gap: 16px;
-  border: 1px solid #202120;
+  border: 1px solid var(--ink);
   padding: 0 24px;
   font-size: 15px;
   font-weight: 620;
@@ -116,18 +116,18 @@
 }
 
 .buttonPrimary {
-  background: #202120;
-  color: #fff;
+  background: var(--ink);
+  color: var(--on-ink);
 }
 
 .buttonPrimary:hover {
-  border-color: #115ea3;
-  background: #115ea3;
+  border-color: var(--brand-hover);
+  background: var(--brand-hover);
 }
 
 .buttonPrimary:active {
-  border-color: #0c3b5e;
-  background: #0c3b5e;
+  border-color: var(--brand-deep);
+  background: var(--brand-deep);
 }
 
 .buttonSecondary {
@@ -135,13 +135,13 @@
 }
 
 .buttonSecondary:hover {
-  border-color: #115ea3;
-  color: #115ea3;
+  border-color: var(--brand-hover);
+  color: var(--brand-hover);
 }
 
 .buttonSecondary:active {
-  border-color: #0c3b5e;
-  color: #0c3b5e;
+  border-color: var(--brand-deep);
+  color: var(--brand-deep);
 }
 
 .heroCopy,
@@ -159,10 +159,10 @@
 
 .productFrame {
   overflow: hidden;
-  border: 1px solid rgba(32, 33, 32, .14);
+  border: 1px solid var(--frame-border);
   border-radius: 3px;
-  background: #fff;
-  box-shadow: 0 28px 70px rgba(35, 38, 39, .12), 0 2px 8px rgba(35, 38, 39, .06);
+  background: var(--surface);
+  box-shadow: 0 28px 70px var(--shadow), 0 2px 8px var(--shadow-soft);
 }
 
 .productFrame img {
@@ -172,8 +172,8 @@
 }
 
 .systemStrip {
-  border-block: 1px solid #d4d1ca;
-  background: rgba(255, 255, 255, .2);
+  border-block: 1px solid var(--border-strong);
+  background: color-mix(in srgb, var(--surface) 20%, transparent);
 }
 
 .systemStripInner {
@@ -183,7 +183,7 @@
 
 .systemStrip article {
   min-height: 148px;
-  border-right: 1px solid #d4d1ca;
+  border-right: 1px solid var(--border-strong);
   padding: 32px 40px 34px 0;
 }
 
@@ -198,7 +198,7 @@
 .systemStrip article > span {
   display: block;
   margin-bottom: 17px;
-  color: #595a57;
+  color: var(--text-soft);
 }
 
 .systemStrip strong {
@@ -222,7 +222,7 @@
 
 .sectionKicker {
   margin: 8px 0 0;
-  color: #595a57;
+  color: var(--text-soft);
   letter-spacing: .22em;
 }
 
@@ -239,13 +239,13 @@
 .sectionIntro {
   max-width: 600px;
   margin: 28px 0 0;
-  color: #6b6c69;
+  color: var(--text-muted);
   font-size: 18px;
   line-height: 1.75;
 }
 
 .evidence {
-  background: #fff;
+  background: var(--surface);
 }
 
 .evidenceStage {
@@ -261,7 +261,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 80px;
   margin-top: 34px;
-  border-top: 1px solid #dfded9;
+  border-top: 1px solid var(--border-strong);
   padding-top: 27px;
 }
 
@@ -270,12 +270,12 @@
   grid-template-columns: 42px 1fr;
   gap: 16px;
   margin: 0;
-  color: #6f706d;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .captionRow b {
-  color: #0f6cbd;
+  color: var(--brand);
   font-size: 11px;
   letter-spacing: .1em;
 }
@@ -285,12 +285,12 @@
 }
 
 .release {
-  background: #1d2022;
-  color: #f5f4ef;
+  background: var(--panel-dark);
+  color: var(--panel-dark-text);
 }
 
 .release .sectionKicker {
-  color: #aeb3b5;
+  color: var(--panel-dark-muted);
 }
 
 .release .sectionHead {
@@ -298,7 +298,7 @@
 }
 
 .release h2 span {
-  color: #72b5ef;
+  color: var(--brand-bright);
   font-family: "Songti SC", STSong, "Noto Serif SC", serif;
   font-style: italic;
   font-weight: 400;
@@ -307,12 +307,12 @@
 .releaseSteps {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid #464a4d;
+  border-top: 1px solid var(--panel-dark-border);
 }
 
 .releaseSteps article {
   min-height: 286px;
-  border-right: 1px solid #464a4d;
+  border-right: 1px solid var(--panel-dark-border);
   padding: 30px 34px 36px 0;
 }
 
@@ -327,7 +327,7 @@
 .releaseSteps article > span {
   display: block;
   margin-bottom: 72px;
-  color: #aeb3b5;
+  color: var(--panel-dark-muted);
 }
 
 .releaseSteps h3 {
@@ -339,7 +339,7 @@
 
 .releaseSteps p {
   margin: 0;
-  color: #aeb3b5;
+  color: var(--panel-dark-muted);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -362,14 +362,14 @@
 
 .governanceCopy > p:not(.sectionKicker) {
   margin: 31px 0 0;
-  color: #6b6c69;
+  color: var(--text-muted);
   font-size: 17px;
   line-height: 1.7;
 }
 
 .governanceCopy ul {
   margin: 44px 0 0;
-  border-top: 1px solid #d4d1ca;
+  border-top: 1px solid var(--border-strong);
   padding: 0;
   list-style: none;
 }
@@ -380,12 +380,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  border-bottom: 1px solid #d4d1ca;
+  border-bottom: 1px solid var(--border-strong);
   font-size: 14px;
 }
 
 .governanceCopy li span {
-  color: #5f605d;
+  color: var(--text-soft);
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 10px;
   letter-spacing: .1em;
@@ -396,9 +396,9 @@
   height: 360px;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid rgba(32, 33, 32, .14);
-  background: #fff;
-  box-shadow: 0 28px 70px rgba(35, 38, 39, .12), 0 2px 8px rgba(35, 38, 39, .06);
+  border: 1px solid var(--frame-border);
+  background: var(--surface);
+  box-shadow: 0 28px 70px var(--shadow), 0 2px 8px var(--shadow-soft);
 }
 
 .governanceVisual img {
@@ -418,15 +418,15 @@
   width: 270px;
   margin: 0;
   padding: 22px 24px;
-  background: #0f6cbd;
-  color: #fff;
+  background: var(--brand);
+  color: var(--on-brand);
   font-size: 13px;
   line-height: 1.6;
 }
 
 .agent {
-  border-top: 1px solid #d4d1ca;
-  background: #e9e6df;
+  border-top: 1px solid var(--border-strong);
+  background: var(--surface-subtle);
 }
 
 .agentGrid {
@@ -439,14 +439,14 @@
 .agentCopy {
   max-width: 650px;
   margin: 36px 0 0;
-  color: #6b6c69;
+  color: var(--text-muted);
   font-size: 18px;
   line-height: 1.75;
 }
 
 .agentBoundary {
   margin-top: 24px;
-  border-top: 1px solid #bdbab3;
+  border-top: 1px solid var(--border-mid);
 }
 
 .boundaryRow {
@@ -455,11 +455,11 @@
   gap: 16px;
   align-items: center;
   min-height: 78px;
-  border-bottom: 1px solid #bdbab3;
+  border-bottom: 1px solid var(--border-mid);
 }
 
 .boundaryRow > span {
-  color: #5f605d;
+  color: var(--text-soft);
   font-size: 11px;
 }
 
@@ -469,18 +469,18 @@
 }
 
 .boundaryRow small {
-  color: #6f706d;
+  color: var(--text-muted);
   font-size: 13px;
 }
 
 .agentNote {
   margin: 24px 0 0;
-  color: #777874;
+  color: var(--text-tertiary);
   font-size: 13px;
 }
 
 .scope {
-  background: #fff;
+  background: var(--surface);
 }
 
 .scopeLayout {
@@ -501,14 +501,14 @@
 
 .scopeCopy > p:not(.sectionKicker) {
   margin: 30px 0 0;
-  color: #6b6c69;
+  color: var(--text-muted);
   font-size: 17px;
   line-height: 1.7;
 }
 
 .scopeList {
   margin: 0;
-  border-top: 1px solid #d8d7d2;
+  border-top: 1px solid var(--border-strong);
   padding: 0;
   list-style: none;
 }
@@ -519,11 +519,11 @@
   gap: 28px;
   align-items: center;
   min-height: 112px;
-  border-bottom: 1px solid #d8d7d2;
+  border-bottom: 1px solid var(--border-strong);
 }
 
 .scopeList li > span:first-child {
-  color: #5f605d;
+  color: var(--text-soft);
   font-size: 11px;
   letter-spacing: .1em;
 }
@@ -538,19 +538,19 @@
 
 .scopeList p {
   margin: 0;
-  color: #777874;
+  color: var(--text-tertiary);
   font-size: 14px;
 }
 
 .scopeList li > span:last-child {
-  color: #0f6cbd;
+  color: var(--brand);
   font-size: 20px;
 }
 
 .finalCta {
   padding-block: 154px;
-  background: #0f6cbd;
-  color: #fff;
+  background: var(--brand);
+  color: var(--on-brand);
 }
 
 .finalCtaInner {
@@ -576,34 +576,34 @@
 }
 
 .finalCtaButton {
-  border-color: #fff;
-  background: #fff;
-  color: #202120;
+  border-color: var(--on-brand);
+  background: var(--on-brand);
+  color: var(--brand);
   white-space: nowrap;
 }
 
 .finalCtaButton:hover {
-  border-color: #202120;
-  background: #202120;
-  color: #fff;
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--on-ink);
 }
 
 .finalCtaSecondary {
   border-color: rgba(255, 255, 255, .66);
   background: transparent;
-  color: #fff;
+  color: var(--on-brand);
 }
 
 .finalCtaSecondary:hover {
-  border-color: #fff;
-  background: #fff;
-  color: #202120;
+  border-color: var(--on-brand);
+  background: var(--on-brand);
+  color: var(--brand);
 }
 
 .footer {
   padding: 58px 0 44px;
-  background: #1d2022;
-  color: #c2c5c6;
+  background: var(--panel-dark);
+  color: var(--panel-dark-soft-alt);
 }
 
 .footerTop {
@@ -611,7 +611,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 40px;
-  border-bottom: 1px solid #3c4042;
+  border-bottom: 1px solid var(--panel-dark-border-strong);
   padding-bottom: 48px;
 }
 
@@ -619,7 +619,7 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  color: #fff;
+  color: var(--panel-dark-heading);
   font-size: 20px;
   font-weight: 600;
 }
@@ -640,11 +640,11 @@
 }
 
 .footerLinks a:hover {
-  color: #72b5ef;
+  color: var(--brand-bright);
 }
 
 .footerLinks a:active {
-  color: #fff;
+  color: var(--panel-dark-heading);
 }
 
 .footerBottom {
@@ -652,7 +652,7 @@
   justify-content: space-between;
   gap: 30px;
   padding-top: 28px;
-  color: #aeb3b5;
+  color: var(--panel-dark-muted);
   font-size: 12px;
 }
 
@@ -776,7 +776,7 @@
   .systemStrip article + article {
     min-height: auto;
     border-right: 0;
-    border-bottom: 1px solid #d4d1ca;
+    border-bottom: 1px solid var(--border-strong);
     padding: 27px 0;
   }
 
@@ -811,7 +811,7 @@
   .releaseSteps article + article {
     min-height: auto;
     border-right: 0;
-    border-bottom: 1px solid #464a4d;
+    border-bottom: 1px solid var(--panel-dark-border);
     padding: 28px 0 30px;
   }
 

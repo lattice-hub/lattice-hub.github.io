@@ -33,7 +33,7 @@ a {
 
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid #0f6cbd;
+  outline: 2px solid var(--brand, #0f6cbd);
   outline-offset: 3px;
 }
 
@@ -46,14 +46,37 @@ nextjs-portal,
   --page: #f2f0eb;
   --surface: #ffffff;
   --surface-subtle: #e9e6df;
+  --ink: #202120;
   --text: #242424;
   --text-secondary: #616161;
   --text-tertiary: #8a8886;
+  --text-muted: #6b6c69;
+  --text-soft: #595a57;
   --border: #d9d9d9;
   --border-subtle: #e7e7e7;
+  --border-strong: #d4d1ca;
+  --border-mid: #c8c6c0;
   --brand: #0f6cbd;
   --brand-hover: #115ea3;
+  --brand-deep: #0c3b5e;
   --brand-soft: #ebf3fc;
+  --brand-bright: #72b5ef;
+  --on-brand: #ffffff;
+  --on-ink: #ffffff;
+  --panel-dark: #1d2022;
+  --panel-dark-elevated: #25292c;
+  --panel-dark-text: #f5f4ef;
+  --panel-dark-heading: #f7f6f1;
+  --panel-dark-muted: #aeb3b5;
+  --panel-dark-muted-alt: #aeb4b6;
+  --panel-dark-soft: #b9bdc0;
+  --panel-dark-soft-alt: #c1c5c7;
+  --panel-dark-border: #464a4d;
+  --panel-dark-border-alt: #454a4d;
+  --panel-dark-border-strong: #3c4042;
+  --frame-border: rgba(32, 33, 32, 0.14);
+  --shadow: rgba(35, 38, 39, 0.12);
+  --shadow-soft: rgba(35, 38, 39, 0.06);
   --success: #107c10;
   --warning: #8a4f0a;
   --danger: #c50f1f;
@@ -65,6 +88,47 @@ nextjs-portal,
   background: var(--page);
   color: var(--text);
   font-family: "Segoe UI Variable", "Segoe UI", -apple-system, BlinkMacSystemFont, "Noto Sans SC", sans-serif;
+}
+
+html.dark .site-shell {
+  --page: #121314;
+  --surface: #1a1c1e;
+  --surface-subtle: #222526;
+  --ink: #f2f1ec;
+  --text: #ecebe6;
+  --text-secondary: #a8aba9;
+  --text-tertiary: #7d817e;
+  --text-muted: #a8aba9;
+  --text-soft: #9a9d9a;
+  --border: #3a3e41;
+  --border-subtle: #2c3033;
+  --border-strong: #3f4447;
+  --border-mid: #3a3e41;
+  --brand: #4ea1e0;
+  --brand-hover: #72b5ef;
+  --brand-deep: #8bc8f3;
+  --brand-soft: #16324a;
+  --brand-bright: #8bc8f3;
+  --on-brand: #ffffff;
+  --on-ink: #121314;
+  --panel-dark: #0c0e0f;
+  --panel-dark-elevated: #15181a;
+  --panel-dark-text: #f5f4ef;
+  --panel-dark-heading: #f7f6f1;
+  --panel-dark-muted: #aeb3b5;
+  --panel-dark-muted-alt: #aeb4b6;
+  --panel-dark-soft: #b9bdc0;
+  --panel-dark-soft-alt: #c1c5c7;
+  --panel-dark-border: #2f3437;
+  --panel-dark-border-alt: #2f3437;
+  --panel-dark-border-strong: #3c4042;
+  --frame-border: rgba(242, 241, 236, 0.14);
+  --shadow: rgba(0, 0, 0, 0.45);
+  --shadow-soft: rgba(0, 0, 0, 0.28);
+}
+
+html.dark .site-shell img:not([src*="lattice-hub-logo"]) {
+  opacity: 0.96;
 }
 
 .site-shell--chrome {
@@ -191,10 +255,15 @@ nextjs-portal,
   min-height: 44px;
 }
 
-.drawer-lang {
+.drawer-lang,
+.drawer-theme {
   display: flex;
   align-items: center;
   min-height: 44px;
+}
+
+.drawer-theme {
+  padding: 10px 0 4px;
 }
 
 .experience-trigger {
@@ -217,7 +286,7 @@ nextjs-portal,
   border-radius: 4px;
   padding: 0 13px;
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
   font-size: 14px;
   font-weight: 600;
   transition: background 160ms ease, transform 160ms ease;
@@ -300,11 +369,11 @@ nextjs-portal,
   width: min(390px, calc(100vw - 40px));
   grid-template-columns: 1fr auto;
   gap: 24px;
-  border: 1px solid #3c4042;
+  border: 1px solid var(--panel-dark-border-strong);
   padding: 24px;
-  background: #1d2022;
-  box-shadow: 0 20px 56px rgba(29, 32, 34, .2);
-  color: #fff;
+  background: var(--panel-dark);
+  box-shadow: 0 20px 56px var(--shadow);
+  color: var(--panel-dark-heading);
 }
 
 .experience-notice[hidden] {
@@ -314,7 +383,7 @@ nextjs-portal,
 .experience-notice span {
   display: block;
   margin-bottom: 16px;
-  color: #aeb3b5;
+  color: var(--panel-dark-muted);
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 10px;
   letter-spacing: .16em;
@@ -329,7 +398,7 @@ nextjs-portal,
 
 .experience-notice p {
   margin: 9px 0 0;
-  color: #c1c5c7;
+  color: var(--panel-dark-soft-alt);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -338,11 +407,11 @@ nextjs-portal,
   display: grid;
   width: 44px;
   height: 44px;
-  border: 1px solid #555a5d;
+  border: 1px solid var(--panel-dark-border);
   padding: 0;
   place-items: center;
   background: transparent;
-  color: #fff;
+  color: var(--panel-dark-heading);
   cursor: pointer;
 }
 
@@ -437,7 +506,7 @@ nextjs-portal,
 .button-primary {
   border-color: var(--brand);
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
 }
 
 .button-primary:hover {
@@ -524,7 +593,7 @@ nextjs-portal,
   place-items: center;
   border-radius: 4px;
   background: var(--brand);
-  color: #fff;
+  color: var(--surface);
   font-size: 11px;
   font-weight: 750;
 }
@@ -687,7 +756,7 @@ nextjs-portal,
 .release-state {
   border-radius: 3px;
   padding: 4px 6px;
-  background: #fff4ce;
+  background: var(--surface)4ce;
   color: #5c2e00;
   font-size: 9px;
 }
@@ -783,7 +852,7 @@ nextjs-portal,
 .agent-strip-state {
   border-radius: 3px;
   padding: 4px 6px;
-  background: #fff4ce;
+  background: var(--surface)4ce;
   color: #5c2e00;
   font-size: 9px;
   white-space: nowrap;
@@ -1192,7 +1261,7 @@ nextjs-portal,
   border-radius: 4px;
   padding: 0 10px;
   background: #d1d1d1;
-  color: #616161;
+  color: var(--text-secondary);
   font-size: 10px;
 }
 
@@ -1294,8 +1363,8 @@ nextjs-portal,
   justify-content: space-between;
   gap: 30px;
   padding: 30px max(var(--gutter), calc((100vw - var(--container)) / 2));
-  background: #242424;
-  color: #fff;
+  background: var(--text);
+  color: var(--surface);
 }
 
 .architecture-copy {

@@ -20,22 +20,22 @@
 }
 
 .diagramBackground {
-  fill: #f4f2ec;
+  fill: var(--page, #f4f2ec);
 }
 
 .gridDot {
-  fill: #aaa89f;
+  fill: var(--text-tertiary, #aaa89f);
   opacity: .18;
 }
 
 .planeDepth {
-  fill: #d7d4cc;
+  fill: var(--border-strong, #d7d4cc);
   opacity: .55;
 }
 
 .planeTop {
-  fill: rgba(255, 255, 255, .58);
-  stroke: #d2cfc7;
+  fill: color-mix(in srgb, var(--surface, #fff) 58%, transparent);
+  stroke: var(--border-strong, #d2cfc7);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
@@ -965,4 +965,20 @@
   .secretBoundary {
     opacity: 1;
   }
+}
+
+:global(html.dark) .diagramFrame {
+  color-scheme: dark;
+}
+
+:global(html.dark) .diagramBackground {
+  fill: var(--page);
+}
+
+:global(html.dark) .planeTop {
+  fill: color-mix(in srgb, var(--surface) 42%, transparent);
+}
+
+:global(html.dark) .diagramLarge {
+  filter: saturate(0.92) brightness(0.96);
 }

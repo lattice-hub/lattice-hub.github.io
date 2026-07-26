@@ -14,41 +14,41 @@
 
 .diagramNote {
   margin: 20px 0 0;
-  color: #72736e;
+  color: var(--text-muted);
   font-size: 13px;
   line-height: 1.7;
 }
 
 .componentSection {
-  background: #1d2022;
-  color: #f7f6f1;
+  background: var(--panel-dark);
+  color: var(--panel-dark-heading);
 }
 
 .componentSection :global([class*="sectionIndex"]),
 .componentSection :global([class*="sectionLede"]) {
-  color: #aeb4b6;
+  color: var(--panel-dark-muted-alt);
 }
 
 .componentGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   margin-top: 70px;
-  border-top: 1px solid #454a4d;
-  border-left: 1px solid #454a4d;
+  border-top: 1px solid var(--panel-dark-border-alt);
+  border-left: 1px solid var(--panel-dark-border-alt);
 }
 
 .componentCard {
   display: grid;
   min-height: 300px;
   align-content: start;
-  border-right: 1px solid #454a4d;
-  border-bottom: 1px solid #454a4d;
+  border-right: 1px solid var(--panel-dark-border-alt);
+  border-bottom: 1px solid var(--panel-dark-border-alt);
   padding: 32px;
   transition: background 180ms ease;
 }
 
 .componentCard:hover {
-  background: #25292c;
+  background: var(--panel-dark-elevated);
 }
 
 .componentCard > span,
@@ -62,12 +62,12 @@
 }
 
 .componentCard > span {
-  color: #7fc2f4;
+  color: var(--brand-bright);
 }
 
 .componentCard small {
   margin-top: 26px;
-  color: #aeb4b6;
+  color: var(--panel-dark-muted-alt);
 }
 
 .componentCard h3 {
@@ -80,7 +80,7 @@
 .componentCard p {
   max-width: 450px;
   margin: 20px 0 0;
-  color: #aeb4b6;
+  color: var(--panel-dark-muted-alt);
   font-size: 14px;
   line-height: 1.75;
 }
@@ -91,25 +91,25 @@
   gap: 10px;
   align-self: end;
   margin-top: 30px;
-  color: #8bc8f3;
+  color: var(--brand-bright);
   font-size: 13px;
   font-weight: 620;
 }
 
 .executionSection {
-  background: #fff;
+  background: var(--surface);
 }
 
 .executionNotes {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   margin-top: 36px;
-  border-top: 1px solid #d8d6cf;
+  border-top: 1px solid var(--border-strong);
 }
 
 .executionNotes article {
   min-height: 230px;
-  border-right: 1px solid #d8d6cf;
+  border-right: 1px solid var(--border-strong);
   padding: 28px 34px 30px 0;
 }
 
@@ -122,7 +122,7 @@
 }
 
 .executionNotes article > span {
-  color: #0f6cbd;
+  color: var(--brand);
 }
 
 .executionNotes h3 {
@@ -134,18 +134,18 @@
 
 .executionNotes p {
   margin: 0;
-  color: #6e6f6b;
+  color: var(--text-muted);
   font-size: 14px;
   line-height: 1.7;
 }
 
 .boundarySection {
-  background: #f2f0ea;
+  background: var(--page);
 }
 
 .responsibilityTable {
   margin-top: 66px;
-  border-top: 1px solid #bdbbb4;
+  border-top: 1px solid var(--border-mid);
 }
 
 .tableHead,
@@ -154,12 +154,12 @@
   grid-template-columns: .45fr .9fr 1.65fr;
   gap: 30px;
   align-items: center;
-  border-bottom: 1px solid #cfcdc6;
+  border-bottom: 1px solid var(--border-strong);
 }
 
 .tableHead {
   min-height: 52px;
-  color: #777873;
+  color: var(--text-tertiary);
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 9px;
   font-weight: 680;
@@ -172,7 +172,7 @@
 }
 
 .tableRow strong {
-  color: #0f6cbd;
+  color: var(--brand);
   font-size: 14px;
 }
 
@@ -183,7 +183,7 @@
 
 .tableRow p {
   margin: 0;
-  color: #686965;
+  color: var(--text-muted);
   font-size: 14px;
   line-height: 1.65;
 }
@@ -200,14 +200,14 @@
   min-height: 44px;
   align-items: center;
   gap: 12px;
-  border-bottom: 1px solid #202120;
+  border-bottom: 1px solid var(--ink);
   font-size: 14px;
   font-weight: 620;
 }
 
 .actions a:hover {
-  border-color: #0f6cbd;
-  color: #0f6cbd;
+  border-color: var(--brand);
+  color: var(--brand);
 }
 
 @media (max-width: 900px) {
@@ -223,7 +223,7 @@
   .executionNotes article + article {
     min-height: 0;
     border-right: 0;
-    border-bottom: 1px solid #d8d6cf;
+    border-bottom: 1px solid var(--border-strong);
     padding: 28px 0;
   }
 

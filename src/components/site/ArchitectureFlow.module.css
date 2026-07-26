@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 36px;
-  border-bottom: 1px solid #cfcdc6;
+  border-bottom: 1px solid var(--border-strong);
 }
 
 .header {
@@ -36,11 +36,11 @@
 }
 
 .kicker {
-  color: #777873;
+  color: var(--text-tertiary);
 }
 
 .header strong {
-  color: #202120;
+  color: var(--ink);
   font-size: 18px;
   font-weight: 640;
   text-wrap: pretty;
@@ -51,7 +51,7 @@
   flex: 0 0 auto;
   align-items: center;
   gap: 2px;
-  border: 1px solid #cfcdc6;
+  border: 1px solid var(--border-strong);
   border-radius: 999px;
   padding: 2px;
   background: rgba(255, 255, 255, .46);
@@ -65,7 +65,7 @@
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: #777873;
+  color: var(--text-tertiary);
   cursor: pointer;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 9px;
@@ -77,17 +77,17 @@
 }
 
 .localeButton:hover {
-  color: #202120;
+  color: var(--ink);
 }
 
 .localeButton[aria-pressed="true"] {
-  background: #202120;
-  color: #fff;
+  background: var(--ink);
+  color: var(--surface);
   transform: translateY(-1px);
 }
 
 .localeButton:focus-visible {
-  outline: 2px solid #0f6cbd;
+  outline: 2px solid var(--brand);
   outline-offset: 2px;
 }
 
@@ -107,7 +107,7 @@
   border: 0;
   padding: 0 4px;
   background: transparent;
-  color: #6b6c68;
+  color: var(--text-muted);
   cursor: pointer;
   font: inherit;
   font-size: 13px;
@@ -116,15 +116,15 @@
 }
 
 .switchButton span {
-  color: #969792;
+  color: var(--text-tertiary);
 }
 
 .switchButton:hover {
-  color: #202120;
+  color: var(--ink);
 }
 
 .switchButton[aria-pressed="true"] {
-  color: #0f6cbd;
+  color: var(--brand);
 }
 
 .switchButton::after {
@@ -133,7 +133,7 @@
   bottom: -1px;
   left: 0;
   height: 2px;
-  background: #0f6cbd;
+  background: var(--brand);
   content: "";
   opacity: 0;
   transform: scaleX(.55);
@@ -148,11 +148,11 @@
 }
 
 .switchButton[aria-pressed="true"] span {
-  color: #0f6cbd;
+  color: var(--brand);
 }
 
 .switchButton:focus-visible {
-  outline: 2px solid #0f6cbd;
+  outline: 2px solid var(--brand);
   outline-offset: 2px;
 }
 
@@ -166,7 +166,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 32px;
   align-items: end;
-  border-top: 1px solid #cfcdc6;
+  border-top: 1px solid var(--border-strong);
   padding-top: 18px;
 }
 
@@ -176,11 +176,11 @@
 }
 
 .caption > div > span {
-  color: #0f6cbd;
+  color: var(--brand);
 }
 
 .caption strong {
-  color: #202120;
+  color: var(--ink);
   font-size: 17px;
   font-weight: 640;
 }
@@ -188,7 +188,7 @@
 .caption p {
   max-width: 720px;
   margin: 0;
-  color: #72736f;
+  color: var(--text-muted);
   font-size: 13px;
   line-height: 1.65;
 }
@@ -198,7 +198,7 @@
   min-height: 44px;
   align-items: center;
   gap: 10px;
-  color: #0f6cbd;
+  color: var(--brand);
   font-size: 13px;
   font-weight: 670;
   white-space: nowrap;

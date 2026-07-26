@@ -457,6 +457,10 @@ test('mdx image component resolves structured image src objects', () => {
 
 test('global styles do not override fumadocs document theming', () => {
   const globalCss = readFileSync('src/app/global.css', 'utf8');
+  const layout = readFileSync('src/app/layout.tsx', 'utf8');
+  const siteHeader = readFileSync('src/components/site/SiteHeader.tsx', 'utf8');
+  const themeSwitch = readFileSync('src/components/site/ThemeSwitch.tsx', 'utf8');
+  const docsLayout = readFileSync('src/app/docs/_components/DocsLayoutContent.tsx', 'utf8');
 
   assert.doesNotMatch(globalCss, /:root\s*{[\s\S]*--radius(?:-lg)?:/, 'Fumadocs radius tokens must stay intact');
   assert.doesNotMatch(globalCss, /body\s*{[^}]*background:\s*var\(--bg\)/, 'body background should follow Fumadocs');
@@ -465,6 +469,13 @@ test('global styles do not override fumadocs document theming', () => {
   assert.doesNotMatch(globalCss, /^article img\s*{/m, 'docs images must not be styled through a global article selector');
   assert.match(globalCss, /\.site-shell\s*{[\s\S]*--page:/, 'homepage design tokens should be scoped to the homepage shell');
   assert.match(globalCss, /\.site-shell\s*{[\s\S]*font-family:/, 'homepage typography should be scoped to the homepage shell');
+  assert.match(globalCss, /html\.dark\s+\.site-shell\s*{[\s\S]*--page:/, 'site shell must define dark tokens');
+  assert.match(layout, /defaultTheme:\s*'system'/);
+  assert.match(layout, /enableSystem:\s*true/);
+  assert.match(siteHeader, /ThemeSwitch/);
+  assert.match(themeSwitch, /setTheme\('light'\)|setTheme\(value\)/);
+  assert.match(themeSwitch, /'system'/);
+  assert.match(docsLayout, /mode:\s*'light-dark-system'/);
 });
 
 test('docs layout uses fumadocs section switcher for docs api blog reports and developers', () => {

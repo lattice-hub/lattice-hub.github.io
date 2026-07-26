@@ -6,6 +6,7 @@ import { Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { DocsLanguageSwitch } from '@/components/site/DocsLanguageSwitch';
+import { ThemeSwitch } from '@/components/site/ThemeSwitch';
 import {
   GITHUB_ORGANIZATION_URL,
   isSiteNavActive,
@@ -123,6 +124,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="nav-actions">
+          <ThemeSwitch />
           {docsLanguage ? (
             <DocsLanguageSwitch
               enHref={docsLanguage.enHref}
@@ -181,6 +183,9 @@ export function SiteHeader() {
         >
           体验
         </button>
+        <div className="drawer-theme">
+          <ThemeSwitch />
+        </div>
         {docsLanguage ? (
           <div className="drawer-lang">
             <DocsLanguageSwitch

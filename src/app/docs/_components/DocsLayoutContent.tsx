@@ -36,6 +36,9 @@ export function DocsLayoutContent({
           title: locale === 'en' ? 'Lattice Hub Docs' : 'Lattice Hub 文档',
           url: '/',
         }}
+        themeSwitch={{
+          mode: 'light-dark-system',
+        }}
       >
         {children}
       </DocsLayout>

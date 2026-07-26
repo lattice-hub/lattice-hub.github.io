@@ -29,7 +29,16 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body>
-        <RootProvider>{children}</RootProvider>
+        <RootProvider
+          theme={{
+            defaultTheme: 'system',
+            enableSystem: true,
+            attribute: 'class',
+            disableTransitionOnChange: true,
+          }}
+        >
+          {children}
+        </RootProvider>
       </body>
     </html>
   );

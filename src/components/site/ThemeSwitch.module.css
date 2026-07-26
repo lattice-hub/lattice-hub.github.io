@@ -1,0 +1,59 @@
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid var(--border, var(--color-fd-border));
+  border-radius: 999px;
+  padding: 3px;
+  background: var(--surface-subtle, var(--color-fd-muted));
+}
+
+.switch button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 30px;
+  min-height: 28px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 8px;
+  background: transparent;
+  color: var(--text-tertiary, var(--color-fd-muted-foreground));
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    color 140ms ease,
+    background 140ms ease;
+}
+
+.switch button:hover {
+  color: var(--text, var(--color-fd-foreground));
+}
+
+.switch button.active {
+  background: var(--text, var(--color-fd-foreground));
+  color: var(--surface, var(--color-fd-background));
+}
+
+.label {
+  display: none;
+  font-size: 11px;
+  font-weight: 620;
+  letter-spacing: 0.02em;
+}
+
+.compact .label {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .switch:not(.compact) .label {
+    display: inline;
+  }
+
+  .switch:not(.compact) button {
+    min-width: 0;
+    padding: 0 10px;
+  }
+}
