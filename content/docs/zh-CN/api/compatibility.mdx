@@ -1,0 +1,38 @@
+---
+title: 兼容协议
+description: Eureka、Nacos、Apollo 兼容入口的端口与边界；不是完整第三方协议手册。
+---
+
+控制面通过独立 apiserver 插件提供与 Eureka、Nacos、Apollo 的**兼容入口**，便于存量客户端逐步迁入统一控制面。本页说明端口与产品边界；完整第三方协议语义以各生态官方文档为准，控制面实现可能只覆盖常用注册/发现/配置子集。
+
+## 端口与插件
+
+| 插件 | 默认端口 | 兼容目标 | 默认配置要点 |
+| --- | ---: | --- | --- |
+| `service-eureka` | 8761 | Eureka 注册发现 | 可配置默认 namespace、增量刷新与不健康实例过期 |
+| `service-nacos` | 8848 | Nacos 注册/配置风格入口 | 按插件启用 |
+| `service-apollo` | 8890 | Apollo 配置风格入口 | 按插件启用 |
+
+权威配置：`deploy/conf/pole-apiserver.yaml`。未启用插件时端口不监听。
+
+## 产品边界
+
+1. **汇入统一控制面**：兼容协议最终进入同一套服务 / 配置 / 鉴权领域模型，而不是旁路一套独立存储。
+2. **不是完整复刻**：不要假定每一个 Nacos / Apollo / Eureka 管理 API 或控制台特性都已实现。
+3. **与原生入口并存**：新集成优先 [gRPC](/docs/api/grpc) 或 [HTTP OpenAPI](/docs/api/http-openapi)；兼容口用于迁移窗口与存量客户端。
+4. **鉴权**：协议层提取身份后进入统一 auth interceptor，见 [鉴权链与资源映射](/docs/principles/auth-protocols)。
+
+## 何时使用
+
+| 场景 | 建议 |
+| --- | --- |
+| 已有 Eureka / Nacos / Apollo 客户端，短期无法改 SDK | 启用对应兼容插件，验证注册与拉取 |
+| 新建服务或可改客户端 | 使用原生 gRPC / HTTP，避免长期依赖兼容层 |
+| 需要 Console 精细治理与灰度 | 在控制面资源模型上操作，再让兼容客户端消费结果视图 |
+
+## 相关阅读
+
+- [协议端口](/docs/api/ports)
+- [接入方式](/docs/what-is/access)
+- [Control Plane](/docs/components/control-plane)
+- [Specification](/docs/components/specification)

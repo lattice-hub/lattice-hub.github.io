@@ -1,0 +1,39 @@
+---
+title: Protocol ports
+description: Default Control Plane listen ports; compatibility ports listen only when enabled.
+---
+
+Ports follow `pole-control-plane/deploy/conf/pole-apiserver.yaml` and Console config. A port does not listen unless its apiserver plugin is enabled.
+
+## Default port matrix
+
+| Plugin / entry | Default port | Protocol | Purpose |
+| --- | ---: | --- | --- |
+| Console (`pole-server`) | 8080 | HTTP | Embedded admin UI and Console gateway |
+| `api-http` | 8090 | HTTP | Control-plane REST / OpenAPI-style API |
+| `service-grpc` | 8091 | gRPC | Service registration, discovery, governance views |
+| `config-grpc` | 8093 | gRPC | Configuration read/write and discovery |
+| `xds-v3` | 15010 | gRPC (xDS) | Envoy xDS v3 control plane |
+| `service-eureka` | 8761 | HTTP | Eureka-compatible discovery |
+| `service-nacos` | 8848 | HTTP | Nacos-compatible discovery/config |
+| `service-apollo` | 8890 | HTTP | Apollo-compatible config |
+
+Post-install checks: [Server installation](/en/docs/guides/server-install). Integration choices: [Integration options](/en/docs/what-is/access).
+
+## Enable and disable
+
+- Each protocol entry is a separate apiserver plugin; comment out or remove its `name` block to stop listening.
+- `api-http` can further gate surfaces via `api.admin` / `api.console` / `api.client` / `api.aimcp` / `api.aia2a`.
+- In production, tighten exposure: keep admin / Console API on private networks; expose only gRPC or compatibility ports to clients as needed.
+
+## Quick local probes
+
+```bash
+# Console
+curl -I http://127.0.0.1:8080
+
+# HTTP API (control plane must be up; unauthenticated calls may return business codes but still prove the port listens)
+curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8090/auth/v1/system
+```
+
+Probe gRPC / xDS with `grpcurl` or an SDK; validate compatibility ports with their native clients.

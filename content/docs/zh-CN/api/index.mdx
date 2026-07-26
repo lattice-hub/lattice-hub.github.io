@@ -1,0 +1,32 @@
+---
+title: API 与协议总览
+description: Control Plane 多协议入口地图：HTTP OpenAPI、gRPC、xDS 与兼容协议的职责边界。
+---
+
+本分区整理 `pole-control-plane` 对外暴露的接口入口与默认端口。面向集成方：用哪个端口、哪类协议、路径前缀落在哪里。Console 操作步骤仍在 [使用指南](/docs/guides/console)；protobuf 消息细节见 [Specification](/docs/components/specification)。
+
+## 协议地图
+
+| 入口 | 默认端口 | 主要读者 | 文档 |
+| --- | ---: | --- | --- |
+| Console HTTP | 8080 | 平台管理 | [控制台使用](/docs/guides/console) |
+| HTTP API（OpenAPI 风格） | 8090 | 脚本、自动化、Console 同源调用 | [HTTP OpenAPI](/docs/api/http-openapi) |
+| Discovery gRPC | 8091 | SDK / 客户端发现与注册 | [gRPC](/docs/api/grpc) |
+| Config gRPC | 8093 | SDK / 客户端配置 | [gRPC](/docs/api/grpc) |
+| xDS v3 | 15010 | Envoy / 数据面 | [xDS](/docs/api/xds) |
+| Eureka / Nacos / Apollo | 8761 / 8848 / 8890 | 存量客户端兼容 | [兼容协议](/docs/api/compatibility) |
+
+完整端口矩阵见 [协议端口](/docs/api/ports)。配置权威源：`pole-control-plane/deploy/conf/pole-apiserver.yaml`。
+
+## 读这份文档时注意
+
+1. **控制面 HTTP OpenAPI** 与 **用户服务契约 OpenAPI** 不是一回事。前者是控制面自身的 REST 管理/客户端 API；后者是业务服务可上报的契约原文，见发现侧 `ReportServiceContract`。
+2. 协议层只负责解析请求与身份载体；鉴权在领域 Server 的 interceptor 中统一完成。见 [鉴权链与资源映射](/docs/principles/auth-protocols)。
+3. 本分区首版给出**入口、分组、代表性路径与边界**，不是逐接口的完整 schema。细粒度注解在控制面 `plugin/apiserver/httpserver/docs/*_apidoc.go`；运行时是否挂载 Swagger UI 取决于 `api-http.enableSwagger`。
+
+## 推荐阅读顺序
+
+1. [协议端口](/docs/api/ports)：确认监听了哪些入口。
+2. [HTTP OpenAPI](/docs/api/http-openapi)：管理面与客户端 REST 前缀。
+3. [gRPC](/docs/api/grpc) 或 [xDS](/docs/api/xds)：按运行时选择。
+4. 需要兼容存量注册中心时，再看 [兼容协议](/docs/api/compatibility)。

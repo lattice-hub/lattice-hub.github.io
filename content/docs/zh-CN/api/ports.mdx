@@ -1,0 +1,39 @@
+---
+title: 协议端口
+description: Control Plane 默认监听端口矩阵；兼容协议仅在对应插件启用时监听。
+---
+
+端口以 `pole-control-plane/deploy/conf/pole-apiserver.yaml` 与 Console 配置为准。未启用对应 apiserver 插件时，该端口不会监听。
+
+## 默认端口矩阵
+
+| 插件 / 入口 | 默认端口 | 协议 | 用途 |
+| --- | ---: | --- | --- |
+| Console（`pole-server`） | 8080 | HTTP | 内嵌管理界面与 Console 网关 |
+| `api-http` | 8090 | HTTP | 控制面 REST / OpenAPI 风格 API |
+| `service-grpc` | 8091 | gRPC | 服务注册发现、治理视图拉取 |
+| `config-grpc` | 8093 | gRPC | 配置读写与发现 |
+| `xds-v3` | 15010 | gRPC (xDS) | Envoy xDS v3 控制面 |
+| `service-eureka` | 8761 | HTTP | Eureka 兼容注册发现 |
+| `service-nacos` | 8848 | HTTP | Nacos 兼容注册/配置入口 |
+| `service-apollo` | 8890 | HTTP | Apollo 兼容配置入口 |
+
+安装后的联通检查见 [服务端安装](/docs/guides/server-install)。接入场景选型见 [接入方式](/docs/what-is/access)。
+
+## 启用与关闭
+
+- 各协议入口是独立 apiserver 插件；注释或移除对应 `name` 配置即不再监听。
+- `api-http` 还可按 `api.admin` / `api.console` / `api.client` / `api.aimcp` / `api.aia2a` 分组开关暴露面。
+- 生产环境请按需收敛：例如仅对内网开放 admin / Console API，对客户端只开放 gRPC 或兼容协议。
+
+## 本地快速探测
+
+```bash
+# Console
+curl -I http://127.0.0.1:8080
+
+# HTTP API（需已启动控制面；未鉴权时可能返回业务错误码，但仍说明端口在听）
+curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8090/auth/v1/system
+```
+
+gRPC / xDS 端口用 `grpcurl` 或客户端 SDK 探测；兼容协议按各自客户端协议校验。

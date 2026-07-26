@@ -1,0 +1,45 @@
+---
+title: gRPC APIs
+description: Discovery gRPC (8091) and Config gRPC (8093) entry points; contracts live in Specification.
+---
+
+The control plane exposes two native gRPC entry points for clients. Message types and RPCs live in `pole-io/specification`. This page covers **ports, roles, and how they relate to HTTP**.
+
+## Entries
+
+| Plugin | Default port | Contract focus | Typical consumers |
+| --- | ---: | --- | --- |
+| `service-grpc` | 8091 | `DiscoverGRPC`: register, discover, heartbeat, governance/contract views | Rust SDK and other gRPC clients |
+| `config-grpc` | 8093 | `ConfigGRPC`: config create/update/publish/discover | Config clients / SDKs |
+
+TLS and connection limits live under each plugin `option` (`tls`, `connLimit`, `enableCacheProto`, …).
+
+## Relation to the HTTP API
+
+| Capability | HTTP (8090) | gRPC (8091 / 8093) |
+| --- | --- | --- |
+| Console management CRUD | `/naming/v1`, `/config/v1`, `/core/v1`, … | Full Console surface is not exposed over gRPC |
+| Client Discover / Register / Heartbeat | `/naming/v1/Discover`, … | Primary path via `service-grpc` |
+| Config clients | `/config/v1` client group | Primary path via `config-grpc` |
+| MCP / A2A Registry management | `/ai/mcp/v1`, `/ai/a2a/v1` | Management APIs are on HTTP |
+
+Prefer gRPC for SDKs; prefer [HTTP OpenAPI](/en/docs/api/http-openapi) for automation and Console-backed calls.
+
+## Contract modules (index)
+
+Full module table: [Specification](/en/docs/components/specification). Directly related to gRPC:
+
+- `api/v1/service_manage`: `DiscoverGRPC`, instances, clients, service contracts
+- `api/v1/config_manage`: `ConfigGRPC`
+- `api/v1/traffic_manage` / `fault_tolerance` / `security`: governance and identity views Discover can return
+
+Discoverable resource types include Namespaces, Services, Instances, Service Contracts, the nine governance rule types, Service Identity, and more.
+
+## Authorization boundary
+
+gRPC adapters extract credentials, then enter the same domain Servers and auth interceptors as HTTP. Management auth is separate from workload credentials; the data-plane credential header is `x-pole-workload-credential` and must not be mixed with Console/API management tokens. See [Authorization and resources](/en/docs/principles/auth-protocols) and Specification security notes.
+
+## Related components
+
+- [Rust SDK](/en/docs/components/rust-sdk): proxyless discovery and config ports
+- [Control-plane assembly](/en/docs/principles/architecture): how apiserver plugins assemble

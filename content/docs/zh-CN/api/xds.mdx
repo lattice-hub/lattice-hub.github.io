@@ -1,0 +1,33 @@
+---
+title: xDS v3
+description: Envoy xDS v3 控制面入口（默认 15010）的职责与边界。
+---
+
+`xds-v3` 插件对外提供 Envoy 兼容的 **xDS v3** 控制面，默认监听 **15010**。数据面（Envoy 或兼容实现）通过该端口订阅动态资源；控制面把缓存中的服务与治理 **active** 视图投影为 xDS 资源，而不是在 xDS 端口上暴露 Console CRUD。
+
+## 基本事实
+
+| 项 | 值 |
+| --- | --- |
+| 插件名 | `xds-v3` |
+| 默认端口 | 15010 |
+| 协议 | gRPC（xDS v3） |
+| 实现依赖 | `envoyproxy/go-control-plane`（控制面工程事实） |
+
+配置位置：`deploy/conf/pole-apiserver.yaml` 中 `name: xds-v3`。
+
+## 职责边界
+
+- **做**：向 Envoy 类数据面下发发现与治理相关的动态配置视图。
+- **不做**：完整的 HTTP OpenAPI 管理面；MCP/A2A Registry 管理仍走 [HTTP OpenAPI](/docs/api/http-openapi)。
+- **与 Sidecar 的关系**：Pole Sidecar 是独立数据面骨架（HTTP/gRPC 转发），不替代本端口的 Envoy xDS 协议角色。见 [Pole Sidecar](/docs/components/pingora-sidecar)。
+
+## 读路径依赖
+
+xDS 读路径依赖控制面缓存刷新的 active 视图。缓存与事件流见 [增量缓存与事件流](/docs/principles/cache-eventhub)；装配位置见 [控制面装配架构](/docs/principles/architecture)。
+
+## 接入提示
+
+1. 确认 `xds-v3` 插件已启用且端口可达（默认 15010）。
+2. Envoy 侧指向控制面 xDS 地址，并按部署网络配置 TLS/mTLS（若生产启用）。
+3. 在 Console 或 API 发布服务与治理规则后，等待缓存刷新，再观察数据面是否拿到新视图。

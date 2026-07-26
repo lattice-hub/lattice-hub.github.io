@@ -1,0 +1,45 @@
+---
+title: gRPC 接口
+description: Discovery gRPC（8091）与 Config gRPC（8093）入口；契约细节指向 Specification。
+---
+
+控制面为客户端提供两组原生 gRPC 入口。消息类型与 RPC 定义在 `pole-io/specification`，本页只说明**端口、用途与和 HTTP 的分工**。
+
+## 入口
+
+| 插件 | 默认端口 | 契约重心 | 典型消费者 |
+| --- | ---: | --- | --- |
+| `service-grpc` | 8091 | `DiscoverGRPC`：注册、发现、心跳、治理/契约视图 | Rust SDK、其他 gRPC 客户端 |
+| `config-grpc` | 8093 | `ConfigGRPC`：配置文件创建、更新、发布与发现 | 配置客户端 / SDK |
+
+TLS、连接限制等见各插件 `option`（`tls`、`connLimit`、`enableCacheProto` 等）。
+
+## 与 HTTP API 的关系
+
+| 能力 | HTTP（8090） | gRPC（8091 / 8093） |
+| --- | --- | --- |
+| Console 管理 CRUD | `/naming/v1`、`/config/v1`、`/core/v1` … | 不以 gRPC 暴露完整 Console 面 |
+| 客户端 Discover / Register / Heartbeat | `/naming/v1/Discover` 等 | `service-grpc` 主路径 |
+| 配置客户端 | `/config/v1` client 分组 | `config-grpc` 主路径 |
+| MCP / A2A Registry 管理 | `/ai/mcp/v1`、`/ai/a2a/v1` | 管理 API 在 HTTP 侧 |
+
+SDK 接入优先走 gRPC；自动化脚本与 Console 同源调用优先走 [HTTP OpenAPI](/docs/api/http-openapi)。
+
+## 契约模块（入口索引）
+
+完整模块表见 [Specification](/docs/components/specification)。与 gRPC 直接相关的包括：
+
+- `api/v1/service_manage`：`DiscoverGRPC`、实例、客户端、服务契约
+- `api/v1/config_manage`：`ConfigGRPC`
+- `api/v1/traffic_manage` / `fault_tolerance` / `security`：Discover 可下发的治理与身份相关视图
+
+Discover 可请求的资源类型包括 Namespaces、Services、Instances、Service Contracts、九类治理规则、Service Identity 等。
+
+## 鉴权边界
+
+gRPC 入口提取凭证后进入与 HTTP 相同的领域 Server + auth interceptor。管理鉴权与工作负载凭证分离；数据面凭证 Header 约定为 `x-pole-workload-credential`，不得与 Console/API 管理 token 混用。详见 [鉴权链与资源映射](/docs/principles/auth-protocols) 与 Specification 安全约定。
+
+## 相关组件
+
+- [Rust SDK](/docs/components/rust-sdk)：proxyless 直连发现与配置端口
+- [控制面装配架构](/docs/principles/architecture)：apiserver 插件如何装配

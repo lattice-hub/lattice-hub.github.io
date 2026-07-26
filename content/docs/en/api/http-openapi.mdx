@@ -1,0 +1,129 @@
+---
+title: HTTP OpenAPI
+description: Control-plane 8090 HTTP API groups, path prefixes, and representative routes—not user service-contract OpenAPI.
+---
+
+The HTTP API is served by the `api-http` plugin on port **8090** by default. It uses `go-restful`; annotations live in `plugin/apiserver/httpserver/docs/*_apidoc.go`. This page maps **groups and path prefixes**. Full schemas follow the running control plane and source annotations.
+
+Do not confuse this with **OpenAPI 3.x service contracts** that business services may report—that is a discovery/service-contract feature, not the control-plane REST surface described here.
+
+## API groups (config switches)
+
+Under `api-http.api` in `pole-apiserver.yaml`:
+
+| Group | Role | Typical prefixes |
+| --- | --- | --- |
+| `console` | Console / management resources (services, config, governance) | `/core/v1`, `/naming/v1`, `/config/v1` |
+| `client` | Client discovery, register, heartbeat, config | `/naming/v1`, `/config/v1` |
+| `admin` | Ops and diagnostics | `/admin/v1` |
+| `aimcp` | MCP Registry management and related entry points | `/ai/mcp/v1` |
+| `aia2a` | A2A Agent Registry (registry metadata only) | `/ai/a2a/v1` |
+
+`console.include` may contain `default` / `service` / `config`; `client.include` may contain `discover` / `register` / `healthcheck` / `config`.
+
+## Path prefixes
+
+| Prefix | Domain |
+| --- | --- |
+| `/auth/v1` | Login, users, policies, auth status |
+| `/core/v1` | Core Console resources such as namespaces |
+| `/naming/v1` | Services, instances, governance rules, client discover/register |
+| `/config/v1` | Config groups, files, releases, listen-related APIs |
+| `/admin/v1` | Connections, log levels, main-user init, system configuration |
+| `/ai/mcp/v1` | MCP Server / Tool Registry |
+| `/ai/a2a/v1` | A2A Agent / Skill Registry |
+
+## Auth headers (management surface)
+
+Console-backed OpenAPI calls typically send:
+
+```http
+Authorization: <token>
+X-Pole-User: <user_id>
+Content-Type: application/json
+```
+
+`token` / `user_id` come from `POST /auth/v1/user/login`. See [Authorization and resources](/en/docs/principles/auth-protocols).
+
+## Representative routes
+
+These routes build a mental model; they are **not** a complete catalog.
+
+### Auth
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `GET` | `/auth/v1/system` | Auth system status |
+| `POST` | `/auth/v1/user/login` | Login; returns token |
+
+### Namespaces / services / instances (management)
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `GET` / `POST` / `PUT` | `/core/v1/namespaces` | Namespaces (delete via subpath) |
+| `GET` / `POST` / `PUT` | `/naming/v1/services` | Services |
+| `GET` / `POST` / `PUT` | `/naming/v1/instances` | Instances |
+
+### Client discovery and registration
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `POST` | `/naming/v1/Discover` | Pull instance and rule views |
+| `POST` | `/naming/v1/RegisterInstance` | Register instance |
+| `POST` | `/naming/v1/DeregisterInstance` | Deregister |
+| `POST` | `/naming/v1/Heartbeat` | Heartbeat |
+| `POST` | `/naming/v1/ReportServiceContract` | Report service contract (may include OpenAPI text) |
+
+### Configuration
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `GET` | `/config/v1/groups` | Config groups |
+| `GET` | `/config/v1/file` | Read a config file |
+| `POST` | `/config/v1/files/release` | Publish (`normal` / `gray`) |
+
+Curl walkthrough for multi-gray: [Configuration guide](/en/docs/guides/console/configuration).
+
+### Governance (selected)
+
+Rules and releases mostly hang under `/naming/v1`, with a `GET|POST|PUT /{resource}` plus `/releases` pattern:
+
+| Path fragment | Capability |
+| --- | --- |
+| `/routings` | Routing |
+| `/ratelimits` | Rate limit |
+| `/circuitbreakers` | Circuit breaker |
+| `/faultdetectors` | Fault detect |
+| `/traffic/security` | Traffic security |
+| `/traffic/mirrors` | Traffic mirror |
+| `/traffic/mocks` | Traffic mock |
+
+Nine governance domains and the release chain: [Governance releases](/en/docs/principles/governance-release).
+
+### AI Registry
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `GET` / `POST` / `PUT` | `/ai/mcp/v1/servers` | MCP Server |
+| `GET` | `/ai/mcp/v1/server/tools` | MCP Tool |
+| `GET` / `POST` / `PUT` | `/ai/a2a/v1/agents` | A2A Agent |
+| `GET` | `/ai/a2a/v1/agent/skills` | Agent Skill |
+| `GET` | `/ai/a2a/v1/agents/{id}/card` | Agent Card |
+
+MCP / A2A on the control plane are **registry metadata**, not an Agent runtime. Console guides: [MCP](/en/docs/guides/console/mcp), [A2A](/en/docs/guides/console/a2a).
+
+### Admin
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `GET` | `/admin/v1/apiserver/conn` | API Server connections |
+| `GET` | `/admin/v1/system/configuration` | Typed system configuration catalog |
+| `POST` | `/admin/v1/mainuser/create` | Initialize main user |
+
+## Swagger and source entry points
+
+- Config: `api-http.option.enableSwagger` (sample defaults to `true`).
+- Annotations: `plugin/apiserver/httpserver/docs/` (`auth`, `naming_*`, `config_*`, `admin`, `core_console`, …).
+- Route registration: `plugin/apiserver/httpserver/{auth,discover,config,aimcp,aia2a,...}`.
+
+Later editions may embed exported OpenAPI artifacts or link a runtime docs UI; this first edition is a path map.

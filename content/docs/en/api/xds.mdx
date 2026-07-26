@@ -1,0 +1,33 @@
+---
+title: xDS v3
+description: Envoy xDS v3 control-plane entry (default 15010)—role and boundaries.
+---
+
+The `xds-v3` plugin exposes an Envoy-compatible **xDS v3** control plane on port **15010** by default. Data planes (Envoy or compatible implementations) subscribe to dynamic resources here. The control plane projects **active** service and governance views from cache into xDS resources; it does not expose Console CRUD on the xDS port.
+
+## Basics
+
+| Item | Value |
+| --- | --- |
+| Plugin | `xds-v3` |
+| Default port | 15010 |
+| Protocol | gRPC (xDS v3) |
+| Implementation dependency | `envoyproxy/go-control-plane` (control-plane engineering fact) |
+
+Config: `name: xds-v3` in `deploy/conf/pole-apiserver.yaml`.
+
+## Boundaries
+
+- **Does**: deliver discovery- and governance-related dynamic config views to Envoy-class data planes.
+- **Does not**: replace the HTTP OpenAPI management surface; MCP/A2A Registry management stays on [HTTP OpenAPI](/en/docs/api/http-openapi).
+- **Vs Sidecar**: Pole Sidecar is a separate local data-plane skeleton (HTTP/gRPC forwarding); it does not replace this Envoy xDS protocol role. See [Pole Sidecar](/en/docs/components/pingora-sidecar).
+
+## Read-path dependency
+
+The xDS read path depends on active views refreshed by the control-plane cache. See [Incremental cache and events](/en/docs/principles/cache-eventhub) and [Control-plane assembly](/en/docs/principles/architecture).
+
+## Integration tips
+
+1. Ensure the `xds-v3` plugin is enabled and the port is reachable (default 15010).
+2. Point Envoy at the control-plane xDS address; configure TLS/mTLS for production if enabled.
+3. After publishing services and governance via Console or API, wait for cache refresh, then verify the data plane receives the new view.

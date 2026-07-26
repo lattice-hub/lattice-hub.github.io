@@ -1,0 +1,32 @@
+---
+title: API and protocols overview
+description: Map Control Plane entry points for HTTP OpenAPI, gRPC, xDS, and compatibility protocols.
+---
+
+This section covers the public entry points and default ports of `pole-control-plane`. It is for integrators: which port, which protocol, and which path prefix. Console workflows stay in [Guides](/en/docs/guides/console). Protobuf message details stay in [Specification](/en/docs/components/specification).
+
+## Protocol map
+
+| Entry | Default port | Primary readers | Docs |
+| --- | ---: | --- | --- |
+| Console HTTP | 8080 | Platform operators | [Using the Console](/en/docs/guides/console) |
+| HTTP API (OpenAPI-style) | 8090 | Scripts, automation, Console-backed calls | [HTTP OpenAPI](/en/docs/api/http-openapi) |
+| Discovery gRPC | 8091 | SDK / client discovery and registration | [gRPC](/en/docs/api/grpc) |
+| Config gRPC | 8093 | SDK / client configuration | [gRPC](/en/docs/api/grpc) |
+| xDS v3 | 15010 | Envoy / data plane | [xDS](/en/docs/api/xds) |
+| Eureka / Nacos / Apollo | 8761 / 8848 / 8890 | Legacy client compatibility | [Compatibility](/en/docs/api/compatibility) |
+
+Full port matrix: [Protocol ports](/en/docs/api/ports). Authoritative config: `pole-control-plane/deploy/conf/pole-apiserver.yaml`.
+
+## Read with these boundaries
+
+1. **Control-plane HTTP OpenAPI** is not the same as **user service-contract OpenAPI**. The former is the control plane REST surface; the latter is contract text that services may report via discovery (`ReportServiceContract`).
+2. Protocol adapters parse requests and identity carriers; authorization runs in domain Server interceptors. See [Authorization and resources](/en/docs/principles/auth-protocols).
+3. This first edition covers **entries, groups, representative paths, and boundaries**—not a full per-endpoint schema. Annotations live in `plugin/apiserver/httpserver/docs/*_apidoc.go`. Whether a Swagger UI is mounted depends on `api-http.enableSwagger`.
+
+## Suggested order
+
+1. [Protocol ports](/en/docs/api/ports): confirm which listeners are enabled.
+2. [HTTP OpenAPI](/en/docs/api/http-openapi): management and client REST prefixes.
+3. [gRPC](/en/docs/api/grpc) or [xDS](/en/docs/api/xds): pick by runtime.
+4. For legacy registries, read [Compatibility](/en/docs/api/compatibility).
