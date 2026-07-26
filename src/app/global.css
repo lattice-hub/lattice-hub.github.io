@@ -68,6 +68,11 @@ nextjs-portal,
 }
 
 .site-shell--chrome {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 60;
   min-height: 0;
   overflow: visible;
   background: transparent;
@@ -88,6 +93,8 @@ nextjs-portal,
 }
 
 .site-shell--chrome .topnav {
+  position: relative;
+  top: auto;
   background: var(--page);
 }
 

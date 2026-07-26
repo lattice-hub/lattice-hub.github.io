@@ -16,8 +16,8 @@ export default function ComponentsPage() {
         <p className="overline">Component ecosystem</p>
         <h1>从控制面到运行时，组件围绕同一套资源模型协作。</h1>
         <p>
-          Control Plane 定义治理模型和多协议入口；Console、Pole Agent、Controller、Pole Sidecar、SDK、
-          Observability 与 Specification 分别承担操作、接入、执行、观测和开放契约。
+          Control Plane 定义治理模型、多协议入口与内嵌 Console；Pole Agent、Controller、Pole Sidecar、SDK、
+          Observability 与 Specification 分别承担智能操作、接入、执行、观测和开放契约。
         </p>
         <div className="hero-actions">
           {componentPageActions.map((action) => {

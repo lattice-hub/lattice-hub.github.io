@@ -1,9 +1,9 @@
 ---
 title: Control Plane
-description: Core Lattice Hub control plane for discovery, configuration, governance, and AI Native registries.
+description: Core Lattice Hub control plane with embedded Console for discovery, configuration, governance, and AI Native registries.
 ---
 
-The Control Plane owns APIs, domain logic, caches, and storage, and exposes HTTP, gRPC, xDS, Nacos, Apollo, and Eureka-compatible entry points.
+The Control Plane owns APIs, domain logic, caches, and storage, and exposes HTTP, gRPC, xDS, Nacos, Apollo, and Eureka-compatible entry points. Console ships in the same repository and deployment unit—it is no longer listed as a separate component.
 
 ![deployment architecture](/diagrams/deployment-architecture.svg)
 
@@ -16,6 +16,25 @@ The Control Plane owns APIs, domain logic, caches, and storage, and exposes HTTP
 - Pole Agent with human-confirmed configuration drafts only.
 - Typed system configuration and OTel export into shared GreptimeDB.
 - Fine-grained authorization for management and client APIs.
+- Embedded Console: Fluent UI workbenches for resources, governance, auth, registries, system settings, and platform metrics.
+
+## Embedded Console
+
+Console is delivered with the Control Plane and can run via `--mode all|server|console`:
+
+| Mode | Purpose |
+| --- | --- |
+| `all` | Control-plane APIs + embedded Console (local default) |
+| `server` | APIs and protocol servers only |
+| `console` | Console gateway only; reaches `poleServer.address` over the network |
+
+Step-by-step operations: [Using the Console](/en/docs/guides/console-use).
+
+![Configuration groups](/images/console/config-groups.png)
+
+![Governance workbench](/images/console/governance.png)
+
+![Platform metrics](/images/console/platform-metrics.png)
 
 ## Default ports
 
@@ -29,12 +48,12 @@ The Control Plane owns APIs, domain logic, caches, and storage, and exposes HTTP
 
 ## Confirmed engineering facts
 
-- Stack includes Go, gRPC, MySQL, go-control-plane, mcp-go, OpenTelemetry, and Pebble.
+- Stack includes Go, gRPC, MySQL, go-control-plane, mcp-go, OpenTelemetry, and Pebble; Console frontend is React 18 + Fluent UI v9.
 - Assembly layers: protocol adapters, domain servers, interceptors, cache, store.
 - Caches refresh about every 1s with a `lastMtime - 5s` overlap window.
-- Modes: `all` / `server` / `console`.
 
 ## Deeper reading
 
 - [Control-plane assembly](/en/docs/principles/architecture)
 - [Server installation](/en/docs/guides/server-install)
+- [Using the Console](/en/docs/guides/console-use)

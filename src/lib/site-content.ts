@@ -1,6 +1,5 @@
 import {
   Activity,
-  Boxes,
   Braces,
   Cpu,
   FileText,
@@ -161,7 +160,7 @@ export const docsSections: ContentEntry[] = [
   {
     title: '组件生态',
     href: '/components',
-    summary: 'Control Plane、Console、Controller、SDK、Pole Sidecar 与规范。',
+    summary: 'Control Plane、Controller、SDK、Pole Sidecar 与规范。',
   },
   {
     title: '工程实践',
@@ -179,16 +178,9 @@ export const componentGroups: ComponentGroup[] = [
   {
     name: 'Control Plane',
     href: '/docs/components/control-plane',
-    summary: '统一服务发现、配置、治理、身份、Registry 与多协议接入。',
-    details: ['管理 API 与多协议入口', '向接入组件提供统一视图'],
+    summary: '统一服务发现、配置、治理、身份、Registry 与多协议接入；内嵌 Console 管理界面。',
+    details: ['管理 API、多协议入口与内嵌 Console', '向接入组件提供统一视图'],
     icon: ServerCog,
-  },
-  {
-    name: 'Console',
-    href: '/docs/components/console',
-    summary: '基于 Fluent UI 的企业控制台，覆盖资源管理、治理工作台、系统配置和平台观测。',
-    details: ['亮色 / 暗色企业界面', '草稿、发布、历史与审计入口'],
-    icon: Boxes,
   },
   {
     name: 'Rust SDK',

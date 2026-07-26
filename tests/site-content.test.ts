@@ -110,7 +110,6 @@ test('component matrix covers the Lattice Hub ecosystem', () => {
 
   assert.deepEqual(componentNames, [
     'Control Plane',
-    'Console',
     'Rust SDK',
     'Kubernetes Controller',
     'Pole Sidecar',
@@ -128,10 +127,12 @@ test('docs routing exposes the five PRD landing destinations', () => {
 
 test('docs brand navigation returns to the website homepage', () => {
   const docsLayout = readFileSync('src/app/docs/_components/DocsLayoutContent.tsx', 'utf8');
+  const globalCss = readFileSync('src/app/global.css', 'utf8');
 
   assert.match(docsLayout, /<SiteHeader \/>/);
   assert.match(docsLayout, /site-shell--chrome/);
   assert.match(docsLayout, /--fd-banner-height/);
+  assert.match(globalCss, /\.site-shell--chrome\s*\{[\s\S]*position:\s*fixed/);
   assert.match(docsLayout, /nav=\{\{[\s\S]*url:\s*'\/'/);
   assert.doesNotMatch(docsLayout, /nav=\{\{[\s\S]*url:\s*getDocsUrl\(locale\)/);
 });
@@ -373,7 +374,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 32);
+  assert.equal(chinese.length, 31);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);

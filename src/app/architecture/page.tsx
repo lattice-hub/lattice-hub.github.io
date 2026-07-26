@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     absolute: '组件架构｜Lattice.Hub',
   },
   description:
-    '了解 Lattice.Hub 的 Control Plane、Console、Kubernetes Controller、Rust SDK、Pole Sidecar、Limiter Server 与 Specification 如何协作，以及治理能力如何进入运行时执行。',
+    '了解 Lattice.Hub 的 Control Plane、Kubernetes Controller、Rust SDK、Pole Sidecar、Limiter Server 与 Specification 如何协作，以及治理能力如何进入运行时执行。',
 };
 
 const components = [
@@ -25,46 +25,39 @@ const components = [
     index: '01',
     name: 'Control Plane',
     role: '核心控制面',
-    detail: '统一服务发现、配置、治理、权限、能力目录与多协议入口，对外提供管理与运行时视图。',
+    detail: '统一服务发现、配置、治理、权限、能力目录与多协议入口；内嵌 Console 提供管理与发布操作，不进入业务流量。',
     href: '/docs/components/control-plane',
   },
   {
     index: '02',
-    name: 'Console',
-    role: '管理入口',
-    detail: '让平台团队查看资源、审阅变化和执行发布操作；它负责管理，不进入业务流量。',
-    href: '/docs/components/console',
-  },
-  {
-    index: '03',
     name: 'Kubernetes Controller',
     role: '集群集成',
     detail: '同步 Service、Endpoints、Namespace 与 ConfigMap，并按配置注入 Pole Sidecar、Java Agent 或 Envoy。',
     href: '/docs/components/kubernetes-controller',
   },
   {
-    index: '04',
+    index: '03',
     name: 'Rust SDK',
     role: 'Proxyless 客户端',
     detail: '为 Rust 应用提供轻量的 Proxyless 接入形态，并复用组织的开放协议契约。',
     href: '/docs/components/rust-sdk',
   },
   {
-    index: '05',
+    index: '04',
     name: 'Pole Sidecar',
     role: '本地数据面',
     detail: '当前是支持 HTTP、HTTP/2、gRPC-h2c 转发、前缀路由与轮询的轻量数据面骨架。',
     href: '/docs/components/pingora-sidecar',
   },
   {
-    index: '06',
+    index: '05',
     name: 'Limiter Server',
     role: '分布式限流运行时',
     detail: '缓存并分配全局 Token，承接客户端配额获取与上报，是治理能力的专用运行时组件。',
     href: 'https://github.com/lattice-hub/pole-limiter-server',
   },
   {
-    index: '07',
+    index: '06',
     name: 'Specification',
     role: '共享契约',
     detail: '定义服务管理、流量治理、容错、访问控制与 MCP 协议，并提供多语言生成入口。',
@@ -73,7 +66,7 @@ const components = [
 ] as const;
 
 const responsibilityRows = [
-  ['管理面', 'Console · Pole Agent', '准备、审阅和决定变化；不执行真实服务请求。'],
+  ['管理面', 'Control Plane Console · Pole Agent', '准备、审阅和决定变化；不执行真实服务请求。'],
   ['控制面', 'Lattice.Hub · Controller', '管理统一资源视图，并连接 Kubernetes 等外部运行环境。'],
   ['执行面', 'Rust SDK · Limiter Server · Envoy / Gateway', '在各自已支持的协议和能力范围内影响服务调用。'],
   ['扩展数据面', 'Pole Sidecar', '当前提供代理骨架；动态治理接入与更多执行能力按实现进度演进。'],
@@ -101,7 +94,7 @@ export default function ArchitecturePage() {
         <div className={styles.sectionInner}>
           <SectionHeading index="01 / COMPONENT MAP" title="组件各司其职，控制面保持统一。">
             <p>
-              Console 与 Controller 从管理和集群侧接入；SDK、Limiter Server 与代理数据面从运行时侧接入；
+              Control Plane（内嵌 Console）与 Controller 从管理和集群侧接入；SDK、Limiter Server 与代理数据面从运行时侧接入；
               Specification 让各组件共享稳定契约。
             </p>
           </SectionHeading>
@@ -118,7 +111,7 @@ export default function ArchitecturePage() {
         <div className={styles.sectionInner}>
           <SectionHeading index="02 / COMPONENT RESPONSIBILITIES" title="先看组件职责，再看内部实现。">
             <p>
-              每个组件只承诺自己已经承担的角色。Pole Agent 属于 Console 工作模式，Observability 属于平台集成能力，
+              每个组件只承诺自己已经承担的角色。Console 与 Pole Agent 属于 Control Plane 内的管理能力，Observability 属于平台集成能力，
               它们不被包装成独立部署组件。
             </p>
           </SectionHeading>
@@ -143,7 +136,7 @@ export default function ArchitecturePage() {
         <div className={styles.sectionInner}>
           <SectionHeading index="03 / GOVERNANCE EXECUTION" title="规则在控制面发布，在离流量最近的组件执行。">
             <p>
-              平台工程师通过 Console 或 API 确认作用域并发布规则。Control Plane
+              平台工程师通过 Control Plane Console 或 API 确认作用域并发布规则。控制面
               将可消费治理视图交给对应运行时；SDK、专用运行时或代理数据面只执行自身当前支持的能力。
             </p>
           </SectionHeading>
@@ -154,7 +147,7 @@ export default function ArchitecturePage() {
             <article>
               <span>01 / DEFINE</span>
               <h3>管理面决定变化</h3>
-              <p>调用方、被调方、规则内容与发布时间由平台工程师审阅，Console 只是操作入口。</p>
+              <p>调用方、被调方、规则内容与发布时间由平台工程师审阅，内嵌 Console 只是操作入口。</p>
             </article>
             <article>
               <span>02 / DISTRIBUTE</span>

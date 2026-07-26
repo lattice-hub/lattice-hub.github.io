@@ -2,7 +2,6 @@
   "title": "Components",
   "pages": [
     "control-plane",
-    "console",
     "rust-sdk",
     "kubernetes-controller",
     "pingora-sidecar",
