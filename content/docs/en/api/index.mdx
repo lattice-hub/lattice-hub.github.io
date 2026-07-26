@@ -22,7 +22,7 @@ Full port matrix: [Protocol ports](/en/docs/api/ports). Authoritative config: `p
 
 1. **Control-plane HTTP OpenAPI** is not the same as **user service-contract OpenAPI**. The former is the control plane REST surface; the latter is contract text that services may report via discovery (`ReportServiceContract`).
 2. Protocol adapters parse requests and identity carriers; authorization runs in domain Server interceptors. See [Authorization and resources](/en/docs/principles/auth-protocols).
-3. This first edition covers **entries, groups, representative paths, and boundaries**—not a full per-endpoint schema. Annotations live in `plugin/apiserver/httpserver/docs/*_apidoc.go`. Whether a Swagger UI is mounted depends on `api-http.enableSwagger`.
+3. [HTTP OpenAPI](/en/docs/api/http-openapi) already uses a parameters-left / examples-right layout for core endpoints. Full schemas still follow control-plane annotations and the running server.
 
 ## Suggested order
 

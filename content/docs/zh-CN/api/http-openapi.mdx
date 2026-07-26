@@ -1,130 +1,31 @@
 ---
 title: HTTP OpenAPI
-description: 控制面 8090 HTTP API 的分组、路径前缀与代表性接口；区别于用户服务契约 OpenAPI。
+description: 控制面 8090 HTTP API 参考：左侧参数说明，右侧 cURL / JavaScript / Go / Python 调用示例。
+full: true
 ---
 
-HTTP API 由 `api-http` 插件提供，默认监听 **8090**。实现基于 `go-restful`，注解在 `plugin/apiserver/httpserver/docs/*_apidoc.go`。这里整理**分组与路径前缀**，便于选型；完整 schema 以运行中的控制面与源码注解为准。
+HTTP API 由 `api-http` 插件提供，默认监听 **8090**。下面按接口展示**参数说明**与**多语言请求示例**；完整 schema 仍以控制面注解 `plugin/apiserver/httpserver/docs/*_apidoc.go` 与运行时为准。
 
 不要与「业务服务上报的 OpenAPI 3.x 契约」混淆——那是发现域的服务契约能力，不是本页描述的控制面 REST。
 
-## API 分组（配置开关）
+## 使用约定
 
-`pole-apiserver.yaml` 中 `api-http.api` 可按组启用：
-
-| 分组 | 作用 | 典型前缀 |
-| --- | --- | --- |
-| `console` | Console / 管理面资源操作（服务、配置、治理等） | `/core/v1`、`/naming/v1`、`/config/v1` |
-| `client` | 客户端发现、注册、心跳、配置 | `/naming/v1`、`/config/v1` |
-| `admin` | 运维与诊断 | `/admin/v1` |
-| `aimcp` | MCP Registry 管理与相关入口 | `/ai/mcp/v1` |
-| `aia2a` | A2A Agent Registry（仅注册发现元数据） | `/ai/a2a/v1` |
-
-`console.include` 默认可含 `default` / `service` / `config`；`client.include` 可含 `discover` / `register` / `healthcheck` / `config`。
-
-## 路径前缀
-
-| 前缀 | 领域 |
+| 项 | 说明 |
 | --- | --- |
-| `/auth/v1` | 登录、用户、策略与鉴权状态 |
-| `/core/v1` | 命名空间等核心 Console 资源 |
-| `/naming/v1` | 服务、实例、治理规则、客户端发现/注册 |
-| `/config/v1` | 配置分组、文件、发布与监听相关 |
-| `/admin/v1` | 连接、日志级别、主用户初始化、系统配置等 |
-| `/ai/mcp/v1` | MCP Server / Tool Registry |
-| `/ai/a2a/v1` | A2A Agent / Skill Registry |
+| Base URL | `http://127.0.0.1:8090`（按部署替换） |
+| 管理面鉴权 | `Authorization: <token>` + `X-Pole-User: <user_id>`，来自登录接口 |
+| API 分组开关 | `pole-apiserver.yaml` → `api-http.api.{console,client,admin,aimcp,aia2a}` |
+| 客户端主路径 | 发现/注册更推荐 gRPC `8091` / `8093`；HTTP 便于脚本与联调 |
 
-## 鉴权请求头（管理面）
+路径前缀速查：`/auth/v1`、`/core/v1`、`/naming/v1`、`/config/v1`、`/admin/v1`、`/ai/mcp/v1`、`/ai/a2a/v1`，以及 client 分组下的 `/v1/*`。
 
-Console 同源 OpenAPI 调用通常携带：
+## API Reference
 
-```http
-Authorization: <token>
-X-Pole-User: <user_id>
-Content-Type: application/json
-```
+<HttpOpenApiReference />
 
-`token` / `user_id` 来自 `POST /auth/v1/user/login`。权限模型见 [鉴权链与资源映射](/docs/principles/auth-protocols)。
+## 延伸阅读
 
-## 代表性路径
-
-下列路径帮助建立心智模型，**不是**完整清单。
-
-### 鉴权
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| `GET` | `/auth/v1/system` | 鉴权系统状态 |
-| `POST` | `/auth/v1/user/login` | 登录，取 token |
-
-### 命名空间 / 服务 / 实例（管理）
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| `GET` / `POST` / `PUT` | `/core/v1/namespaces` | 命名空间（另有 delete 子路径） |
-| `GET` / `POST` / `PUT` | `/naming/v1/services` | 服务 |
-| `GET` / `POST` / `PUT` | `/naming/v1/instances` | 实例 |
-
-### 客户端发现与注册
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| `POST` | `/naming/v1/Discover` | 拉取实例与规则视图 |
-| `POST` | `/naming/v1/RegisterInstance` | 注册实例 |
-| `POST` | `/naming/v1/DeregisterInstance` | 反注册 |
-| `POST` | `/naming/v1/Heartbeat` | 心跳 |
-| `POST` | `/naming/v1/ReportServiceContract` | 上报服务契约（可含 OpenAPI 原文） |
-
-### 配置
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| `GET` | `/config/v1/groups` | 配置分组（Console / 管理面） |
-| `GET` | `/config/v1/file` | 读配置文件（管理面） |
-| `POST` | `/config/v1/files/release` | 发布（含 `normal` / `gray`） |
-| `GET` | `/v1/GetConfigFile` | **客户端**拉配置；`tags=key=value` 命中灰度 |
-
-客户端多灰度 curl（无标签回落全量 / `tags=env=gray-a|gray-b` 命中不同灰度）见 [配置中心指南](/docs/guides/console/configuration)。
-
-### 治理规则（节选）
-
-规则与 release 多挂在 `/naming/v1` 下，模式类似：`GET|POST|PUT /{resource}` + `/releases`：
-
-| 资源路径片段 | 能力 |
-| --- | --- |
-| `/routings` | 路由 |
-| `/ratelimits` | 限流 |
-| `/circuitbreakers` | 熔断 |
-| `/faultdetectors` | 故障探测 |
-| `/traffic/security` | 调用鉴权 |
-| `/traffic/mirrors` | 流量镜像 |
-| `/traffic/mocks` | 流量 Mock |
-
-九类治理与发布链见 [治理规则与灰度发布](/docs/principles/governance-release)。
-
-### AI Registry
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| `GET` / `POST` / `PUT` | `/ai/mcp/v1/servers` | MCP Server |
-| `GET` | `/ai/mcp/v1/server/tools` | MCP Tool |
-| `GET` / `POST` / `PUT` | `/ai/a2a/v1/agents` | A2A Agent |
-| `GET` | `/ai/a2a/v1/agent/skills` | Agent Skill |
-| `GET` | `/ai/a2a/v1/agents/{id}/card` | Agent Card |
-
-MCP / A2A 在控制面是 **Registry 元数据**，不是 Agent Runtime。Console 操作见 [MCP](/docs/guides/console/mcp)、[A2A](/docs/guides/console/a2a)。
-
-### Admin
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| `GET` | `/admin/v1/apiserver/conn` | API Server 连接 |
-| `GET` | `/admin/v1/system/configuration` | 系统配置目录 |
-| `POST` | `/admin/v1/mainuser/create` | 初始化主用户 |
-
-## Swagger 与源码入口
-
-- 配置项：`api-http.option.enableSwagger`（默认示例为 `true`）。
-- 注解源：`plugin/apiserver/httpserver/docs/`（`auth` / `naming_*` / `config_*` / `admin` / `core_console` 等）。
-- 路由注册：`plugin/apiserver/httpserver/{auth,discover,config,aimcp,aia2a,...}`。
-
-后续版本可在本页嵌入导出的 OpenAPI 产物或链接到运行时文档；首版以路径地图为准。
+- [协议端口](/docs/api/ports)
+- [gRPC 接口](/docs/api/grpc)
+- [鉴权链与资源映射](/docs/principles/auth-protocols)
+- [配置中心指南](/docs/guides/console/configuration)

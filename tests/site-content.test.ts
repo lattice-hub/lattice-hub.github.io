@@ -15,7 +15,7 @@ import {
   siteNav,
 } from '../src/lib/site-content';
 import { docsLayoutTabs, getDocsSectionTree } from '../src/lib/docs-navigation';
-import { resolveImageSrc } from '../src/mdx-components';
+import { resolveImageSrc } from '../src/lib/mdx-image';
 import { getArchitectureCopy } from '../src/components/site/architectureLocale';
 
 function collectMdxRelativePaths(root: string, current = ''): string[] {
@@ -477,6 +477,23 @@ test('global styles do not override fumadocs document theming', () => {
   assert.match(themeSwitch, /setTheme\(value\)/);
   assert.match(themeSwitch, /'system'/);
   assert.match(docsLayout, /mode:\s*'light-dark-system'/);
+});
+
+test('HTTP OpenAPI reference uses dual-column endpoint component', () => {
+  const zh = readFileSync('content/docs/zh-CN/api/http-openapi.mdx', 'utf8');
+  const en = readFileSync('content/docs/en/api/http-openapi.mdx', 'utf8');
+  const mdx = readFileSync('src/mdx-components.tsx', 'utf8');
+  const reference = readFileSync('src/components/docs/HttpOpenApiReference.tsx', 'utf8');
+  const endpoint = readFileSync('src/components/docs/ApiEndpoint.tsx', 'utf8');
+
+  assert.match(zh, /full:\s*true/);
+  assert.match(en, /full:\s*true/);
+  assert.match(zh, /<HttpOpenApiReference\s*\/>/);
+  assert.match(en, /<HttpOpenApiReference\s*\/>/);
+  assert.match(mdx, /HttpOpenApiReference/);
+  assert.match(reference, /httpOpenApiSections/);
+  assert.match(endpoint, /styles\.grid/);
+  assert.match(endpoint, /samples\.map/);
 });
 
 test('docs layout uses fumadocs section switcher for docs api blog reports and developers', () => {

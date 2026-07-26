@@ -1,0 +1,25 @@
+.root {
+  margin-top: 1.75rem;
+}
+
+.section {
+  margin-bottom: 2.75rem;
+}
+
+.sectionHeader {
+  margin-bottom: 0.35rem;
+}
+
+.sectionTitle {
+  margin: 0 0 0.45rem;
+  font-size: 1.55rem;
+  font-weight: 680;
+  letter-spacing: -0.03em;
+}
+
+.sectionDesc {
+  margin: 0;
+  color: var(--color-fd-muted-foreground);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
