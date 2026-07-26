@@ -467,11 +467,12 @@ test('global styles do not override fumadocs document theming', () => {
   assert.match(globalCss, /\.site-shell\s*{[\s\S]*font-family:/, 'homepage typography should be scoped to the homepage shell');
 });
 
-test('docs layout uses fumadocs section switcher for docs blog reports and developers', () => {
+test('docs layout uses fumadocs section switcher for docs api blog reports and developers', () => {
   assert.deepEqual(
     docsLayoutTabs.map((tab) => ({ title: tab.title, url: tab.url })),
     [
       { title: '文档', url: '/docs' },
+      { title: 'API', url: '/docs/api' },
       { title: '博客', url: '/docs/blog' },
       { title: '报告', url: '/docs/reports' },
       { title: '开发者', url: '/docs/developers' },
@@ -559,18 +560,6 @@ test('docs layout uses fumadocs section switcher for docs blog reports and devel
 
       {
         type: 'folder',
-        name: 'API',
-        index: { type: 'page', name: 'API 与协议总览', url: '/docs/api' },
-        children: [
-          { type: 'page', name: '协议端口', url: '/docs/api/ports' },
-          { type: 'page', name: 'HTTP OpenAPI', url: '/docs/api/http-openapi' },
-          { type: 'page', name: 'gRPC 接口', url: '/docs/api/grpc' },
-          { type: 'page', name: 'xDS v3', url: '/docs/api/xds' },
-          { type: 'page', name: '兼容协议', url: '/docs/api/compatibility' },
-        ],
-      },
-      {
-        type: 'folder',
         name: '原理',
         children: [
           { type: 'page', name: '架构', url: '/docs/principles/architecture' },
@@ -603,6 +592,18 @@ test('docs layout uses fumadocs section switcher for docs blog reports and devel
       },
       {
         type: 'folder',
+        name: 'API',
+        index: { type: 'page', name: 'API 与协议总览', url: '/docs/api' },
+        children: [
+          { type: 'page', name: '协议端口', url: '/docs/api/ports' },
+          { type: 'page', name: 'HTTP OpenAPI', url: '/docs/api/http-openapi' },
+          { type: 'page', name: 'gRPC 接口', url: '/docs/api/grpc' },
+          { type: 'page', name: 'xDS v3', url: '/docs/api/xds' },
+          { type: 'page', name: '兼容协议', url: '/docs/api/compatibility' },
+        ],
+      },
+      {
+        type: 'folder',
         name: '博客',
         index: { type: 'page', name: '博客', url: '/docs/blog' },
         children: [{ type: 'page', name: '实践', url: '/docs/blog/practice' }],
@@ -626,6 +627,10 @@ test('docs layout uses fumadocs section switcher for docs blog reports and devel
   };
 
   assert.deepEqual(
+    getDocsSectionTree(tree, ['api']).children.map((node) => node.name),
+    ['API 与协议总览', '协议端口', 'HTTP OpenAPI', 'gRPC 接口', 'xDS v3', '兼容协议'],
+  );
+  assert.deepEqual(
     getDocsSectionTree(tree, ['blog']).children.map((node) => node.name),
     ['博客', '实践'],
   );
@@ -639,7 +644,7 @@ test('docs layout uses fumadocs section switcher for docs blog reports and devel
   );
   assert.deepEqual(
     getDocsSectionTree(tree, ['principles', 'architecture']).children.map((node) => node.name),
-    ['Lattice Hub 是什么', '使用指南', 'API 与协议', '最佳实践', '原理细节'],
+    ['Lattice Hub 是什么', '使用指南', '最佳实践', '原理细节'],
   );
   assert.deepEqual(
     getDocsSectionTree(tree, []).children
@@ -655,12 +660,6 @@ test('docs layout uses fumadocs section switcher for docs blog reports and devel
       'K8s 和 Controller',
       'Pole Sidecar',
       '协议与网关',
-      'API 与协议总览',
-      '协议端口',
-      'HTTP OpenAPI',
-      'gRPC 接口',
-      'xDS v3',
-      '兼容协议',
       '灰度发布',
       'K8s 相关实践',
       'Agent 能力发现',

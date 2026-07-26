@@ -1,9 +1,9 @@
-import { BarChart3, BookOpen, Newspaper, Users } from 'lucide-react';
+import { BarChart3, BookOpen, Code2, Newspaper, Users } from 'lucide-react';
 import type { LayoutTab } from 'fumadocs-ui/layouts/shared';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import type { DocsLocale } from '@/lib/source';
 
-type DocsSection = 'docs' | 'blog' | 'reports' | 'developers';
+type DocsSection = 'docs' | 'api' | 'blog' | 'reports' | 'developers';
 type DocsPageAlias = {
   slugs: string[];
   name: string;
@@ -13,6 +13,7 @@ const navigationCopy = {
   'zh-CN': {
     sections: {
       docs: { title: '文档', description: '产品能力、原理和组件说明' },
+      api: { title: 'API', description: 'OpenAPI、协议端口与兼容入口' },
       blog: { title: '博客', description: '最佳实践和接入经验' },
       reports: { title: '报告', description: '性能、配置和验证报告' },
       developers: { title: '开发者', description: 'Maintainer、Committer 与社区角色' },
@@ -20,7 +21,6 @@ const navigationCopy = {
     folders: {
       overview: 'Lattice Hub 是什么',
       guides: '使用指南',
-      api: 'API 与协议',
       practices: '最佳实践',
       principles: '原理细节',
     },
@@ -30,12 +30,6 @@ const navigationCopy = {
       access: '接入方式',
       install: '服务端安装',
       console: '控制台使用',
-      apiOverview: 'API 与协议总览',
-      apiPorts: '协议端口',
-      apiHttp: 'HTTP OpenAPI',
-      apiGrpc: 'gRPC 接口',
-      apiXds: 'xDS v3',
-      apiCompatibility: '兼容协议',
       consoleOverview: '控制台概览',
       consoleServices: '服务与环境',
       consoleConfiguration: '配置中心',
@@ -75,6 +69,7 @@ const navigationCopy = {
   en: {
     sections: {
       docs: { title: 'Docs', description: 'Product capabilities, principles, and components' },
+      api: { title: 'API', description: 'OpenAPI, protocol ports, and compatibility entries' },
       blog: { title: 'Blog', description: 'Practices and integration notes' },
       reports: { title: 'Reports', description: 'Performance and verification reports' },
       developers: { title: 'Developers', description: 'Maintainers, committers, and community roles' },
@@ -82,7 +77,6 @@ const navigationCopy = {
     folders: {
       overview: 'What is Lattice Hub?',
       guides: 'Guides',
-      api: 'API and protocols',
       practices: 'Best practices',
       principles: 'Principles',
     },
@@ -92,12 +86,6 @@ const navigationCopy = {
       access: 'Integration options',
       install: 'Server installation',
       console: 'Using the Console',
-      apiOverview: 'API and protocols overview',
-      apiPorts: 'Protocol ports',
-      apiHttp: 'HTTP OpenAPI',
-      apiGrpc: 'gRPC APIs',
-      apiXds: 'xDS v3',
-      apiCompatibility: 'Compatibility protocols',
       consoleOverview: 'Console overview',
       consoleServices: 'Services and environments',
       consoleConfiguration: 'Configuration',
@@ -146,6 +134,7 @@ function getSectionConfig(locale: DocsLocale) {
 
   return {
     docs: { ...copy.docs, url: getLocalizedDocsUrl(locale) },
+    api: { ...copy.api, url: getLocalizedDocsUrl(locale, ['api']) },
     blog: { ...copy.blog, url: getLocalizedDocsUrl(locale, ['blog']) },
     reports: { ...copy.reports, url: getLocalizedDocsUrl(locale, ['reports']) },
     developers: { ...copy.developers, url: getLocalizedDocsUrl(locale, ['developers']) },
@@ -157,6 +146,7 @@ export function getDocsLayoutTabs(locale: DocsLocale): LayoutTab[] {
 
   return [
     { ...sectionConfig.docs, icon: <BookOpen /> },
+    { ...sectionConfig.api, icon: <Code2 /> },
     { ...sectionConfig.blog, icon: <Newspaper /> },
     { ...sectionConfig.reports, icon: <BarChart3 /> },
     { ...sectionConfig.developers, icon: <Users /> },
@@ -166,6 +156,10 @@ export function getDocsLayoutTabs(locale: DocsLocale): LayoutTab[] {
 export const docsLayoutTabs = getDocsLayoutTabs('zh-CN');
 
 function getDocsSection(slug: string[] = []): DocsSection {
+  if (slug[0] === 'api') {
+    return 'api';
+  }
+
   if (slug[0] === 'blog') {
     return 'blog';
   }
@@ -327,14 +321,6 @@ function getProductDocsTree(tree: PageTree.Root, locale: DocsLocale): PageTree.R
         alias(copy.pages.sidecar, ['components', 'pingora-sidecar']),
         alias(copy.pages.specification, ['components', 'specification']),
       ]),
-      folder(copy.folders.api, [
-        alias(copy.pages.apiOverview, ['api']),
-        alias(copy.pages.apiPorts, ['api', 'ports']),
-        alias(copy.pages.apiHttp, ['api', 'http-openapi']),
-        alias(copy.pages.apiGrpc, ['api', 'grpc']),
-        alias(copy.pages.apiXds, ['api', 'xds']),
-        alias(copy.pages.apiCompatibility, ['api', 'compatibility']),
-      ]),
       folder(copy.folders.practices, [
         alias(copy.pages.grayRelease, ['practices', 'gray-release']),
         alias(copy.pages.kubernetes, ['practices', 'kubernetes-sync']),
@@ -360,7 +346,12 @@ export function getDocsSectionTree(
 ): PageTree.Root {
   const section = getDocsSection(slug);
 
-  if (section === 'blog' || section === 'reports' || section === 'developers') {
+  if (
+    section === 'api' ||
+    section === 'blog' ||
+    section === 'reports' ||
+    section === 'developers'
+  ) {
     const folder = findSectionFolder(tree, section, locale);
     return folder ? treeFromFolder(folder) : tree;
   }
