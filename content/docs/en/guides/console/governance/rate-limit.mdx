@@ -1,0 +1,37 @@
+---
+title: Rate limit
+description: Create local/cluster rate limits: target, API match, QPS/concurrency, and effects.
+---
+
+Wizard type: **Rate limit** (create kind `ratelimit-local`).
+
+![Rate-limit editor](/images/console/gov-rate-limit.png)
+
+## Steps
+
+1. Create rule → Rate limit.
+2. Fill and save:
+   1. **Basics**: kebab-case name, priority, enable, labels
+   2. **Target**: namespace, service, **mode** (single-instance / cluster)
+   3. **Sub-rules** (≥1): match APIs → optional conditions → QPS or concurrency → effect (fail-fast / queue; custom JSON response)
+3. Publish.
+
+## Modes
+
+| UI | Notes |
+| --- | --- |
+| Single-instance | Default create path; queue wait allowed |
+| Cluster | Switch in editor; **fail-fast only** |
+
+List labels may say local/global/distributed—trust the editor mode.
+
+## Checks
+
+- ≥1 sub-rule with ≥1 API and non-empty path
+- Window / concurrency amounts >0
+- Custom response must be valid JSON
+
+## Related
+
+- [Governance overview](/en/docs/guides/console/governance)
+- [Circuit breaker](/en/docs/guides/console/governance/circuit-breaker)

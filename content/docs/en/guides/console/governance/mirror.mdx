@@ -1,0 +1,27 @@
+---
+title: Traffic mirror
+description: Copy matched requests to a shadow service by API scope, labels, and ratio.
+---
+
+Wizard type: **Mirror** (`kind=traffic-mirror`).
+
+![Traffic-mirror editor](/images/console/gov-mirror.png)
+
+## Steps
+
+1. Create rule → Mirror.
+2. Fill and save:
+   1. **Basics**
+   2. **Service scope**: caller → callee; caller may be all namespaces/services
+   3. **Mirror sub-rules** (≥1): API scope → traffic labels → execute (ratio 0–100, target ns/service)
+3. Publish.
+
+## Notes
+
+- Mirroring creates extra traffic/side effects—size the shadow target accordingly.
+- Resource: `MirrorRules` / `TrafficMirrorRules`.
+
+## Related
+
+- [Traffic mock](/en/docs/guides/console/governance/mock)
+- [Governance overview](/en/docs/guides/console/governance)

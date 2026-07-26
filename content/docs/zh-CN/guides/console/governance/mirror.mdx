@@ -1,0 +1,31 @@
+---
+title: 流量镜像
+description: 按接口与流量标签将请求按比例复制到影子服务。
+---
+
+向导类型：**镜像**（`kind=traffic-mirror`）。
+
+![流量镜像编辑器](/images/console/gov-mirror.png)
+
+## 操作步骤
+
+1. 「新建规则」→「镜像」。
+2. 填写并保存：
+   1. **基础信息**：规则名称（kebab-case）、启用、优先级、标签、描述
+   2. **服务范围**：主调 → 被调；主调可为「全部命名空间 / 全部服务」
+   3. **镜像规则**（至少 1 条）：
+      - **接口范围**：至少 1 个接口，path 非空
+      - **流量标签**：至少 1 条，key/value 非空
+      - **镜像执行**：镜像比例 0–100、目标命名空间、目标服务
+3. 「发布」。
+
+## 注意
+
+- 镜像产生额外流量与副作用，目标服务应可承受影子流量。
+- 子规则可单独启用/禁用。
+- 发布资源：`MirrorRules` / `TrafficMirrorRules`。
+
+## 相关
+
+- [流量 Mock](/docs/guides/console/governance/mock)
+- [治理工作台概览](/docs/guides/console/governance)

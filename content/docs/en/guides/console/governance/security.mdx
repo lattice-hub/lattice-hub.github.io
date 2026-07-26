@@ -1,0 +1,30 @@
+---
+title: Traffic security
+description: Configure callee auth mode and allow/deny rules, then publish.
+---
+
+Wizard type: **Auth** (`kind=traffic-security`).
+
+![Traffic-security editor](/images/console/gov-security.png)
+
+## Steps
+
+1. Create rule → Auth.
+2. Fill and save:
+   1. **Basics**: kebab-case name, enable, priority, labels, description
+   2. **Service**: callee namespace/service (identity comes from auth mode, not spoofable headers)
+   3. **Auth mode**: Pole managed identity (recommended) / custom Header (compat)
+   4. **Sub-rules**: blacklist / whitelist / service-level; allow or deny
+3. Publish after the rule exists.
+
+## Constraints
+
+- ≥1 sub-rule
+- At most one service-level rule, without API scope
+- API-level needs ≥1 protected API
+- Console no longer creates shared rule-level `CUSTOM_HEADER` credentials
+
+## Related
+
+- [Authorization](/en/docs/guides/console/authorization) (management principals/policies; different from traffic security)
+- [Governance overview](/en/docs/guides/console/governance)

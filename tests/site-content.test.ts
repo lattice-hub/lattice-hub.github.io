@@ -374,7 +374,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 38);
+  assert.equal(chinese.length, 47);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
@@ -502,7 +502,50 @@ test('docs layout uses fumadocs section switcher for docs blog reports and devel
             children: [
               { type: 'page', name: '服务与环境', url: '/docs/guides/console/services' },
               { type: 'page', name: '配置中心', url: '/docs/guides/console/configuration' },
-              { type: 'page', name: '治理工作台', url: '/docs/guides/console/governance' },
+              {
+                type: 'folder',
+                name: '治理工作台',
+                index: {
+                  type: 'page',
+                  name: '治理工作台概览',
+                  url: '/docs/guides/console/governance',
+                },
+                children: [
+                  { type: 'page', name: '路由规则', url: '/docs/guides/console/governance/route' },
+                  {
+                    type: 'page',
+                    name: '限流规则',
+                    url: '/docs/guides/console/governance/rate-limit',
+                  },
+                  {
+                    type: 'page',
+                    name: '熔断规则',
+                    url: '/docs/guides/console/governance/circuit-breaker',
+                  },
+                  {
+                    type: 'page',
+                    name: '主动探测',
+                    url: '/docs/guides/console/governance/fault-detect',
+                  },
+                  {
+                    type: 'page',
+                    name: '无损发布',
+                    url: '/docs/guides/console/governance/lossless',
+                  },
+                  {
+                    type: 'page',
+                    name: '流量鉴权',
+                    url: '/docs/guides/console/governance/security',
+                  },
+                  {
+                    type: 'page',
+                    name: '流量镜像',
+                    url: '/docs/guides/console/governance/mirror',
+                  },
+                  { type: 'page', name: '流量 Mock', url: '/docs/guides/console/governance/mock' },
+                  { type: 'page', name: '泳道规则', url: '/docs/guides/console/governance/lane' },
+                ],
+              },
               { type: 'page', name: '权限管理', url: '/docs/guides/console/authorization' },
               {
                 type: 'page',

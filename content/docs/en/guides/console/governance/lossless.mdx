@@ -1,0 +1,28 @@
+---
+title: Lossless release
+description: Delayed register, warm-up, and offline wait. Console wizard label is “Lossless”.
+---
+
+Wizard type: **Lossless** (`kind=lossless`). “Graceful release / graceful online-offline” in docs maps to this capability; the Console label is **Lossless**.
+
+![Lossless editor](/images/console/gov-lossless.png)
+
+## Steps
+
+1. Create rule → Lossless.
+2. Fill and save:
+   1. **Basics**: rule id, priority shown as **5**, enable, labels
+   2. **Target**: namespace, service
+   3. **Online · delayed register**: time-based or probe-based
+   4. **Warm-up · progressive traffic**: window, terminate protect %, curve 1–5
+   5. **Offline · wait**: offline protect + wait interval
+3. Publish.
+
+## Capabilities
+
+Enable **at least one** of delayed register / warm-up / offline wait. Enable state is derived from those toggles.
+
+## Related
+
+- [Governance overview](/en/docs/guides/console/governance)
+- [Progressive delivery](/en/docs/practices/gray-release)

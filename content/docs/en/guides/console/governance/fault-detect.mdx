@@ -1,0 +1,29 @@
+---
+title: Fault detect
+description: Schedule HTTP/TCP/UDP probes against a callee service with port and payload settings.
+---
+
+Wizard type: **Probe** (`kind=faultdetect`).
+
+![Fault-detect editor](/images/console/gov-fault-detect.png)
+
+## Steps
+
+1. Create rule → Probe.
+2. Fill and save:
+   1. **Basics**: required kebab-case name (≤64), priority, description, labels
+   2. **Target**: probed namespace and service
+   3. **Probe rules** (≥1): schedule (protocol, interval >0, timeout >0) → port strategy → HTTP payload or TCP/UDP match
+3. Publish.
+
+## Protocols
+
+| Protocol | Key fields |
+| --- | --- |
+| HTTP | method, url, headers |
+| TCP / UDP | send, receive; exact / contains / regex |
+
+## Related
+
+- [Circuit breaker](/en/docs/guides/console/governance/circuit-breaker)
+- [Governance overview](/en/docs/guides/console/governance)

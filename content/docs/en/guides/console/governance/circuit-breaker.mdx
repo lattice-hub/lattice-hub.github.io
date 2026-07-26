@@ -1,0 +1,30 @@
+---
+title: Circuit breaker
+description: Configure break level, error/trigger conditions, recovery, and fallback responses.
+---
+
+Wizard type: **Circuit break** (`kind=circuitbreaker`).
+
+![Circuit-breaker editor](/images/console/gov-circuit-breaker.png)
+
+## Steps
+
+1. Create rule → Circuit break.
+2. Fill and save:
+   1. **Basics**: kebab-case name, priority, description, labels
+   2. **Service scope** + **break level** (service / instance / API; editable at create)
+   3. **Sub-rules**: strategy (errors → triggers) → recovery → fallback response
+3. Publish.
+
+## Notes
+
+| Item | Notes |
+| --- | --- |
+| Level | Create-time only |
+| Ratio threshold | 0–100 |
+| Active probe | Recovery toggle; probe rules live under [Fault detect](/en/docs/guides/console/governance/fault-detect) |
+
+## Related
+
+- [Fault detect](/en/docs/guides/console/governance/fault-detect)
+- [Governance overview](/en/docs/guides/console/governance)

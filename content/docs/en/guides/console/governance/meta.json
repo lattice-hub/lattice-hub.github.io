@@ -1,0 +1,15 @@
+{
+  "title": "Governance",
+  "pages": [
+    "index",
+    "route",
+    "rate-limit",
+    "circuit-breaker",
+    "fault-detect",
+    "lossless",
+    "security",
+    "mirror",
+    "mock",
+    "lane"
+  ]
+}

@@ -1,0 +1,37 @@
+---
+title: Lane rules
+description: Configure lane group entry, member services, and lane definitions; enable state pushes on save.
+---
+
+Wizard type: **Lane** (`kind=lane`). Editor tabs: **Group / Lanes / Versions / Audit**.
+
+![Lane editor](/images/console/gov-lane.png)
+
+## Steps
+
+1. Create rule → Lane.
+2. On **Group**, fill and save:
+   1. **Basics**: name, enable, priority, description, labels  
+      - Hint: enable state is pushed to the data plane on save
+   2. **Group entry**: gateway / app entry; ≥1; ns+service required
+   3. **Member services**: ≥1
+3. On **Lanes**, define lanes:
+   - Name, label value
+   - Fixed traffic-tag key: `X-Lattice-Traffic-Lane`
+   - Match (AND/OR), post-hit ratio 0–100%
+   - Member services that enter the lane
+4. Optionally Publish for versioned full/gray release.
+
+## Difference from the common model
+
+| Action | Most rule types | Lane |
+| --- | --- | --- |
+| Save | Write config only | Toast: saved and pushed to data plane |
+| Publish | Primary activation path | Still available for versioned release |
+
+Treat enable toggles as immediate data-plane impact. Prefer on-screen copy if docs disagree.
+
+## Related
+
+- [Route rules](/en/docs/guides/console/governance/route)
+- [Governance overview](/en/docs/guides/console/governance)

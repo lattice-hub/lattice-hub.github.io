@@ -1,0 +1,72 @@
+---
+title: Governance overview
+description: Entry points for nine rule families, three detail tabs, full/gray publish, and per-type guides.
+---
+
+Menu: **Governance → Workbench** (`/governance/workbench`). Also reachable from the service detail “Traffic governance” tab.
+
+![Governance workbench](/images/console/governance.png)
+
+![Create-rule wizard](/images/console/governance-create-wizard.png)
+
+## Workbench list
+
+Page header: “Rule governance workbench”.
+
+1. Summary: total / enabled / pending publish / rule-type count.
+2. Filters: environment, rule type, status, search.
+3. “Create rule” opens the type wizard.
+4. Open detail or delete (gated by permission and `editable` / `deleteable`).
+5. Resource **Authorize** when needed.
+
+Embedded service workbench can switch “as caller” / “as callee”.
+
+## Per-type guides
+
+| Type | Wizard label | Guide |
+| --- | --- | --- |
+| Route | Route | [Route rules](/en/docs/guides/console/governance/route) |
+| Rate limit | Rate limit | [Rate limit](/en/docs/guides/console/governance/rate-limit) |
+| Circuit break | Circuit break | [Circuit breaker](/en/docs/guides/console/governance/circuit-breaker) |
+| Probe | Probe | [Fault detect](/en/docs/guides/console/governance/fault-detect) |
+| Lossless (graceful online/offline) | Lossless | [Lossless release](/en/docs/guides/console/governance/lossless) |
+| Auth | Auth | [Traffic security](/en/docs/guides/console/governance/security) |
+| Mirror | Mirror | [Traffic mirror](/en/docs/guides/console/governance/mirror) |
+| Mock | Mock | [Traffic mock](/en/docs/guides/console/governance/mock) |
+| Lane | Lane | [Lane rules](/en/docs/guides/console/governance/lane) |
+
+## Three detail tabs
+
+![Governance rule detail](/images/console/governance-detail.png)
+
+![Versions tab](/images/console/governance-versions.png)
+
+| Tab | Purpose |
+| --- | --- |
+| Rule | Edit body and save |
+| Versions | Releases, rollback, delete |
+| Listeners | Client listeners (may be disabled while creating) |
+
+Sticky actions: **Edit / Save / Discard / Publish**. Save writes the draft; Publish opens the release drawer.
+
+## Publish (shared)
+
+1. Click Publish outside edit mode → “Rule publish”.
+2. Version name (required ≤64), description (≤255).
+3. **Full** or **gray** publish.
+4. Gray needs ≥1 client-label condition; keys unique; match is **OR** (any label).
+5. Labels: client IP / client ID / client language.
+
+Do not mix with configuration’s four-tab release model.
+
+## Boundaries
+
+- **Save ≠ publish** for most types.
+- **Lane exception**: enable state is pushed to the data plane on save. See [Lane rules](/en/docs/guides/console/governance/lane).
+- Edit rights ≠ Publish rights.
+
+## Further reading
+
+- [Governance releases](/en/docs/principles/governance-release)
+- [Progressive delivery](/en/docs/practices/gray-release)
+- [Console overview](/en/docs/guides/console)

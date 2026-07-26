@@ -1,0 +1,27 @@
+---
+title: Traffic mock
+description: Return fixed Code, delay, and Body when API and traffic conditions match.
+---
+
+Wizard type: **Mock** (`kind=traffic-mock`).
+
+![Traffic-mock editor](/images/console/gov-mock.png)
+
+## Steps
+
+1. Create rule → Mock.
+2. Fill and save:
+   1. **Basics**
+   2. **Service scope**: caller (may be all) → mocked callee
+   3. **Mock sub-rules** (≥1): select APIs → traffic match → response (Code, delay ≥0, headers, body)
+3. Publish.
+
+## Body
+
+- JSON Content-Type requires valid JSON body.
+- Full-screen body editor is available.
+
+## Related
+
+- [Traffic mirror](/en/docs/guides/console/governance/mirror)
+- [Governance overview](/en/docs/guides/console/governance)

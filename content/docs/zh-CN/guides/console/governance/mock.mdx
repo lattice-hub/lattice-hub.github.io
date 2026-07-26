@@ -1,0 +1,36 @@
+---
+title: 流量 Mock
+description: 命中接口与流量条件后返回固定 Code、延迟与 Body。
+---
+
+向导类型：**Mock**（`kind=traffic-mock`）。
+
+![流量 Mock 编辑器](/images/console/gov-mock.png)
+
+## 操作步骤
+
+1. 「新建规则」→「Mock」。
+2. 填写并保存：
+   1. **基础信息**
+   2. **服务范围**：主调（可为全部）→ 被调 Mock 服务
+   3. **Mock 子规则**（至少 1 条），固定流水线：
+      - **选择接口**：路径非空
+      - **流量匹配**：至少 1 条条件且值非空
+      - **Mock 响应结果**：Code 非空、delay ≥0、响应头、Body
+3. 「发布」。
+
+## 响应 Body
+
+- Content-Type 为 JSON 时，Body 须合法 JSON。
+- 支持「响应 Body 全屏编辑」。
+- 主调若指定具体服务，须命名空间与服务同时填写。
+
+## 发布与观察
+
+- 发布资源：`MockRules` / `TrafficMockRules`
+- 观察副作用是否限制在目标接口与条件范围；联调结束后及时停用或回滚
+
+## 相关
+
+- [流量镜像](/docs/guides/console/governance/mirror)
+- [治理工作台概览](/docs/guides/console/governance)

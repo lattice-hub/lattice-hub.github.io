@@ -1,0 +1,72 @@
+---
+title: 治理工作台概览
+description: 九类治理规则的入口、详情三 Tab、全量/灰度发布与类型专章索引。
+---
+
+对应菜单：**治理管理 → 治理工作台**（`/governance/workbench`）。也可从服务详情「流量治理」Tab 嵌入进入。
+
+![治理工作台](/images/console/governance.png)
+
+![新建规则向导](/images/console/governance-create-wizard.png)
+
+## 工作台列表
+
+页头「规则治理工作台」。
+
+1. 查看摘要：规则总数 / 已启用 / 待发布 / 规则类型数。
+2. 筛选：归属环境、规则类型、状态（全部/已启用/已停用）、搜索规则名/服务/条件。
+3. 「新建规则」打开类型向导，选择九类之一。
+4. 列表操作：进入详情、删除（受权限与 `editable`/`deleteable` 约束）。
+5. 需要时对规则做**资源授权**。
+
+服务内嵌工作台可切换「作为主调方」/「作为被调方」，并「关联规则」。
+
+## 按类型操作专章
+
+| 类型 | 向导标签 | 操作文档 |
+| --- | --- | --- |
+| 路由 | 路由 | [路由规则](/docs/guides/console/governance/route) |
+| 限流 | 限流 | [限流规则](/docs/guides/console/governance/rate-limit) |
+| 熔断 | 熔断 | [熔断规则](/docs/guides/console/governance/circuit-breaker) |
+| 探测 | 探测 | [主动探测](/docs/guides/console/governance/fault-detect) |
+| 无损（优雅上下线） | 无损 | [无损发布](/docs/guides/console/governance/lossless) |
+| 鉴权 | 鉴权 | [流量鉴权](/docs/guides/console/governance/security) |
+| 镜像 | 镜像 | [流量镜像](/docs/guides/console/governance/mirror) |
+| Mock | Mock | [流量 Mock](/docs/guides/console/governance/mock) |
+| 泳道 | 泳道 | [泳道规则](/docs/guides/console/governance/lane) |
+
+## 规则详情三个 Tab
+
+![治理规则详情](/images/console/governance-detail.png)
+
+![版本 Tab](/images/console/governance-versions.png)
+
+| Tab | 用途 |
+| --- | --- |
+| 规则 | 编辑规则本体并保存 |
+| 版本 | 查看发布版本、回滚、删除版本 |
+| 监听 | 查看客户端监听情况（创建中可能禁用） |
+
+悬浮操作区常见按钮：**编辑 / 保存 / 撤销 / 发布**。保存写配置草稿；发布打开「规则发布」抽屉。
+
+## 发布规则（全类型共用）
+
+1. 在非编辑态点「发布」，打开抽屉「规则发布」。
+2. 填写版本名称（必填 ≤64）、版本描述（≤255）。
+3. 选择 **全量发布** 或 **灰度发布**。
+4. 灰度需至少 1 个客户端标签条件，key 不可重复；命中语义为「满足**任一**标签条件」（OR）。
+5. 客户端标签可选：客户端 IP / 客户端 ID / 客户端语言。
+
+治理发布记录**没有**配置中心那套「正式草稿 / 提交为正式草稿 / 删除灰度」四 Tab，不要混用语义。
+
+## 关键边界
+
+- **保存 ≠ 发布**：多数类型保存后仍须点发布，客户端才读到新版本。
+- **泳道例外**：启用状态「保存后立即下发到数据面」。详见 [泳道规则](/docs/guides/console/governance/lane)。
+- 有编辑权 ≠ 有 Publish 权（如 `PublishRouteRules`）。
+
+## 深入阅读
+
+- [治理规则与灰度发布](/docs/principles/governance-release)
+- [灰度发布实践](/docs/practices/gray-release)
+- [控制台概览](/docs/guides/console)
