@@ -6,7 +6,9 @@
     "configuration",
     "governance",
     "authorization",
-    "ai-registry",
+    "mcp",
+    "a2a",
+    "agent",
     "system",
     "metrics"
   ]

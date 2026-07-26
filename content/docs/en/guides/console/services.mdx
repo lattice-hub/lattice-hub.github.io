@@ -9,8 +9,6 @@ Menus: **Namespaces**, **Discovery → Service instances**. Stabilize environmen
 
 ![Service instances](/images/console/services.png)
 
-![Service detail](/images/console/service-detail.png)
-
 ## Namespaces
 
 Path: sidebar “Namespaces” → `/namespace`.
@@ -50,6 +48,8 @@ Path: sidebar “Discovery → Service instances” → `/discovery/service`.
 
 ## Five tabs on service detail
 
+![Service detail](/images/console/service-detail.png)
+
 | Tab | Purpose |
 | --- | --- |
 | Service detail | Edit description, department, business, labels; copy service ID |
@@ -58,9 +58,13 @@ Path: sidebar “Discovery → Service instances” → `/discovery/service`.
 | Subscriptions | Who subscribes / is subscribed |
 | Traffic governance | Embedded governance workbench filtered as caller/callee |
 
-The page may also offer environment switching (jump same-named services across namespaces). Always confirm the current environment before acting.
+The page may also offer environment switching. Always confirm the current environment before acting.
 
-### Instances
+### Instances and health checks
+
+![Instances tab](/images/console/service-instances.png)
+
+![Create instance and health check](/images/console/service-instance-create.png)
 
 1. Open the Instances tab; search by host if needed.
 2. Create or edit instances.
@@ -77,14 +81,26 @@ The page may also offer environment switching (jump same-named services across n
 
 ### Aliases
 
-1. Open Aliases → create alias.
+![Aliases tab](/images/console/service-aliases.png)
+
+![Create alias](/images/console/service-alias-create.png)
+
+1. Open Aliases → “Create alias”.
 2. Fill target service, alias namespace, alias name, notes.
 3. Alias rules: start with a lowercase letter; lowercase letters/digits/hyphens only; unique in the namespace.
 4. View, copy, or delete.
 
 ### Subscriptions
 
-Read-only view of who subscribes to this service and what it subscribes to. Empty state: no subscription relationships. Used for call topology; subscriptions are not created here.
+![Subscriptions tab](/images/console/service-subscriptions.png)
+
+Read-only view of who subscribes to this service and what it subscribes to. Empty state: no subscription relationships. Subscriptions are not created here.
+
+### Traffic governance (in-service entry)
+
+![In-service traffic governance](/images/console/service-governance.png)
+
+Switch “as caller / as callee” and associate rules. Full per-type guides: [Governance](/en/docs/guides/console/governance).
 
 ## Documentation boundary
 

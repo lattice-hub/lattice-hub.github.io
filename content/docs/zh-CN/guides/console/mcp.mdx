@@ -1,0 +1,36 @@
+---
+title: MCP 服务
+description: 在 AI 工具中登记 MCP Server、管理工具列表与资源授权。
+---
+
+对应菜单：**AI 工具 → MCP 服务**（`/ai/mcps`）。这是 Registry 能力，与侧栏底部的 [Pole Agent 工作台](/docs/guides/console/agent) 不是同一入口。
+
+![MCP 服务列表](/images/console/mcp-registry.png)
+
+![新建 MCP Server](/images/console/mcp-create.png)
+
+## 列表操作
+
+1. 按命名空间、协议筛选；搜索服务名称。
+2. 「新建 MCP Server」。
+3. 查看摘要指标：Servers / Namespaces / HTTP / SSE·Stream / Pole 服务等。
+4. 进入详情管理工具列表；可授权；可跳转关联的后端服务。
+
+## 创建时常见字段
+
+名称、命名空间、业务、部门、关联服务或自定义地址、协议、端口、可见命名空间、后端类型、描述等。
+
+操作后确认缓存刷新，列表与详情一致；给调用方最小读权限。见 [权限管理](/docs/guides/console/authorization)。
+
+## 与其他入口的关系
+
+| 入口 | 作用 |
+| --- | --- |
+| 本页 MCP 服务 | 登记可发现的 MCP Server / Tool |
+| [A2A Agent](/docs/guides/console/a2a) | 登记 Agent Card / 技能元数据 |
+| [Pole Agent 工作台](/docs/guides/console/agent) | 对话式查询与配置草稿（白名单工具才可被调用） |
+
+## 深入阅读
+
+- [AI Registry 原理](/docs/principles/ai-registry)
+- [控制台概览](/docs/guides/console)

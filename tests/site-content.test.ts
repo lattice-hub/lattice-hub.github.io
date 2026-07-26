@@ -374,7 +374,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 47);
+  assert.equal(chinese.length, 49);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
@@ -547,11 +547,9 @@ test('docs layout uses fumadocs section switcher for docs blog reports and devel
                 ],
               },
               { type: 'page', name: '权限管理', url: '/docs/guides/console/authorization' },
-              {
-                type: 'page',
-                name: 'AI Registry 与 Pole Agent',
-                url: '/docs/guides/console/ai-registry',
-              },
+              { type: 'page', name: 'MCP 服务', url: '/docs/guides/console/mcp' },
+              { type: 'page', name: 'A2A Agent', url: '/docs/guides/console/a2a' },
+              { type: 'page', name: 'Pole Agent 工作台', url: '/docs/guides/console/agent' },
               { type: 'page', name: '系统配置', url: '/docs/guides/console/system' },
               { type: 'page', name: '监控指标', url: '/docs/guides/console/metrics' },
             ],

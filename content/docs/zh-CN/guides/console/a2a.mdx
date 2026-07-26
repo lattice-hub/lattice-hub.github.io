@@ -1,0 +1,33 @@
+---
+title: A2A Agent
+description: 在 AI 工具中登记 A2A Agent Card、技能与协议元数据，并做资源授权。
+---
+
+对应菜单：**AI 工具 → A2A Agent**（`/ai/a2a`）。只做 Registry，不是任务执行引擎；也不等于侧栏底部的 [Pole Agent 工作台](/docs/guides/console/agent)。
+
+![A2A Agent 列表](/images/console/a2a-registry.png)
+
+![新建 A2A Agent](/images/console/a2a-create.png)
+
+## 新建向导 Tabs
+
+1. **基础信息**：名称、命名空间、版本、协议版本、业务、部门、描述、Provider、文档/图标等  
+2. **接入与能力**：首选协议与地址、后端绑定、Streaming / Push / Extended Card 等开关  
+3. **技能**：维护 Skill 列表  
+4. **来源与 Card**：Agent Card 相关元数据  
+
+## 详情 Tabs
+
+**Agent Card** / **技能** / **编辑**。列表与详情均可做资源授权。
+
+## 边界
+
+- A2A Registry 只登记 Card、技能与协议元数据。
+- 不负责任务代理、Agent Runtime 或对话写配置。
+- 对话写配置请走 [Pole Agent 工作台](/docs/guides/console/agent)；MCP 工具登记见 [MCP 服务](/docs/guides/console/mcp)。
+
+## 深入阅读
+
+- [AI Registry 原理](/docs/principles/ai-registry)
+- [Agent 能力发现实践](/docs/practices/agent-discovery)
+- [控制台概览](/docs/guides/console)

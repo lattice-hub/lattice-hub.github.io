@@ -14,6 +14,7 @@ When the user asks to commit and push (or when a push to `main` is completed in 
 - Frontmatter YAML values that contain `:` must be quoted.
 - Chinese and English docs under `content/docs/{zh-CN,en}/` must stay path-symmetric; update `tests/site-content.test.ts` page counts when adding pages.
 - Console guide screenshots live in `public/images/console/` and should come from a real Console when available.
+- Keep **MCP** (`/docs/guides/console/mcp`), **A2A** (`/docs/guides/console/a2a`), and **Pole Agent workspace** (`/docs/guides/console/agent`) as separate guides. Do not merge Agent into AI Registry pages—Agent is the sidebar-bottom workspace mode, not an AI-tools submenu item.
 
 ## Product facts
 

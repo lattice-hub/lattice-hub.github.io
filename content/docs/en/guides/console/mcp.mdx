@@ -1,0 +1,36 @@
+---
+title: MCP services
+description: Register MCP Servers under AI tools, manage tools, and authorize access.
+---
+
+Menu: **AI tools → MCP services** (`/ai/mcps`). This is Registry capacity—not the same entry as the separate [Pole Agent workspace](/en/docs/guides/console/agent) at the bottom of the sidebar.
+
+![MCP service list](/images/console/mcp-registry.png)
+
+![Create MCP Server](/images/console/mcp-create.png)
+
+## List actions
+
+1. Filter by namespace and protocol; search by name.
+2. “Create MCP Server”.
+3. Inspect summary metrics: Servers / Namespaces / HTTP / SSE·Stream / Pole services, and so on.
+4. Open detail for tools; authorize; jump to the linked backend service.
+
+## Common create fields
+
+Name, namespace, business, department, linked service or custom address, protocol, port, visible namespaces, backend type, description, and similar.
+
+After changes, confirm cache refresh so list and detail agree; grant callers least-privilege read. See [Authorization](/en/docs/guides/console/authorization).
+
+## Related entries
+
+| Entry | Role |
+| --- | --- |
+| This page | Register discoverable MCP Servers / tools |
+| [A2A Agent](/en/docs/guides/console/a2a) | Register Agent Card / skill metadata |
+| [Pole Agent workspace](/en/docs/guides/console/agent) | Conversational query and config drafts (allowlisted tools only) |
+
+## Further reading
+
+- [AI Registry principles](/en/docs/principles/ai-registry)
+- [Console overview](/en/docs/guides/console)

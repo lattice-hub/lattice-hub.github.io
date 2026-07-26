@@ -9,8 +9,6 @@ description: 在 Console 中管理命名空间、服务、实例、别名、订�
 
 ![服务实例](/images/console/services.png)
 
-![服务详情](/images/console/service-detail.png)
-
 ## 命名空间
 
 路径：侧栏「命名空间」→ `/namespace`。
@@ -50,6 +48,8 @@ Namespace 表示**运行环境**，不是租户或团队空间。
 
 ## 服务详情五个 Tab
 
+![服务详情](/images/console/service-detail.png)
+
 进入服务后可见：
 
 | Tab | 用途 |
@@ -62,7 +62,11 @@ Namespace 表示**运行环境**，不是租户或团队空间。
 
 页内还可能提供环境切换（同名服务跨 Namespace 跳转），操作前务必确认当前环境。
 
-### 服务实例
+### 服务实例与健康检查
+
+![服务实例 Tab](/images/console/service-instances.png)
+
+![新建实例与健康检查](/images/console/service-instance-create.png)
 
 1. 打开「服务实例」Tab，可按主机地址搜索。
 2. 「新建实例」或编辑已有实例。
@@ -79,14 +83,26 @@ Namespace 表示**运行环境**，不是租户或团队空间。
 
 ### 服务别名
 
-1. 打开「服务别名」Tab → 创建别名。
+![服务别名 Tab](/images/console/service-aliases.png)
+
+![新建别名](/images/console/service-alias-create.png)
+
+1. 打开「服务别名」Tab →「新建别名」。
 2. 填写：目标服务、别名所在命名空间、别名、备注。
 3. 别名规则：小写字母开头，仅小写字母/数字/中划线；同命名空间下不可重名。
 4. 可查看、复制别名、删除。
 
 ### 服务订阅
 
+![服务订阅 Tab](/images/console/service-subscriptions.png)
+
 只读查看谁订阅了该服务、该服务订阅了谁。空态为「暂无订阅关系」。用于理解调用拓扑，不在此页创建订阅。
+
+### 流量治理（服务内入口）
+
+![服务内流量治理](/images/console/service-governance.png)
+
+从服务详情「流量治理」Tab 可切换「作为主调方 / 作为被调方」并关联规则。完整九类规则操作见 [治理工作台](/docs/guides/console/governance)。
 
 ## 文档边界
 

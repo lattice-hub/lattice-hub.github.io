@@ -1,0 +1,33 @@
+---
+title: A2A Agent
+description: Register A2A Agent Cards, skills, and protocol metadata under AI tools, and authorize access.
+---
+
+Menu: **AI tools → A2A Agent** (`/ai/a2a`). Registry only—not a task runtime, and not the [Pole Agent workspace](/en/docs/guides/console/agent).
+
+![A2A Agent list](/images/console/a2a-registry.png)
+
+![Create A2A Agent](/images/console/a2a-create.png)
+
+## Create wizard tabs
+
+1. **Basics**: name, namespace, version, protocol version, business, department, description, provider, docs/icon, and so on
+2. **Access and capabilities**: preferred protocol/address, backend binding, Streaming / Push / Extended Card toggles
+3. **Skills**: maintain the skill list
+4. **Source and Card**: Agent Card metadata
+
+## Detail tabs
+
+**Agent Card** / **Skills** / **Edit**. List and detail both support resource authorization.
+
+## Boundaries
+
+- A2A Registry registers Card, skills, and protocol metadata only.
+- It does not run tasks, host an Agent Runtime, or write config via chat.
+- Chat drafts go to [Pole Agent workspace](/en/docs/guides/console/agent); MCP tools are registered under [MCP services](/en/docs/guides/console/mcp).
+
+## Further reading
+
+- [AI Registry principles](/en/docs/principles/ai-registry)
+- [Agent discovery practice](/en/docs/practices/agent-discovery)
+- [Console overview](/en/docs/guides/console)
