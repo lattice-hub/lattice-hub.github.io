@@ -473,7 +473,8 @@ test('global styles do not override fumadocs document theming', () => {
   assert.match(layout, /defaultTheme:\s*'system'/);
   assert.match(layout, /enableSystem:\s*true/);
   assert.match(siteHeader, /ThemeSwitch/);
-  assert.match(themeSwitch, /setTheme\('light'\)|setTheme\(value\)/);
+  assert.match(themeSwitch, /aria-haspopup="menu"/);
+  assert.match(themeSwitch, /setTheme\(value\)/);
   assert.match(themeSwitch, /'system'/);
   assert.match(docsLayout, /mode:\s*'light-dark-system'/);
 });

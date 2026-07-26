@@ -1,59 +1,75 @@
-.switch {
+.root {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  border: 1px solid var(--border, var(--color-fd-border));
-  border-radius: 999px;
-  padding: 3px;
-  background: var(--surface-subtle, var(--color-fd-muted));
 }
 
-.switch button {
+.trigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  min-width: 30px;
-  min-height: 28px;
-  border: 0;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border, var(--color-fd-border));
   border-radius: 999px;
-  padding: 0 8px;
-  background: transparent;
-  color: var(--text-tertiary, var(--color-fd-muted-foreground));
+  padding: 0;
+  background: var(--surface-subtle, var(--color-fd-muted));
+  color: var(--text-secondary, var(--color-fd-muted-foreground));
   cursor: pointer;
-  font-family: inherit;
   transition:
     color 140ms ease,
-    background 140ms ease;
+    background 140ms ease,
+    border-color 140ms ease;
 }
 
-.switch button:hover {
+.trigger:hover,
+.trigger[aria-expanded='true'] {
+  border-color: var(--border-strong, var(--color-fd-border));
+  color: var(--text, var(--color-fd-foreground));
+  background: var(--surface, var(--color-fd-card));
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 80;
+  display: grid;
+  min-width: 132px;
+  gap: 2px;
+  border: 1px solid var(--border, var(--color-fd-border));
+  border-radius: 10px;
+  padding: 4px;
+  background: var(--surface, var(--color-fd-popover));
+  box-shadow: 0 12px 32px var(--shadow, rgba(0, 0, 0, 0.18));
+}
+
+.menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  border: 0;
+  border-radius: 7px;
+  padding: 0 10px;
+  background: transparent;
+  color: var(--text-secondary, var(--color-fd-muted-foreground));
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 560;
+  text-align: left;
+  transition:
+    color 120ms ease,
+    background 120ms ease;
+}
+
+.menu button:hover {
+  background: var(--surface-subtle, var(--color-fd-muted));
   color: var(--text, var(--color-fd-foreground));
 }
 
-.switch button.active {
+.menu button.active {
   background: var(--text, var(--color-fd-foreground));
   color: var(--surface, var(--color-fd-background));
-}
-
-.label {
-  display: none;
-  font-size: 11px;
-  font-weight: 620;
-  letter-spacing: 0.02em;
-}
-
-.compact .label {
-  display: none;
-}
-
-@media (min-width: 1100px) {
-  .switch:not(.compact) .label {
-    display: inline;
-  }
-
-  .switch:not(.compact) button {
-    min-width: 0;
-    padding: 0 10px;
-  }
 }

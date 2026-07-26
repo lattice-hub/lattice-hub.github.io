@@ -266,6 +266,30 @@ html.dark .site-shell img:not([src*="lattice-hub-logo"]) {
   padding: 10px 0 4px;
 }
 
+.drawer-theme [data-theme-toggle] {
+  width: 100%;
+}
+
+.drawer-theme [data-theme-toggle] > button[aria-haspopup='menu'] {
+  width: 100%;
+  justify-content: flex-start;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 0 12px;
+}
+
+.drawer-theme [data-theme-toggle] > button[aria-haspopup='menu']::after {
+  content: '主题';
+  font-size: 13px;
+  font-weight: 580;
+}
+
+.drawer-theme [data-theme-toggle] [role='menu'] {
+  right: auto;
+  left: 0;
+  width: min(220px, calc(100vw - 48px));
+}
+
 .experience-trigger {
   min-width: 44px;
   min-height: 44px;
