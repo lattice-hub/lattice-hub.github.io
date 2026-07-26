@@ -5,6 +5,8 @@ description: 从产品能力视角理解 Lattice Hub 的运行环境、服务治
 
 Lattice Hub 的功能不是一组分散 API，而是一套控制面资源视图。服务、实例、配置、治理规则、权限策略和 AI 能力注册都进入同一个控制面，再由 SDK、Pole Sidecar、Controller、Console 和 Agent 消费。
 
+若需对齐 Namespace、Active Release、MCP/A2A 等名词边界，先读 [术语与概念](/docs/what-is/concepts)。
+
 ## 能力总览
 
 | 能力 | 说明 | 深入阅读 |
@@ -19,9 +21,43 @@ Lattice Hub 的功能不是一组分散 API，而是一套控制面资源视图�
 | 系统配置与观测 | 63 项类型化配置目录区分部署锁定、待重启和受控热更新；OTel 指标经 Collector 进入共享 GreptimeDB。 | [观测链路](/docs/principles/observability-chain) |
 | 多运行时接入 | Console、SDK、Kubernetes Controller、Pole Sidecar 和协议适配层复用同一资源视图。 | [接入方式](/docs/what-is/access) |
 
+## 九类治理一览
+
+| 能力 | 典型用途 |
+| --- | --- |
+| 路由 | 按规则/元数据/就近策略选择实例集合 |
+| 泳道 | 按泳道标签隔离灰度流量 |
+| 限流 | 控制 QPS/并发，保护下游 |
+| 熔断 | 连续错误后打开保护并按条件恢复 |
+| 故障探测 | 主动探测实例健康并配合摘流 |
+| 无损上下线 | 延迟注册、readiness、平滑下线 |
+| 调用鉴权 | 在调用路径拒绝未授权请求 |
+| 流量镜像 | 复制请求到影子集群做验证 |
+| 流量 Mock | 命中规则后短路返回，便于联调 |
+
+所有九类都走“规则本体编辑 → Rule Release 发布 → active 视图消费”模型。
+
+## 多协议入口
+
+控制面可同时暴露：
+
+- Polaris 风格 HTTP / gRPC
+- Envoy xDS v3
+- Nacos v1/v2、Apollo、Eureka 兼容入口
+
+协议层只做适配；鉴权、校验和业务语义仍在共享 Domain Server。详见 [Specification](/docs/components/specification) 与 [控制面装配架构](/docs/principles/architecture)。
+
 ## 设计原则
 
 - 先统一控制面资源，再谈客户端和数据面形态。
 - 管理态对象和运行态视图分离，发布版本通过 active release 生效。
 - 缓存与事件流服务读路径，存储层承担事实来源。
 - AI 能力注册不是旁路系统，而是进入服务治理的资源模型。
+- Agent 可以准备变更，发布权仍在人。
+
+## 明确不做的事
+
+- 不把 Namespace 当作多租户/团队空间。
+- 不把 A2A Registry 描述成任务编排或 Agent Runtime。
+- 不声称所有系统配置均可热更新。
+- 不把控制面观测包装成完整全链路 APM 产品。

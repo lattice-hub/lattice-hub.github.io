@@ -5,21 +5,41 @@ description: Understand Lattice Hub through environments, discovery, governance,
 
 Lattice Hub is not a collection of unrelated APIs. Services, instances, configuration, governance rules, permissions, and AI capability records become versioned control-plane resources that different runtimes can consume.
 
+For shared vocabulary (Namespace, Active Release, MCP/A2A boundaries), start with [Concepts and terminology](/en/docs/what-is/concepts).
+
 ## Product capabilities
 
-| Capability | Product boundary |
-| --- | --- |
-| Environments | Namespaces separate development, staging, and production resources and releases. |
-| Service discovery | Multiple protocol adapters share the same service and instance model. |
-| Traffic governance | Nine policy families share scope, revision, release, progressive delivery, and rollback semantics. |
-| Configuration | Editing and runtime activation are separated by immutable releases. |
-| Identity and access | Management authorization and workload identity solve different trust problems. |
-| AI Registry | MCP servers and A2A agent cards are searchable control-plane resources. |
-| Pole Agent | A human-gated assistant reads authorized context and creates reviewable change proposals. |
-| Observability | History, events, statistics, and OTLP signals expose control-plane and runtime state. |
+| Capability | Product boundary | Learn more |
+| --- | --- | --- |
+| Service discovery | Namespaces, services, instances, health, and revisions. | [Control Plane](/en/docs/components/control-plane) |
+| Environments | Namespace separates dev/staging/prod content and releases. | [Integration options](/en/docs/what-is/access) |
+| Traffic governance | Nine families activate through releases. | [Governance releases](/en/docs/principles/governance-release) |
+| Configuration | Publish, progressive delivery, rollback, watches. | [Progressive delivery](/en/docs/practices/gray-release) |
+| Identity and audit | Users, roles, policies, resource mapping, history. | [Authorization](/en/docs/principles/auth-protocols) |
+| AI Registry | MCP servers and A2A agents in API/cache/store. | [AI Registry](/en/docs/principles/ai-registry) |
+| Pole Agent | Real LLM/MCP loop; writes stay drafts after confirmation. | [AI Registry](/en/docs/principles/ai-registry) |
+| System config & ops | 63 typed settings; OTel → Collector → GreptimeDB. | [Observability](/en/docs/principles/observability-chain) |
+| Multi-runtime access | Console, SDK, Controller, Sidecar, protocol adapters. | [Integration options](/en/docs/what-is/access) |
 
-## One view, several consumers
+## Nine governance families
 
-Console, SDKs, Kubernetes Controller, Pole Sidecar, protocol adapters, and agents do not need separate copies of the domain model. Each consumer reads only the published views and capabilities it supports.
+Route, lane, rate limit, circuit breaker, fault detect, lossless lifecycle, traffic security, traffic mirror, traffic mock—all share edit → Rule Release → active view consumption.
 
-This distinction matters: protocol compatibility does not imply that every runtime executes every governance policy. See [integration options](/en/docs/what-is/access) for deployment choices and [governance releases](/en/docs/principles/governance-release) for the activation boundary.
+## Multi-protocol entry points
+
+Polaris-style HTTP/gRPC, Envoy xDS v3, and Nacos/Apollo/Eureka-compatible adapters share Domain Servers for auth and business semantics. See [Specification](/en/docs/components/specification).
+
+## Design principles
+
+- Unify control-plane resources before debating client shapes.
+- Separate management objects from runtime views via active releases.
+- Cache/event paths serve reads; store remains source of truth.
+- AI registries join the resource model; they are not side UIs.
+- Agents prepare changes; humans publish.
+
+## Explicit non-goals
+
+- Namespace is not multi-tenant/team space.
+- A2A Registry is not a task runtime.
+- Not every system setting is hot-reloadable.
+- Control-plane telemetry is not a full APM product claim.

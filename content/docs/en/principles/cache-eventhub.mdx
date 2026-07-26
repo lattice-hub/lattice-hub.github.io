@@ -9,6 +9,8 @@ The cache layer separates read-heavy discovery, configuration, xDS, and AI Regis
 
 `CacheManager` registers caches for services, instances, configuration, governance families, users and policies, MCP servers, and A2A agents. Domain servers depend on cache interfaces rather than storage implementations for normal reads.
 
+![cache manager lifecycle](/diagrams/cache-manager-lifecycle.svg)
+
 ## Incremental refresh window
 
 `BaseCache` tracks the last successful database time and queries with an overlap window. The current `lastFetchTime - 5s` strategy reduces the risk of missing rows around timestamp and transaction boundaries.
@@ -22,11 +24,15 @@ Important state includes:
 
 The overlap window is a delivery safeguard, not a conflict-resolution mechanism. Resource revisions and domain validation still decide how updates are applied.
 
+![base cache update](/diagrams/base-cache-update.svg)
+
 ## Discovery hot path
 
 Discovery responses use revision comparison and complete-response caching. Cached protobuf values are cloned on both `Get` and `Put` so callers and transport serialization cannot mutate shared pointers.
 
 Statistics distinguish revision hits from full response-cache hits, which makes performance evidence more useful than a single cache-hit number.
+
+![discover response cache](/diagrams/discover-response-cache.svg)
 
 ## Governance fan-out
 
@@ -34,6 +40,10 @@ Governance rule caches can share one update query. The unified updater reads cha
 
 This reduces repeated database scans while preserving rule-specific indexes and query APIs.
 
+![governance cache fanout](/diagrams/governance-cache-fanout.svg)
+
 ## EventHub boundary
 
 EventHub distributes resource-change signals inside the process. It complements caches but does not replace durable storage, runtime delivery confirmation, or OpenTelemetry export.
+
+![eventhub write path](/diagrams/eventhub-write-path.svg)

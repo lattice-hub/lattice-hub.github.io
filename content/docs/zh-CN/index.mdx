@@ -5,7 +5,9 @@ description: Lattice Hub 把运行环境、服务发现、流量治理、配置�
 
 Lattice Hub 是面向服务与 Agent 的云原生治理控制面。它把运行环境、服务注册发现、配置分发、流量规则、身份权限和平台观测统一起来，同时把 MCP Server 与 A2A Agent 纳入同一套资源模型，让服务能力可以被应用、SDK、Pole Sidecar、Controller 和 Agent 共同发现与治理。
 
-这页是产品能力的总览，不是目录说明。你可以先用它理解 Lattice Hub 的能力边界，再进入 [架构原理](/docs/principles/architecture)、[组件文档](/docs/components/control-plane)、[最佳实践](/docs/blog) 和 [报告](/docs/reports)。
+这页是产品能力的总览，不是目录说明。你可以先用它理解 Lattice Hub 的能力边界，再进入 [术语与概念](/docs/what-is/concepts)、[架构原理](/docs/principles/architecture)、[组件文档](/docs/components/control-plane)、[最佳实践](/docs/practices/gray-release) 和 [报告](/docs/reports)。
+
+![lattice hub work architecture](/diagrams/lattice-hub-work-architecture.svg)
 
 ## 产品定位
 
@@ -30,7 +32,7 @@ Lattice Hub 解决的是“控制面碎片化”的问题：
 | AI Registry | 将 MCP Server、MCP Tool、A2A Agent 和 Agent Skill 纳入控制面资源。 | [AI Registry 与 Pole Agent](/docs/principles/ai-registry) |
 | Pole Agent | 通过真实 LLM/MCP 最小闭环读取控制面资源，并以预览、确认、草稿和人工发布约束写操作。 | [AI Registry 与 Pole Agent](/docs/principles/ai-registry) |
 | 系统配置与观测 | 以 63 项类型化配置目录管理运行参数，并通过 OTel、Collector 和共享 GreptimeDB 提供控制面平台概览。 | [观测链路](/docs/principles/observability-chain) |
-| 多运行时接入 | 同时服务 SDK、Kubernetes Controller、Pole Sidecar 和未来 Agent Runtime。 | [组件生态](/components) |
+| 多运行时接入 | 同时服务 SDK、Kubernetes Controller、Pole Sidecar 和 Agent 发现入口。 | [接入方式](/docs/what-is/access) |
 
 ## 典型工作流
 

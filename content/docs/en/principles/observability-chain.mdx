@@ -9,13 +9,19 @@ Control-plane observability has two layers. Internal plugin interfaces model pro
 
 History records management operations and resource changes through registered entries. It is the product audit/history model, not automatically an OpenTelemetry log stream.
 
+![history plugin chain](/diagrams/history-plugin-chain.svg)
+
 ## DiscoverEvent
 
 DiscoverEvent publishes service-discovery lifecycle events to registered entries. Consumers can persist, display, or export those events without coupling discovery services to a specific backend.
 
+![discover event chain](/diagrams/discover-event-chain.svg)
+
 ## Statis
 
 Statis aggregates API calls, discovery calls, configuration metrics, cache behavior, and other platform measurements. Callers report typed metrics rather than writing directly to a monitoring database.
+
+![statis metrics chain](/diagrams/statis-metrics-chain.svg)
 
 ## OpenTelemetry SDK
 
@@ -34,3 +40,14 @@ That adapter must preserve the internal meaning and choose bounded labels. High-
 ## Boundary
 
 History, DiscoverEvent, and Statis are Lattice Hub product semantics. OpenTelemetry is the instrumentation and export standard. Neither replaces the other, and Control Plane telemetry does not substitute for application or data-plane request telemetry.
+
+![otel boundary](/diagrams/otel-boundary.svg)
+
+## How to use this for troubleshooting
+
+![observability ops map](/diagrams/observability-ops-map.svg)
+
+1. Verify the main path first: Console/HTTP/gRPC ports, MySQL, and CacheManager refresh.
+2. Check product signals: History, DiscoverEvent, and Statis.
+3. Only then inspect Collector / GreptimeDB / the platform metrics page. Missing observability stack data does not mean the control plane is down.
+4. Separate client issues (wrong port, unpublished release, Sidecar miss) from control-plane failures.

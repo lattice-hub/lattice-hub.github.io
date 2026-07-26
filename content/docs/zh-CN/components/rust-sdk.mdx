@@ -1,9 +1,9 @@
 ---
 title: Rust SDK
-description: Proxyless Service Governance 的 Rust 接入方式。
+description: 用 pole_rust 以 Proxyless 方式接入服务发现、配置中心与治理视图。
 ---
 
-Rust SDK 用于在不依赖数据面代理的情况下接入服务治理能力，适合需要 Proxyless Service Governance 的 Rust 应用。
+Rust SDK（crate：`pole_rust`）让应用在不依赖数据面代理的情况下接入 Lattice Hub。客户端通过 gRPC 直连控制面发现与配置端口，并在本地执行路由、负载均衡等治理逻辑。
 
 ## 安装
 
@@ -12,17 +12,90 @@ Rust SDK 用于在不依赖数据面代理的情况下接入服务治理能力�
 pole_rust = "0.2.0"
 ```
 
-## 环境要求
+环境要求：Rust `>= 1.63.0`。
 
-- Rust 版本要求：`>= 1.63.0`。
-- 现有 README 中建议通过 `cargo bench` 自行运行 benchmark。
+## 配置
 
-## 文档边界
+默认读取 `./pole.yaml` / `./pole.yml`，或通过 `POLE_RUST_CONFIG` 指定路径。关键片段：
 
-当前同级 README 的 Quickstart 代码片段仍为空。首版官网只写安装方式、定位和测试方向，不补造不存在的 SDK 示例。
+```yaml
+global:
+  serverConnectors:
+    discover:
+      addresses:
+        - 127.0.0.1:8091
+      protocol: grpc
+    config:
+      addresses:
+        - 127.0.0.1:8093
+      protocol: grpc
+  client:
+    id: my-rust-service
+consumer:
+  loadBalancer:
+    defaultPolicy: weightedRandom
+```
 
-## 后续可补充
+完整示例见仓库 `tests/data/default-config.yml`。
 
-- 服务注册发现最小示例。
-- 配置监听示例。
-- 治理规则 e2e 验证流程。
+## 服务发现最小示例
+
+仓库 `examples/discover.rs` 演示 Provider 注册、Consumer 拉取与选实例：
+
+```rust
+use std::sync::Arc;
+use pole_rust::{
+    core::context::SDKContext,
+    discovery::api::{
+        new_consumer_api_by_context, new_provider_api_by_context,
+    },
+};
+
+#[tokio::main]
+async fn main() {
+    let ctx = Arc::new(SDKContext::default().expect("sdk context"));
+    let provider = new_provider_api_by_context(ctx.clone()).expect("provider");
+    let consumer = new_consumer_api_by_context(ctx).expect("consumer");
+
+    // provider.register(InstanceRegisterRequest { namespace, service, ip, port, ... }).await
+    // consumer.get_all_instance(...).await
+    // consumer.get_one_instance(...).await  // 含路由与负载均衡
+}
+```
+
+运行示例前请确保控制面 `8091` 可访问，并已存在目标 Namespace。
+
+## 配置中心示例
+
+仓库 `examples/config.rs` 覆盖创建、发布与监听配置文件。流程与 Console 一致：先有文件内容，再发布，客户端 watch 发布结果。
+
+## 能力边界
+
+SDK 侧已覆盖的主路径包括：
+
+- Provider：注册 / 反注册 / 心跳
+- Consumer：拉全量实例、选一实例、watch、调用结果上报
+- 路由链、限流、熔断、故障探测、无损上下线等治理消费
+- 配置文件发布与 watch
+
+具体插件是否启用取决于本地 `pole.yaml` 与控制面 active 规则。
+
+## 验证
+
+```bash
+# 单元测试
+cargo test
+
+# 指向真实控制面的 e2e（需本机已启动 Console / gRPC）
+cargo run -p e2e_tests -- \
+  --console-url http://127.0.0.1:8080 \
+  --client-addr 127.0.0.1:8091
+```
+
+可用 `cargo bench` 自行跑基准；官网不写未公开的压测结论。
+
+## 推荐阅读
+
+- [接入方式](/docs/what-is/access)
+- [增量缓存与事件流](/docs/principles/cache-eventhub)
+- [灰度发布实践](/docs/practices/gray-release)

@@ -1,18 +1,67 @@
 ---
 title: Progressive delivery
-description: Apply versioning, staged rollout, rollback, and activation boundaries to configuration and governance rules.
+description: End-to-end practice for editing, validating, rolling out, and rolling back configuration and governance releases.
 ---
 
-Progressive delivery starts by separating editable state from effective runtime state. A draft may be saved and reviewed without changing what clients consume.
+Progressive delivery separates edit state from runtime state. Rules and configuration are edited and validated first, then immutable releases become the client-visible active view.
 
-## Recommended flow
+![gray release practice](/diagrams/gray-release-practice.svg)
 
-1. Define the target namespace, service scope, and caller/callee relationship.
-2. Save and validate a draft revision.
-3. Review the immutable release payload and rollout conditions.
-4. Publish to a limited scope and observe runtime evidence.
-5. Expand the release, stop the beta, or roll back to a known version.
+## Applies to
 
-Never use “saved” and “effective” as synonyms in operational procedures. The active release is the runtime boundary, and each consuming runtime still executes only its supported capabilities.
+| Object | Release unit | Client reads |
+| --- | --- | --- |
+| Configuration | Config File Release | Long-poll / SSE published versions |
+| Governance | Rule Release | Active release cache views |
 
-See [governance releases](/en/docs/principles/governance-release) for the underlying model.
+Services, MCP servers, and A2A agents use registration/discovery and revisions—not the same draft → active release lifecycle.
+
+## Standard flow
+
+1. Edit the draft in Console.
+2. Pass auth, parameter, and resource-existence checks.
+3. Publish to a progressive scope or fully.
+4. Observe client adoption, business errors, and history.
+5. Complete rollout or roll back / stop gray.
+
+## Configuration notes
+
+- Validate parse/compatibility on a small set first.
+- Keep history so rollback targets a known version.
+- Stay under the 20,000-character content limit.
+- Pole Agent only prepares drafts; humans click publish.
+
+## Governance notes
+
+| Family | Watch during progressive delivery |
+| --- | --- |
+| Route / lane | Traffic lands on the expected instance set |
+| Rate limit | Rejects match the threshold without collateral damage |
+| Circuit breaker / fault detect | Open/recover conditions behave as intended |
+| Lossless | Register delay, drain, and readiness stay smooth |
+| Traffic security | Denies are accurate; no unintended allow |
+| Mirror / Mock | Side effects stay inside the intended scope |
+
+Publish permissions are split by resource (`PublishRouteRules`, `PublishRateLimitRules`, …). Grant least privilege.
+
+## Checklist
+
+- [ ] Correct Namespace (not accidental production)
+- [ ] Target resources exist and revisions are traceable
+- [ ] Publisher has the matching Publish permission
+- [ ] Progressive scope is explainable and reversible
+- [ ] Previous active version is still available to roll back
+- [ ] History / platform metrics show the change
+
+## Anti-patterns
+
+- Writing “effective” data directly into the database.
+- Treating unpublished drafts as runtime truth.
+- Full rollout with no observation window.
+- Letting Pole Agent auto-publish or delete.
+
+## Deeper reading
+
+- [Governance rules and releases](/en/docs/principles/governance-release)
+- [Configuration rollout](/en/docs/blog/config-rollout)
+- [Using the Console](/en/docs/guides/console-use)

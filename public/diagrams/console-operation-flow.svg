@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-label="Console Operation Flow">
+
+<defs>
+  <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#2563eb"/></marker>
+  <marker id="arrow-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#ea580c"/></marker>
+  <marker id="arrow-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#6b7280"/></marker>
+  <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#059669"/></marker>
+</defs>
+
+<style>
+  .title{font:700 18px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#111827}
+  .caption{font:500 12px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#6b7280}
+  .label{font:600 13px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#111827}
+  .sub{font:500 11px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#6b7280}
+  .tiny{font:500 10px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#6b7280}
+  .group-title{font:700 12px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#334155}
+  .box{stroke:#8fb5ff;stroke-width:1.4;fill:#eef5ff;rx:10;ry:10}
+  .box-green{stroke:#34d399;stroke-width:1.4;fill:#ecfdf5;rx:10;ry:10}
+  .box-orange{stroke:#fb923c;stroke-width:1.4;fill:#fff7ed;rx:10;ry:10}
+  .box-purple{stroke:#a78bfa;stroke-width:1.4;fill:#f5f3ff;rx:10;ry:10}
+  .box-gray{stroke:#cbd5e1;stroke-width:1.2;fill:#f8fafc;rx:10;ry:10}
+  .box-white{stroke:#d1d5db;stroke-width:1.2;fill:#ffffff;rx:10;ry:10}
+  .group{stroke:#d7e3f8;stroke-width:1.2;stroke-dasharray:6 5;fill:#fbfdff;rx:14;ry:14}
+  .arrow{stroke:#2563eb;stroke-width:2;fill:none;marker-end:url(#arrow-blue)}
+  .ctrl{stroke:#ea580c;stroke-width:1.7;fill:none;marker-end:url(#arrow-orange)}
+  .async{stroke:#6b7280;stroke-width:1.6;stroke-dasharray:5 4;fill:none;marker-end:url(#arrow-gray)}
+  .read{stroke:#059669;stroke-width:1.7;fill:none;marker-end:url(#arrow-green)}
+</style>
+
+<rect width="960" height="420" fill="#ffffff"/>
+<text x="40" y="36" class="title">Console 操作主链路</text>
+<text x="40" y="58" class="caption">编辑态与发布态分离：草稿进入版本，人工确认后才成为 active 视图</text>
+
+<!-- Steps -->
+<rect x="40" y="100" width="150" height="80" class="box-orange"/>
+<text x="115" y="132" text-anchor="middle" class="label">1. 登录</text>
+<text x="115" y="154" text-anchor="middle" class="sub">首次初始化主账号</text>
+
+<rect x="220" y="100" width="150" height="80" class="box"/>
+<text x="295" y="132" text-anchor="middle" class="label">2. 选环境</text>
+<text x="295" y="154" text-anchor="middle" class="sub">Namespace</text>
+
+<rect x="400" y="100" width="150" height="80" class="box"/>
+<text x="475" y="132" text-anchor="middle" class="label">3. 编辑资源</text>
+<text x="475" y="154" text-anchor="middle" class="sub">服务 / 配置 / 规则</text>
+
+<rect x="580" y="100" width="150" height="80" class="box-purple"/>
+<text x="655" y="132" text-anchor="middle" class="label">4. 发布版本</text>
+<text x="655" y="154" text-anchor="middle" class="sub">鉴权 + 资源校验</text>
+
+<rect x="760" y="100" width="160" height="80" class="box-green"/>
+<text x="840" y="132" text-anchor="middle" class="label">5. Active</text>
+<text x="840" y="154" text-anchor="middle" class="sub">客户端可见视图</text>
+
+<path d="M190,140 L220,140" class="arrow"/>
+<path d="M370,140 L400,140" class="arrow"/>
+<path d="M550,140 L580,140" class="arrow"/>
+<path d="M730,140 L760,140" class="arrow"/>
+
+<!-- Side paths -->
+<rect x="40" y="230" width="280" height="140" class="group"/>
+<text x="60" y="258" class="group-title">治理工作台九类能力</text>
+<text x="60" y="286" class="sub">路由 · 泳道 · 限流 · 熔断 · 故障探测</text>
+<text x="60" y="308" class="sub">无损上下线 · 调用鉴权 · 镜像 · Mock</text>
+<text x="60" y="340" class="tiny">先编辑规则本体，再 Publish 成 release</text>
+
+<rect x="340" y="230" width="280" height="140" class="group"/>
+<text x="360" y="258" class="group-title">配置中心</text>
+<text x="360" y="286" class="sub">草稿 → 发布 → 灰度 → 回滚</text>
+<text x="360" y="308" class="sub">SSE / 长轮询推送给客户端</text>
+<text x="360" y="340" class="tiny">Pole Agent 确认后只保存草稿</text>
+
+<rect x="640" y="230" width="280" height="140" class="group"/>
+<text x="660" y="258" class="group-title">运行时消费</text>
+<text x="660" y="286" class="sub">SDK / Sidecar / Controller / xDS</text>
+<text x="660" y="308" class="sub">只读 active release 与缓存视图</text>
+<text x="660" y="340" class="tiny">不直接读取管理态对象</text>
+
+<path d="M475,180 L475,230" class="ctrl"/>
+<path d="M655,180 L480,230" class="async"/>
+<path d="M840,180 L780,230" class="read"/>
+</svg>

@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="380" viewBox="0 0 960 380" role="img" aria-label="Gray Release Practice Flow">
+
+<defs>
+  <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#2563eb"/></marker>
+  <marker id="arrow-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#ea580c"/></marker>
+  <marker id="arrow-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#6b7280"/></marker>
+  <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#059669"/></marker>
+</defs>
+
+<style>
+  .title{font:700 18px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#111827}
+  .caption{font:500 12px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#6b7280}
+  .label{font:600 13px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#111827}
+  .sub{font:500 11px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#6b7280}
+  .tiny{font:500 10px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#6b7280}
+  .group-title{font:700 12px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#334155}
+  .box{stroke:#8fb5ff;stroke-width:1.4;fill:#eef5ff;rx:10;ry:10}
+  .box-green{stroke:#34d399;stroke-width:1.4;fill:#ecfdf5;rx:10;ry:10}
+  .box-orange{stroke:#fb923c;stroke-width:1.4;fill:#fff7ed;rx:10;ry:10}
+  .box-purple{stroke:#a78bfa;stroke-width:1.4;fill:#f5f3ff;rx:10;ry:10}
+  .box-gray{stroke:#cbd5e1;stroke-width:1.2;fill:#f8fafc;rx:10;ry:10}
+  .box-white{stroke:#d1d5db;stroke-width:1.2;fill:#ffffff;rx:10;ry:10}
+  .group{stroke:#d7e3f8;stroke-width:1.2;stroke-dasharray:6 5;fill:#fbfdff;rx:14;ry:14}
+  .arrow{stroke:#2563eb;stroke-width:2;fill:none;marker-end:url(#arrow-blue)}
+  .ctrl{stroke:#ea580c;stroke-width:1.7;fill:none;marker-end:url(#arrow-orange)}
+  .async{stroke:#6b7280;stroke-width:1.6;stroke-dasharray:5 4;fill:none;marker-end:url(#arrow-gray)}
+  .read{stroke:#059669;stroke-width:1.7;fill:none;marker-end:url(#arrow-green)}
+</style>
+
+<rect width="960" height="380" fill="#ffffff"/>
+<text x="40" y="36" class="title">灰度发布实践流程</text>
+<text x="40" y="58" class="caption">配置与治理规则共用“编辑 → 校验 → 发布 → 观察 → 回滚/全量”节奏</text>
+
+<rect x="40" y="100" width="140" height="90" class="box"/>
+<text x="110" y="135" text-anchor="middle" class="label">编辑草稿</text>
+<text x="110" y="158" text-anchor="middle" class="sub">规则 / 配置内容</text>
+
+<rect x="210" y="100" width="140" height="90" class="box-orange"/>
+<text x="280" y="135" text-anchor="middle" class="label">发布前校验</text>
+<text x="280" y="158" text-anchor="middle" class="sub">权限 · 资源存在</text>
+
+<rect x="380" y="100" width="140" height="90" class="box-purple"/>
+<text x="450" y="135" text-anchor="middle" class="label">灰度发布</text>
+<text x="450" y="158" text-anchor="middle" class="sub">限定客户端范围</text>
+
+<rect x="550" y="100" width="140" height="90" class="box"/>
+<text x="620" y="135" text-anchor="middle" class="label">观察反馈</text>
+<text x="620" y="158" text-anchor="middle" class="sub">监听 · 指标 · 历史</text>
+
+<rect x="720" y="70" width="200" height="70" class="box-green"/>
+<text x="820" y="100" text-anchor="middle" class="label">全量生效</text>
+<text x="820" y="122" text-anchor="middle" class="sub">新 active release</text>
+
+<rect x="720" y="160" width="200" height="70" class="box-gray"/>
+<text x="820" y="190" text-anchor="middle" class="label">回滚 / 停灰度</text>
+<text x="820" y="212" text-anchor="middle" class="sub">恢复上一版本</text>
+
+<path d="M180,145 L210,145" class="arrow"/>
+<path d="M350,145 L380,145" class="arrow"/>
+<path d="M520,145 L550,145" class="arrow"/>
+<path d="M690,120 L720,105" class="read"/>
+<path d="M690,160 L720,185" class="ctrl"/>
+
+<rect x="40" y="240" width="880" height="100" class="group"/>
+<text x="60" y="270" class="group-title">实践约束</text>
+<text x="60" y="298" class="sub">客户端只读 active release；管理态编辑不会立刻改变运行时行为。</text>
+<text x="60" y="320" class="sub">Pole Agent 可准备配置草稿，但不能代替人工完成发布、回滚或删除。</text>
+</svg>

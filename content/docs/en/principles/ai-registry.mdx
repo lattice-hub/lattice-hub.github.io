@@ -11,17 +11,23 @@ MCP Registry stores server identity, transport metadata, tools, and resources. A
 
 Both registries support management and discovery. They do not imply that the Control Plane executes MCP tools or proxies A2A task traffic.
 
+![ai registry cache](/diagrams/ai-registry-cache.svg)
+
 ## MCP startup and APIs
 
 The MCP module initializes storage-backed caches, management APIs, and the MCP SSE server. Pole’s own MCP surface exposes an approved set of control-plane tools to authenticated clients.
 
 MCP tool execution remains subject to the current caller identity and tool policy.
 
+![mcp api assembly](/diagrams/mcp-api-assembly.svg)
+
 ## A2A startup and APIs
 
 The A2A module exposes agent list, create, update, delete, skill, and agent-card endpoints. The registry is responsible for records and discovery state.
 
 A2A task runtime, task state machines, artifact persistence, SSE forwarding, and push notification brokering belong to a gateway, caller runtime, or dedicated A2A data plane.
+
+![a2a registration](/diagrams/a2a-registration.svg)
 
 ## Incremental caching
 

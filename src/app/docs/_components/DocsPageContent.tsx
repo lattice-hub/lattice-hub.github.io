@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/page';
 import { mdxComponents } from '@/mdx-components';
 import { source, type DocsLocale } from '@/lib/source';
-import { DocsLanguageSwitch } from './DocsLanguageSwitch';
 
 type DocsPageParams = Promise<{ slug?: string[] }>;
 const docsBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
@@ -36,7 +35,6 @@ export async function DocsPageContent({
 
   return (
     <DocsPage toc={page.data.toc} full={page.data.full}>
-      <DocsLanguageSwitch enHref={enPage.url} locale={locale} zhHref={zhPage.url} />
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>

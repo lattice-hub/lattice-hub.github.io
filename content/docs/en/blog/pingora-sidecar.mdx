@@ -1,12 +1,28 @@
 ---
-title: The lightweight Pole Sidecar data-plane path
-description: How Pingora, HTTP/2, gRPC-h2c, routing, load balancing, and interceptors shape Pole Sidecar.
+title: Pole Sidecar as a lightweight data plane
+description: Why Pingora sits beside apps, and how it shares facts with the control plane.
 ---
 
-Pole Sidecar is intentionally smaller than a full service mesh. Its current Pingora-based implementation first establishes reliable protocol forwarding, route selection, round-robin balancing, and interceptor extension points.
+Pole Sidecar uses Pingora so multi-language services can still consume Lattice Hub discovery and governance without embedding every SDK.
 
-That sequence creates a testable runtime boundary before dynamic governance is added. Each new policy should define its control-plane view, local state, request behavior, failure mode, and observability evidence.
+## Positioning
 
-Pole Sidecar must not become another control plane. Lattice Hub owns policy creation, versioning, progressive delivery, and rollback; Pole Sidecar executes the subset supported by its deployed version.
+- Local execution: HTTP/gRPC forward, route match, LB, interceptor hooks.
+- Control plane owns facts: services, config, and active governance releases.
+- Coexists with SDKs: Rust can stay proxyless; other languages can use Sidecar.
 
-Future work should be described as a roadmap until the corresponding data-plane behavior is implemented and verified.
+## Current skeleton
+
+- TOML routes and upstream clusters
+- `grpc_prefix` before `prefix`
+- Sample round-robin LB
+- Request/upstream interceptor placeholders
+
+## Next
+
+Wire interceptors to real limiting, breaking, auth, and metrics, and pair with Controller `dns` / `mesh` injection. Before that, close the loop on forward, observe, and align with control-plane versions.
+
+## Related docs
+
+- [Pole Sidecar data plane practice](/en/docs/practices/sidecar-data-plane)
+- [Pole Sidecar component](/en/docs/components/pingora-sidecar)

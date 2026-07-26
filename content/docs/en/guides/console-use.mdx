@@ -1,22 +1,68 @@
 ---
 title: Using the Console
-description: Understand how Console manages resources, releases, Pole Agent, system settings, and operational evidence.
+description: Operational guide for login, environments, services, configuration, governance releases, auth, AI registries, and Pole Agent.
 ---
 
-Console is the primary management interface for platform teams. It is a view and workflow layer over control-plane resources, not a second source of truth.
+The Console is the visual management layer for control-plane resources. Edits still go through authorization and storage; configuration and governance change runtime behavior only after publish.
 
-## Core workflows
+![console operation flow](/diagrams/console-operation-flow.svg)
 
-- Browse namespaces, services, instances, configuration, governance rules, and AI Registry resources.
-- Edit a draft without implying that the runtime has changed.
-- Review version differences and publish an immutable release.
-- Inspect rollout status, history, authorization failures, and available observability evidence.
-- Use Pole Agent to read authorized context and prepare supported configuration updates for human confirmation.
+## Login and bootstrap
 
-## Safety boundaries
+1. Open `http://127.0.0.1:8080` locally.
+2. Create the main user via `/init-admin` on first boot.
+3. Sign in, then create users, groups, roles, and policies as needed.
 
-Saving a draft is not activation. A release becomes visible to a runtime only after the corresponding publish workflow succeeds. Pole Agent cannot bypass permission checks or publish/delete resources through its proposal flow.
+`mainUser: pole` is an expected name label in config, not a password.
 
-System configuration and Pole Secret operations are admin-only. Secret values are write-only: the browser receives status and references, never the plaintext value.
+## First-hour path
 
-Continue with [governance releases](/en/docs/principles/governance-release), [authorization](/en/docs/principles/auth-protocols), or [AI Registry and Pole Agent](/en/docs/principles/ai-registry).
+1. Confirm Namespaces (`default`, `pole-system`, plus your `dev`/`prod` environments).
+2. Register a Service and instances.
+3. Publish one configuration file and verify a client watch.
+4. Publish one governance rule and verify an SDK/Sidecar behavior change.
+5. Tighten permissions so people stop sharing the main account.
+
+## Configuration
+
+![Configuration groups](/images/console/config-groups.png)
+
+Create group → edit file draft → publish immutable version → optional progressive delivery → clients watch via long-poll/SSE. Max content 20,000 characters; max page size 100. Pole Agent confirmed writes remain drafts.
+
+## Governance
+
+![Governance workbench](/images/console/governance.png)
+
+Edit the rule object, publish a Rule Release, activate it, then let clients read the active view. Rollback/stop-gray stay auditable.
+
+![Governance rule detail](/images/console/governance-detail.png)
+
+## AI Registry and Pole Agent
+
+![MCP Registry](/images/console/mcp-registry.png)
+
+![A2A Registry](/images/console/a2a-registry.png)
+
+A2A registers cards/skills/metadata only. Pole Agent (`/agent`) can read allowlisted tools and save configuration drafts after confirmation—never auto-publish.
+
+## System config and platform metrics
+
+![System configuration](/images/console/system-config.png)
+
+![Platform metrics](/images/console/platform-metrics.png)
+
+Apply modes: BootstrapOnly / RestartRequired / HotReload. Empty metrics usually means the observability stack is missing, not that the control plane failed.
+
+## Principles
+
+- Keep edit state and published state separate.
+- Progressive delivery, rollback, and stop-gray must remain auditable.
+- Runtime consumers read active views through SDK, Controller, Sidecar, or protocol adapters.
+- Namespace is an environment, not multi-tenant isolation.
+- A2A Registry is not an execution engine; Pole Agent never auto-publishes.
+
+## Next steps
+
+- [Server installation](/en/docs/guides/server-install)
+- [Progressive delivery practice](/en/docs/practices/gray-release)
+- [Authorization and resource mapping](/en/docs/principles/auth-protocols)

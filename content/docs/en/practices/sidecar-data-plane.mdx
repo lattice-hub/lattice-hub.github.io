@@ -1,18 +1,48 @@
 ---
 title: Pole Sidecar data plane
-description: Use Pole Sidecar for language-neutral routing and governance extension points.
+description: Run Pole Sidecar for local HTTP/gRPC routing while consuming control-plane active views.
 ---
 
-Pole Sidecar is useful when application-language coverage is uneven, SDK integration is expensive, or traffic policy belongs outside the process. It consumes control-plane views while executing request behavior close to the workload.
+Pole Sidecar fits multi-language services or teams that want governance in a local proxy. Forwarding is local; discovery and policy facts still come from Lattice Hub.
 
-## Adoption guidance
+![sidecar data plane](/diagrams/sidecar-data-plane.svg)
 
-- Start with explicit inbound and upstream routes.
-- Verify HTTP/1.1, HTTP/2, and gRPC-h2c behavior independently.
-- Measure the extra proxy hop and failure modes.
-- Roll out governance interceptors one supported capability at a time.
-- Keep the application’s health distinct from Pole Sidecar readiness.
+## When to choose Sidecar
 
-Pole Sidecar and SDK integrations are not mutually exclusive, but ownership must be clear so the same policy is not applied twice.
+| Choose Sidecar | Choose SDK |
+| --- | --- |
+| Multi-language / hard to change code | Rust apps can embed directly |
+| Need a unified local forward/intercept point | Prefer proxyless, one fewer hop |
+| Pair with Controller injection | Mature SDK governance path already exists |
 
-See [Pole Sidecar](/en/docs/components/pingora-sidecar) and its [implementation roadmap](/en/docs/blog/pingora-sidecar).
+## Quick start
+
+```bash
+cargo build
+RUST_LOG=info cargo run
+SIDECAR_CONFIG=./sidecar.toml RUST_LOG=debug cargo run
+```
+
+Requires Rust `1.74+`. Match `grpc_prefix` before `prefix`. Sample LB is round-robin.
+
+## Collaboration rules
+
+1. Control plane owns active service/config/governance views.
+2. Sidecar consumes those views; local TOML is not the long-term source of truth.
+3. Interceptor hooks should evaluate active configuration.
+4. Pair with Controller `dns` / `mesh` injection on Kubernetes.
+
+## Checklist
+
+- [ ] Cluster endpoints in Sidecar config are correct
+- [ ] Route prefixes do not collide; gRPC paths are complete
+- [ ] Control-plane active rules are published
+- [ ] Upstream reachability and timeouts are acceptable
+- [ ] Debug logging can be raised for triage
+- [ ] Sidecar is not described as a control-plane replacement
+
+## Deeper reading
+
+- [Pole Sidecar component](/en/docs/components/pingora-sidecar)
+- [Sidecar roadmap essay](/en/docs/blog/pingora-sidecar)
+- [Kubernetes integration](/en/docs/practices/kubernetes-sync)

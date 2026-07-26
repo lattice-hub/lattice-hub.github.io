@@ -5,6 +5,8 @@ description: Lattice Hub 的核心控制面，承载服务发现、配置中心�
 
 Control Plane 是 Lattice Hub 的核心组件。它基于服务治理控制面的职责组织 API、业务逻辑、缓存和存储，向外提供 HTTP、gRPC、xDS、Nacos、Apollo、Eureka 等多协议入口。
 
+![deployment architecture](/diagrams/deployment-architecture.svg)
+
 ## 关键职责
 
 - 服务发现：管理命名空间、服务、实例和健康状态。
@@ -15,17 +17,30 @@ Control Plane 是 Lattice Hub 的核心组件。它基于服务治理控制面�
 - 系统配置与观测：提供 63 项类型化配置目录、OTel 指标出口和共享 GreptimeDB 查询。
 - 权限控制：资源支持细粒度鉴权，对标云厂商 CAM/RAM 类型能力。
 
+## 默认端口
+
+| 入口 | 端口 |
+| --- | ---: |
+| Console HTTP | 8080 |
+| HTTP API | 8090 |
+| Discovery gRPC | 8091 |
+| Config gRPC | 8093 |
+| xDS v3 | 15010 |
+| Eureka / Nacos / Apollo | 8761 / 8848 / 8890 |
+
 ## 已确认工程事实
 
 - 技术栈包括 Go、`go-restful/v3`、gRPC、MySQL、`envoyproxy/go-control-plane`、`mark3labs/mcp-go`、OpenTelemetry 与 Pebble。
-- 控制面按 API 服务层、业务逻辑层、缓存层、存储层组织。
+- 控制面按协议适配层、领域 Server、interceptor、缓存层、存储层装配，而不是单一 HTTP CRUD。
 - 缓存层覆盖服务、配置、治理规则和 AI Registry 等资源，后台默认每 1 秒增量刷新。
 - 增量查询窗口使用 `lastMtime - 5s` 规避时钟偏差。
+- 启动模式：`all` / `server` / `console`。
 
 ## 适合继续深入的原理
 
-- [四层控制面架构](/docs/principles/architecture)
+- [控制面装配架构](/docs/principles/architecture)
 - [增量缓存与事件流](/docs/principles/cache-eventhub)
 - [治理规则与灰度发布](/docs/principles/governance-release)
-- [鉴权链与多协议映射](/docs/principles/auth-protocols)
+- [鉴权链与资源映射](/docs/principles/auth-protocols)
 - [AI Registry 与 Pole Agent](/docs/principles/ai-registry)
+- [服务端安装](/docs/guides/server-install)

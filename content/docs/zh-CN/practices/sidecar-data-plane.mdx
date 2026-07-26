@@ -1,18 +1,114 @@
 ---
 title: Pole Sidecar 数据面
-description: Pole Sidecar 承载轻量路由、负载均衡和治理拦截器的实践入口。
+description: 使用 Pole Sidecar 承载本地路由、负载均衡与治理扩展点的实践指南。
 ---
 
-Pole Sidecar 适合在业务语言、SDK 接入成本或跨协议治理复杂度较高时使用。它把运行时治理能力放在独立数据面中，同时继续从控制面消费服务发现、路由和配置视图。
+Pole Sidecar 适合业务语言多样、SDK 接入成本高，或希望把治理放到旁路代理的场景。它在本地执行转发，但服务发现与治理事实仍来自 Lattice Hub 控制面。
 
-## 实践要点
+![sidecar data plane](/diagrams/sidecar-data-plane.svg)
 
-- 数据面只消费控制面结果，不重新定义服务治理事实。
-- 路由、负载均衡和拦截器应围绕 active 配置工作。
-- HTTP/1.1、HTTP/2 和 gRPC-h2c 的转发路径要分别观测吞吐和尾延迟。
-- Pole Sidecar 与 SDK 不互斥，应按服务语言、部署形态和治理深度选择。
+## 何时选择 Sidecar
+
+| 选 Sidecar | 选 SDK |
+| --- | --- |
+| 多语言 / 不便改代码 | Rust 应用可直接嵌入 |
+| 需要统一入口做转发与拦截 | 希望 Proxyless、少一跳 |
+| 与 Controller 注入结合 | 已有成熟 SDK 治理链 |
+
+两者不互斥：部分服务用 SDK，部分服务用 Sidecar 是常见组合。
+
+## 快速启动
+
+仓库：`pole-sidecar`。要求 Rust `1.74+`。
+
+```bash
+cargo build
+RUST_LOG=info cargo run
+```
+
+自定义配置：
+
+```bash
+SIDECAR_CONFIG=./my-sidecar.toml RUST_LOG=debug cargo run
+```
+
+最小配置示例（仓库 `sidecar.toml`）：
+
+```toml
+[inbound_http]
+addr = "0.0.0.0:8080"
+
+[[routes]]
+name = "http_api"
+prefix = "/api/"
+cluster = "backend_http"
+
+[[routes]]
+name = "grpc_helloworld"
+grpc_prefix = "/helloworld.Greeter/"
+cluster = "backend_grpc"
+
+[[clusters]]
+name = "backend_http"
+endpoints = ["127.0.0.1:9000"]
+lb_policy = "round_robin"
+tls = false
+
+[[clusters]]
+name = "backend_grpc"
+endpoints = ["127.0.0.1:50051"]
+lb_policy = "round_robin"
+tls = false
+```
+
+## 路由与协议规则
+
+- 匹配顺序：先 `grpc_prefix`，再 `prefix`。
+- gRPC 识别：HTTP/2 且 `content-type` 以 `application/grpc` 开头。
+- 入站默认 HTTP/1.1 与 HTTP/2（含 gRPC-h2c）。
+- 负载均衡当前为简单轮询；生产前按版本确认是否已扩展其他策略。
+
+## 与控制面协作
+
+正确职责划分：
+
+1. 控制面维护服务、实例、配置与治理规则的 active 视图。
+2. Sidecar 拉取或接收这些视图，不在本地重新定义事实。
+3. 拦截器扩展点（ACL、限流、熔断、指标）应围绕 active 配置工作。
+4. 变更仍走 Console/API 的发布链；不要把 Sidecar 本地文件当成长期真相源。
+
+当前骨架已具备请求阶段与上游阶段回调占位。接入真实治理前，先打通发现与路由，再逐个打开拦截器。
+
+## 与 Controller 注入配合
+
+在 Kubernetes 中可由 `pole-controller` 注入 Sidecar：
+
+- `dns` 模式：DNS 拦截，适合渐进。
+- `mesh` 模式：流量劫持，治理更深。
+
+注入后检查：
+
+- 应用是否仍通过就绪探针
+- 出站是否打到预期集群
+- 控制面规则变更是否反映到代理行为
+
+## 观测建议
+
+- 分协议观察 HTTP/1.1、HTTP/2、gRPC-h2c 的吞吐与尾延迟。
+- 记录路由未命中、上游失败、拦截器拒绝。
+- 与控制面 History / DiscoverEvent 对照，区分“规则未发布”和“代理执行问题”。
+
+## 检查清单
+
+- [ ] Sidecar 配置中的 cluster endpoints 正确
+- [ ] 路由前缀无冲突，gRPC 服务 path 完整
+- [ ] 控制面 active 规则已发布
+- [ ] 本地可访问上游，超时与重试可接受
+- [ ] 日志级别在排障时可提升到 debug
+- [ ] 未把 Sidecar 描述成控制面替代品
 
 ## 深入阅读
 
-- [Pole Sidecar](/docs/components/pingora-sidecar)
+- [Pole Sidecar 组件](/docs/components/pingora-sidecar)
 - [Pole Sidecar 的轻量数据面路线](/docs/blog/pingora-sidecar)
+- [Kubernetes 相关实践](/docs/practices/kubernetes-sync)

@@ -5,6 +5,8 @@ description: The Fluent UI management surface for resources, governance, Pole Ag
 
 Console is the operator-facing component of Lattice Hub. It can run with the server in `all` mode or as a separate `console` process that reaches the Control Plane over the network.
 
+Step-by-step operations: [Using the Console](/en/docs/guides/console-use).
+
 ## Workspaces
 
 - Discovery and configuration resource management.
@@ -13,12 +15,54 @@ Console is the operator-facing component of Lattice Hub. It can run with the ser
 - MCP Registry and A2A Agent Registry management.
 - Pole Agent conversations and human-confirmed proposals.
 - System settings, Pole Secret rotation, connection testing, and runtime readiness.
-- Platform history, discovery events, metrics, traces, and operational status.
+- Platform metrics backed by OpenTelemetry and shared GreptimeDB.
 
-## Data and security boundary
+## Interface gallery
 
-Console is not allowed to become an alternate domain backend. Its gateway calls typed Control Plane APIs, and separate-process mode does not read core business tables directly.
+Real Console screenshots from a local/integration environment. Names in the images are structural examples only—not production data or performance claims.
 
-Pole Agent executes in the Console backend. The browser never receives the model API key or Pole management credential. Configuration changes remain drafts until a user confirms the proposal and follows the normal release workflow.
+### Configuration groups
 
-Read [using the Console](/en/docs/guides/console-use) for operator workflows and [AI Registry and Pole Agent](/en/docs/principles/ai-registry) for the assistant boundary.
+![Configuration groups](/images/console/config-groups.png)
+
+### Governance workbench
+
+![Governance workbench](/images/console/governance.png)
+
+### Governance rule detail
+
+Focus on scope and release structure; ignore sample rule names.
+
+![Governance rule detail](/images/console/governance-detail.png)
+
+### MCP / A2A registries
+
+![MCP Registry](/images/console/mcp-registry.png)
+
+![A2A Registry](/images/console/a2a-registry.png)
+
+### System config and platform metrics
+
+![System configuration](/images/console/system-config.png)
+
+![Platform metrics](/images/console/platform-metrics.png)
+
+## Design system
+
+Console uses Microsoft Fluent UI React v9 with Fluent Web Blue (`#0F6CBD`), cool-gray page background, white surfaces, and shared light/dark semantic tokens. No decorative gradients or glow effects.
+
+## Pole Agent
+
+Pole Agent is a first-class Console workspace. It uses a versioned prompt, an OpenAI-compatible LLM gateway, and allowlisted Pole MCP tools. Configuration updates require preview and human confirmation, then save as drafts only. Publish/rollback/delete stay on deterministic product paths.
+
+Write coverage today is limited to existing configuration-file updates. Governance writes, server-side session persistence, and streaming are still evolving. Without an LLM gateway/API key, `/agent` is unavailable; the rest of Console still works.
+
+## System configuration
+
+Sixty-three typed settings are registered; a subset is page-manageable. Apply modes:
+
+- `BootstrapOnly` — deployment config only
+- `RestartRequired` — desired value published, instance reports pending restart
+- `HotReload` — controlled hot update where a safe applier exists
+
+Agent API keys use write-only Secrets; pages, diffs, logs, and model context only see SecretReferences.

@@ -1,16 +1,49 @@
 ---
 title: Agent capability discovery
-description: Make MCP servers and A2A agents discoverable without treating prompts as a registry.
+description: Register MCP servers and A2A agents as control-plane resources with cache, auth, and human-gated Pole Agent writes.
 ---
 
-Agent capability discovery models MCP servers, tools, A2A agent cards, skills, and protocol endpoints as control-plane resources. This provides structured search, authorization, caching, and audit boundaries.
+Agent discovery treats MCP servers, tools, A2A agents, and skills as first-class control-plane resources—not prompt-time service lists.
 
-## Registry roles
+## Target architecture
 
-- MCP Registry describes callable tool and resource endpoints.
-- A2A Agent Registry stores and discovers agent cards, skills, and protocol metadata.
-- Pole Agent imports an approved MCP tool allowlist for human-gated control-plane work.
+1. Register MCP servers or A2A agent cards in Console/API.
+2. Persist to store and refresh CacheManager views.
+3. Agents discover via Registry / MCP interfaces.
+4. Policies limit who can read which servers, tools, or agents.
+5. Changes stay auditable with stable revision semantics.
 
-A2A Registry does not proxy task traffic, SSE streams, artifacts, or push notifications. Those belong to a caller runtime, gateway, or dedicated A2A data plane.
+## Register MCP servers
 
-Keep registry metadata current, use stable identities, and validate endpoint reachability independently from registration success.
+1. Pick the correct Namespace (environment).
+2. Create the MCP server with name, protocol, and metadata.
+3. Maintain tools and backend bindings.
+4. Confirm cache refresh and list visibility.
+5. Grant least-privilege read access.
+
+Pole Agent only calls allowlisted tools such as `list_namespaces`, `list_mcp_servers`, `list_mcp_server_tools`, `get_config_file`, and `search_config_files`.
+
+## Register A2A agents
+
+A2A currently covers agent cards, skills, protocol interfaces, and capability metadata. It does **not** run tasks or host an agent runtime. Treat it as a discoverable capability card.
+
+## Pole Agent boundaries
+
+Suitable for authorized reads and human-confirmed configuration drafts. Not allowed to auto-publish, roll back, or delete as an autonomous publisher.
+
+Write path: read → proposal → preview → concurrency checks → confirm → **draft only** → human publish in the config center.
+
+## Checklist
+
+- [ ] MCP/A2A resources land in the correct Namespace
+- [ ] Tool/skill descriptions explain boundaries
+- [ ] Cache and Console lists agree
+- [ ] Read permissions are narrowed
+- [ ] LLM gateway/allowlist enabled only when needed
+- [ ] Docs never claim A2A executes task orchestration
+
+## Deeper reading
+
+- [AI Registry and Pole Agent](/en/docs/principles/ai-registry)
+- [MCP/A2A registry essay](/en/docs/blog/mcp-a2a-registry)
+- [Concepts](/en/docs/what-is/concepts)

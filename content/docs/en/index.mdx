@@ -5,7 +5,11 @@ description: Lattice Hub brings environments, service discovery, traffic governa
 
 Lattice Hub is a cloud-native control plane for services and agents. It gives platform teams one versioned resource model for service discovery, configuration delivery, traffic policies, authorization, and operational visibility. MCP servers and A2A agents enter the same management boundary without turning the control plane into an application traffic proxy.
 
-Use this page to understand the product boundary before moving into the [architecture](/en/docs/principles/architecture), [component guides](/en/docs/components/control-plane), [best practices](/en/docs/practices/gray-release), and [reports](/en/docs/reports).
+Use this page to understand the product boundary before moving into [concepts](/en/docs/what-is/concepts), [architecture](/en/docs/principles/architecture), [component guides](/en/docs/components/control-plane), [best practices](/en/docs/practices/gray-release), and [reports](/en/docs/reports).
+
+![lattice hub work architecture](/diagrams/lattice-hub-work-architecture.svg)
+
+![product capability map](/diagrams/product-capability-map.svg)
 
 ## The operating model
 
@@ -25,6 +29,8 @@ Use this page to understand the product boundary before moving into the [archite
 | Configuration | Drafts, versions, progressive rollout, rollback, and long-poll delivery. | [Configuration rollout](/en/docs/blog/config-rollout) |
 | AI Native | MCP Registry, A2A Agent Registry, and the human-gated Pole Agent workspace. | [AI Registry and Pole Agent](/en/docs/principles/ai-registry) |
 | Operations | Platform history, discovery events, statistics, and OTLP export. | [Observability pipeline](/en/docs/principles/observability-chain) |
+
+![product runtime workflow](/diagrams/product-runtime-workflow.svg)
 
 ## Main components
 

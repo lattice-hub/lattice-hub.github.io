@@ -9,6 +9,8 @@ Authorization is enforced in domain-server interceptor chains, not as a token ch
 
 `AcquireContext` normalizes console and client identity information before the request reaches a domain method. Console and client permission checks remain distinct because management users and workloads have different trust models.
 
+![auth check path](/diagrams/auth-check-path.svg)
+
 ## Resource mapping
 
 Policy fields map to typed resources such as namespaces, services, configuration groups, rule families, users, groups, roles, and policy rules. The mapping lets authorization code validate scope without teaching each protocol about every resource type.
@@ -21,9 +23,13 @@ Policy creation and update run parameter checks that confirm referenced resource
 
 Validation and authorization are separate interceptors: one answers whether the caller may perform an operation; the other answers whether the operation refers to valid resources.
 
+![policy resource validation](/diagrams/policy-resource-validation.svg)
+
 ## Governance release permissions
 
 Publish, rollback, delete, version-list, and progressive-delivery operations map to rule-specific method names. Route, rate-limit, circuit-breaker, fault-detect, lane, lossless, security, mirror, and Mock releases can therefore be granted independently.
+
+![release auth mapping](/diagrams/release-auth-mapping.svg)
 
 ## Shared across protocols
 

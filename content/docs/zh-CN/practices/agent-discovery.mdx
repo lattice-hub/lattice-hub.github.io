@@ -1,18 +1,92 @@
 ---
 title: Agent 能力发现
-description: MCP/A2A Registry 如何进入服务治理控制面，并被 Agent 发现。
+description: 把 MCP Server 与 A2A Agent 作为控制面资源注册、缓存、鉴权与发现的完整实践。
 ---
 
-Agent 能力发现不是把服务列表包装成提示词，而是把 MCP Server、Tool、A2A Agent 和 Skill 作为控制面资源处理。这样 Agent 发现能力时，可以复用服务治理的注册、缓存、权限和审计链路。
+Agent 能力发现不是把服务列表塞进提示词，而是把 MCP Server、Tool、A2A Agent 和 Skill 当作与服务、规则同级的控制面资源。这样发现能力时可以复用注册、缓存、权限和审计链路。
 
-## 实践要点
+## 目标架构
 
-- MCP/A2A 资源应进入统一 API、store 和 cache。
-- Agent 能力发现需要资源边界和权限边界，不能绕开控制面鉴权。
-- 能力目录要和服务、实例、规则一样具备稳定 revision 或版本语义。
-- 面向 Agent 的入口应复用控制面事实，而不是维护第二份目录。
+1. 平台在 Console / API 注册 MCP Server 或 A2A Agent Card。
+2. 数据进入 store，并由 CacheManager 增量刷新。
+3. Agent 运行时或 Pole Agent 通过 Registry / MCP 接口查询能力目录。
+4. 鉴权策略限制谁可以读哪些 Server、Tool 或 Agent。
+5. 变更可审计；目录具备稳定 revision / 版本语义。
+
+## 注册 MCP Server
+
+在 Console 的 MCP Registry：
+
+1. 选择正确的 Namespace（运行环境）。
+2. 创建 MCP Server，填写名称、协议与业务元数据。
+3. 维护 Tool 列表与后端绑定。
+4. 确认缓存已刷新，列表查询可见。
+5. 给调用方主体授予最小读权限。
+
+控制面 HTTP 装配会打开 MCP 缓存，并暴露 SSE 入口（实现路径以 `/ai/mcp/v1/sse` 为基线）。Pole Agent 只允许调用白名单工具，例如：
+
+- `list_namespaces`
+- `list_mcp_servers`
+- `list_mcp_server_tools`
+- `get_config_file`
+- `search_config_files`
+
+未在白名单中的工具不会被 Agent 使用。
+
+## 注册 A2A Agent
+
+A2A Registry 当前只承担：
+
+- Agent Card
+- 技能（Skill）
+- 协议接口
+- 能力元数据
+
+**不承担**任务代理、会话编排或 Agent Runtime。实践中把它当作“可发现的能力名片”，而不是执行引擎。
+
+操作建议：
+
+1. 先定义 Agent 对外技能边界。
+2. 在 Registry 登记 Card 与 skills。
+3. 与后端服务、MCP Server 的关系写清楚，避免双份目录。
+4. 权限上区分“登记者”和“发现者”。
+
+## Pole Agent 使用边界
+
+Pole Agent 是 Console 的一等对话入口，适合：
+
+- 查询 Namespace、MCP、配置等只读问题
+- 生成配置修改提案并预览差异
+- 在人工确认后保存草稿
+
+不适合也不被允许：
+
+- 自动发布配置或治理规则
+- 直接删除生产资源
+- 绕过鉴权访问未授权资源
+
+配置写路径：读取 → 提案 → 预览 → 哈希/并发检查 → 用户确认 → **仅保存草稿** → 用户在配置中心发布。
+
+## 与服务治理对齐
+
+| 实践 | 原因 |
+| --- | --- |
+| MCP/A2A 进入统一 API / store / cache | 避免第二套目录漂移 |
+| 发现请求走鉴权 | Agent 也是主体，不是超级用户 |
+| 目录带 revision | 客户端可判断是否需要刷新 |
+| 与 Service 绑定清晰 | Tool/Agent 最终仍落到可治理的后端 |
+
+## 检查清单
+
+- [ ] MCP/A2A 资源落在正确 Namespace
+- [ ] Tool / Skill 描述足够让调用方理解边界
+- [ ] 缓存与 Console 列表一致
+- [ ] 读权限已收敛
+- [ ] Pole Agent 白名单与 LLM 配置按需启用
+- [ ] 文档与演示未声称 A2A 可执行任务编排
 
 ## 深入阅读
 
 - [AI Registry 与 Pole Agent](/docs/principles/ai-registry)
 - [MCP/A2A Registry 如何让服务治理被 Agent 发现](/docs/blog/mcp-a2a-registry)
+- [术语与概念](/docs/what-is/concepts)

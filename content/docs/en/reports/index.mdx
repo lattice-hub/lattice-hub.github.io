@@ -1,12 +1,22 @@
 ---
 title: Reports
-description: Reproducible performance, configuration, and verification evidence for Lattice Hub.
+description: Entry point for Lattice Hub performance, configuration, and validation reports.
 ---
 
-Reports contain verified facts, experiment conditions, and explicit gaps. They do not turn planned benchmarks or local observations into production claims.
+Reports only present confirmed facts, reproducible experiments, and explicitly planned measurements.
 
-Current entries:
+## Current reports
 
-- [Performance report](/en/docs/reports/performance): known runtime facts, measurement dimensions, and the benchmark plan.
+- [Performance data report](/en/docs/reports/performance): confirmed configuration facts, observation dimensions, and planned benchmarks.
 
-Every result should identify the commit, topology, protocol, data set, load profile, duration, and collection method required to reproduce it.
+## Writing rules
+
+- No unsourced performance metrics.
+- No marketing claims like “10x faster” or “99.9% uptime”.
+- Mark missing data as “planned / not yet measured”.
+- Default configuration values may appear, but must be labeled as configuration facts—not benchmark results.
+
+## Related reading
+
+- [Observability pipeline](/en/docs/principles/observability-chain)
+- [Server installation](/en/docs/guides/server-install)

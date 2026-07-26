@@ -1,9 +1,11 @@
 ---
 title: Pole Sidecar
-description: Pole Sidecar 是基于 Pingora 的轻量数据面骨架。
+description: Pole Sidecar 是基于 Pingora 的轻量数据面骨架，用于本地 HTTP/gRPC 转发与治理扩展。
 ---
 
-Pole Sidecar 是 Lattice Hub 的轻量数据面方向，当前基于 Pingora 实现。它使用 TOML 配置，支持 HTTP 与 gRPC 转发，并保留治理拦截器扩展点。
+Pole Sidecar 是 Lattice Hub 的轻量数据面方向，当前基于 Pingora 实现。它使用 TOML 配置，支持 HTTP 与 gRPC 转发，并保留治理拦截器扩展点。事实来源仍是控制面的服务发现与 active 治理视图。
+
+![sidecar data plane](/diagrams/sidecar-data-plane.svg)
 
 ## 当前能力
 
@@ -12,16 +14,34 @@ Pole Sidecar 是 Lattice Hub 的轻量数据面方向，当前基于 Pingora 实
 - 负载均衡：简单轮询。
 - 拦截器骨架：请求阶段与上游阶段的回调占位，可扩展 ACL、限流、熔断和指标。
 
+## 快速开始
+
+```bash
+cargo build
+RUST_LOG=info cargo run
+SIDECAR_CONFIG=./sidecar.toml RUST_LOG=debug cargo run
+```
+
+Rust 工具链要求：`1.74+`。
+
 ## 配置要点
 
 - 路由匹配顺序：先匹配 `grpc_prefix`，再匹配 `prefix`。
 - gRPC 识别：HTTP/2 且 `content-type` 以 `application/grpc` 开头。
-- Rust 工具链要求：`1.74+`。
+- `clusters[].endpoints` 定义上游；`lb_policy` 当前示例为 `round_robin`。
+- 可选独立 `inbound_grpc` 端口；也可以与 HTTP 共用 `8080`。
+
+## 与控制面的关系
+
+- Sidecar 不重新定义服务治理事实。
+- 生产路径应消费控制面 active 配置，而不是长期手写死 endpoints。
+- 可与 Kubernetes Controller 的注入模式（`dns` / `mesh`）配合。
 
 ## 后续演进
 
-文档中的设计建议包括访问控制、限流、熔断、动态路由和 Prometheus 指标暴露。
+访问控制、限流、熔断、动态路由和 Prometheus 指标暴露是明确的扩展方向；接入前先在实践页完成路由与发现闭环。
 
 ## 推荐阅读
 
+- [Pole Sidecar 数据面实践](/docs/practices/sidecar-data-plane)
 - [Pole Sidecar 的轻量数据面路线](/docs/blog/pingora-sidecar)

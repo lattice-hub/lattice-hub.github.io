@@ -1,18 +1,107 @@
 ---
 title: K8s 相关实践
-description: Kubernetes Service 同步、按需接入和运行时资源映射的实践入口。
+description: 用 Kubernetes Controller 做 Service 同步、注解驱动接入与 Sidecar 注入的完整实践。
 ---
 
-Kubernetes 接入的目标不是复制一套服务治理模型，而是把集群中的 Service、annotation 和运行时上下文同步成控制面可理解的资源。
+Kubernetes 接入的目标不是复制一套服务治理模型，而是把集群中的 Service、annotation 和运行时上下文同步成控制面可理解的资源，再由 SDK 或 Pole Sidecar 消费同一套治理语义。
 
-## 实践要点
+## 部署 Controller
 
-- 使用 Controller 承接集群侧事件和服务同步。
-- 通过 annotation 表达同步、别名和接入策略。
-- 将 Kubernetes Service 映射为控制面服务视图，再由 SDK 或 Pole Sidecar 消费。
-- 对全量同步和按需同步分别观察事件处理耗时。
+仓库：`pole-controller`。常用路径：
+
+```bash
+make build
+
+# 静态清单
+cd deploy/kubernetes_v1.22/kubernetes && bash install.sh
+
+# 或 Helm
+cd deploy && sh init_helm.sh
+cd kubernetes_v1.22/helm && helm upgrade -i pole-controller .
+```
+
+部署前在 `deploy/variables.txt` 等配置中填好控制面地址与凭证，例如 `POLARIS_HOST`、`POLARIS_TOKEN`、镜像版本。验证：
+
+```bash
+kubectl get pods -n polaris-system
+```
+
+Controller 需要能访问 Control Plane 的 HTTP / gRPC 端口；网络不通时同步会停滞。
+
+## 同步模式选择
+
+| 模式 | 行为 | 适用 |
+| --- | --- | --- |
+| `all` | 将集群 Service 尽量全量同步到控制面 | 小集群、希望快速统一目录 |
+| `demand` | 默认不同步，靠 annotation 显式开启 | 渐进接入、多团队共享集群 |
+
+实践建议：生产共享集群优先 `demand`，避免把系统噪声服务灌进治理目录。
+
+## Annotation 实践
+
+| 注解 | 作用 |
+| --- | --- |
+| `polarismesh.cn/sync` | `true` 同步，`false` 不同步 |
+| `polarismesh.cn/aliasService` | 同步时创建的服务别名 |
+| `polarismesh.cn/aliasNamespace` | 别名所在 Namespace |
+
+示例（按需同步某个 Service）：
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders
+  namespace: payments
+  annotations:
+    polarismesh.cn/sync: "true"
+    polarismesh.cn/aliasService: "orders-api"
+    polarismesh.cn/aliasNamespace: "prod"
+spec:
+  # ...
+```
+
+别名适合兼容历史命名或跨环境访问习惯，但要避免别名与真实服务名互相覆盖造成排障困难。
+
+## Namespace 映射原则
+
+- 控制面 Namespace 表示**运行环境**，不要把每个 Kubernetes Namespace 机械等于一个租户。
+- 常见做法：K8s Namespace 映射到业务名，再通过 annotation/配置落到 `dev`/`prod` 等控制面环境。
+- `pole-system` 等系统命名空间默认不要当业务目录使用。
+
+## Sidecar 注入
+
+Controller 支持给应用 Pod 注入数据面：
+
+| 模式 | 说明 |
+| --- | --- |
+| `dns` | 通过拦截 DNS 实现发现与治理，侵入较低 |
+| `mesh` | 注入 sidecar（及 Envoy 路径）劫持流量，治理更深 |
+
+注入前确认：
+
+1. 控制面已有对应服务与所需治理规则的 active release。
+2. 注入模板与镜像版本匹配集群架构。
+3. 应用就绪探针与无损上下线规则不冲突。
+
+## 观察与排障
+
+- 看 Controller 日志中的同步成功/失败事件。
+- 在 Console 核对服务是否出现、实例是否更新。
+- 区分“未打 sync 注解”“鉴权失败”“控制面不可达”“别名冲突”。
+- 全量同步场景关注事件处理耗时与噪声服务过滤。
+
+## 检查清单
+
+- [ ] Controller 能稳定连接 Control Plane
+- [ ] 同步模式与集群规模匹配
+- [ ] 注解与别名约定已文档化
+- [ ] Console 中能看到同步后的服务视图
+- [ ] SDK 或 Sidecar 能发现这些服务
+- [ ] 注入（如启用）不影响应用就绪与发布
 
 ## 深入阅读
 
 - [Kubernetes Controller](/docs/components/kubernetes-controller)
 - [Kubernetes Service 到 Lattice Hub 的同步模型](/docs/blog/kubernetes-service-sync)
+- [Pole Sidecar 数据面实践](/docs/practices/sidecar-data-plane)

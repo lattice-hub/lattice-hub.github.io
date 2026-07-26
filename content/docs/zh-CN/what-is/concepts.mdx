@@ -1,0 +1,112 @@
+---
+title: 术语与概念
+description: Lattice Hub 核心名词、资源模型和发布语义的统一解释，避免把 Namespace、Registry 与发布链误解成多租户或任务编排系统。
+---
+
+阅读 Lattice Hub 文档时，优先用这一页对齐名词边界。产品事实以控制面实现为准：Namespace 是运行环境，A2A 只注册能力元数据，Pole Agent 只准备草稿，不自动发布。
+
+![concepts resource model](/diagrams/concepts-resource-model.svg)
+
+## 品牌与组件
+
+| 术语 | 含义 |
+| --- | --- |
+| Lattice Hub | 主品牌与官网产品名，面向服务与 Agent 的云原生治理控制面。 |
+| Pole Control Plane | 技术产品名，仓库为 `pole-control-plane`，承载 API、领域 Server、缓存、存储与多协议入口。 |
+| Console | 平台团队的可视化入口，可与 Control Plane 同进程（`--mode all`）或独立部署（`--mode console`）。 |
+| Pole Agent | Console 内的对话工作模式。使用白名单 MCP 工具读取资源；配置写操作经预览、确认后只保存草稿。 |
+| Rust SDK | Proxyless 客户端，直接消费发现、配置与治理视图。 |
+| Pole Sidecar | 基于 Pingora 的轻量数据面，在本地执行路由与转发，事实仍来自控制面。 |
+| Kubernetes Controller | 把 Kubernetes Service / annotation 同步到控制面，并支持 Sidecar 注入。 |
+
+## 运行环境与资源身份
+
+| 术语 | 含义 | 常见误解 |
+| --- | --- | --- |
+| Namespace | 运行环境边界，例如开发、预发、生产。同一逻辑服务在不同 Namespace 拥有独立内容、版本与发布状态。 | 不是租户、团队空间或组织边界。 |
+| Service | Namespace 内的服务目录项，是实例、规则、配置和部分 AI 资源的挂载点。 | 不是 Kubernetes Service 的同义词；K8s Service 需经 Controller 映射。 |
+| Instance | 服务的一个可调用端点，含地址、权重、健康、隔离与元数据。 | 健康检查失败不等于从目录删除。 |
+| Revision | 资源视图的版本指纹。客户端用它判断缓存是否过期。 | 不是 Git commit；由控制面在变更后生成。 |
+| Service Contract | 服务契约描述，供调用方理解接口约束。 | 不等于治理规则。 |
+
+## 配置中心
+
+| 术语 | 含义 |
+| --- | --- |
+| Config Group | 配置分组，组织一组配置文件。 |
+| Config File | 配置文件本体，有编辑态内容。 |
+| Config Release | 不可变发布快照。客户端监听和拉取的是发布结果，不是未发布草稿。 |
+| 灰度发布 | 把新版本只推给符合标签或范围的客户端，再决定全量或回滚。 |
+| 长轮询 / SSE | 客户端感知配置变化的两种监听方式。 |
+
+配置内容当前事实边界：单文件最大 20,000 字符；列表分页最大 100。
+
+## 治理规则与发布语义
+
+| 术语 | 含义 |
+| --- | --- |
+| 规则本体 | Console 管理的规则对象，用于创建、编辑、删除。 |
+| Rule Release | 可发布、可激活、可回滚、可停止灰度的客户端版本。 |
+| Active Release | 客户端、SDK、xDS、Sidecar 实际读取的生效版本。 |
+| 编辑态 / 发布态 | 编辑态改规则本体；只有发布后才进入运行时视图。 |
+
+九类治理能力：
+
+1. 路由（Route）
+2. 泳道（Lane）
+3. 限流（Rate Limit）
+4. 熔断（Circuit Breaker）
+5. 故障探测（Fault Detect）
+6. 无损上下线（Lossless）
+7. 调用鉴权（Traffic Security）
+8. 流量镜像（Traffic Mirror）
+9. 流量 Mock（Traffic Mock）
+
+## AI Registry
+
+| 术语 | 含义 | 边界 |
+| --- | --- | --- |
+| MCP Registry | 注册 MCP Server 与 Tool，进入 API、缓存、存储和 Console。 | 不是通用任务编排器。 |
+| A2A Agent Registry | 注册 Agent Card、技能、协议接口与能力元数据。 | 不承担任务代理或 Agent Runtime。 |
+| Pole MCP 工具 | Pole Agent 可调用的白名单工具，例如列出 Namespace、查询配置。 | 未列入白名单的工具不可由 Agent 调用。 |
+| 提案 / 草稿 | Agent 生成的配置变更临时视图；确认后只写入草稿。 | 发布权仍在人。 |
+
+## 控制面内部概念
+
+| 术语 | 含义 |
+| --- | --- |
+| API Server 插件槽 | `plugin/apiserver/*` 注册的协议入口：HTTP、gRPC、xDS、Nacos、Apollo、Eureka、MCP/A2A。 |
+| Domain Server | 共享业务语义层，如 Discover、Config、GoverRule、Admin。 |
+| Interceptor 链 | 领域 Server 前的横切代理，当前顺序为 `auth` → `paramcheck`。 |
+| CacheManager | 读路径低延迟视图；默认按增量时间窗刷新，窗口含 `lastMtime - 5s` 时钟偏差保护。 |
+| Store | 事实来源，默认 MySQL：`pole_server` 业务库、`pole_observability` 观测库。 |
+| History / DiscoverEvent / Statis | 操作历史、发现事件与统计信号插件链。 |
+| OTel 边界 | 指标、日志经 Collector 进入共享 GreptimeDB，不等于完整全链路 APM 产品。 |
+
+## 权限与系统配置
+
+| 术语 | 含义 |
+| --- | --- |
+| Principal | 认证主体：用户或客户端身份。 |
+| Strategy / Policy | 策略规则，决定谁能对哪些资源执行哪些操作。 |
+| 主账号（main user） | 首次部署时通过 `/init-admin` 创建，不存在代码内硬编码默认密码。 |
+| BootstrapOnly | 只能通过部署配置修改的系统字段。 |
+| RestartRequired | 可发布期望值，但需实例重启后生效。 |
+| HotReload | 具备安全 applier 的字段可受控热更新；不是全部系统配置都可热更新。 |
+
+## 接入形态对照
+
+| 形态 | 何时使用 |
+| --- | --- |
+| Console / API | 平台管理、发布审核、权限与系统配置。 |
+| Rust SDK | 应用内 Proxyless 治理，直连 gRPC 发现与配置端口。 |
+| Kubernetes Controller | 集群 Service 同步、注解驱动接入、Sidecar 注入。 |
+| Pole Sidecar | 语言无关或希望把治理放到旁路代理时。 |
+| 协议兼容入口 | 存量 Nacos / Apollo / Eureka / Envoy 客户端平滑接入。 |
+
+## 阅读顺序
+
+1. 用本页对齐名词。
+2. 看 [功能特性](/docs/what-is/features) 了解能力域。
+3. 看 [控制面装配架构](/docs/principles/architecture) 理解真实运行结构。
+4. 按 [服务端安装](/docs/guides/server-install) 与 [控制台使用](/docs/guides/console-use) 上手操作。

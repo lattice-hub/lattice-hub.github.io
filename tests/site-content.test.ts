@@ -55,6 +55,11 @@ test('site navigation exposes real site-level destinations', () => {
   assert.equal(isSiteNavActive('/architecture', '/product'), true);
   assert.equal(isSiteNavActive('/components', '/product'), false);
   assert.equal(isSiteNavActive('/product', 'https://github.com/lattice-hub/pole-control-plane'), false);
+  assert.equal(isSiteNavActive('/docs', '/docs'), true);
+  assert.equal(isSiteNavActive('/docs/developers', '/docs'), true);
+  assert.equal(isSiteNavActive('/en/docs', '/docs'), true);
+  assert.equal(isSiteNavActive('/en/docs/developers', '/docs'), true);
+  assert.equal(isSiteNavActive('/en/docs/developers', '/components'), false);
 });
 
 test('product topics stay available without occupying primary navigation', () => {
@@ -124,6 +129,9 @@ test('docs routing exposes the five PRD landing destinations', () => {
 test('docs brand navigation returns to the website homepage', () => {
   const docsLayout = readFileSync('src/app/docs/_components/DocsLayoutContent.tsx', 'utf8');
 
+  assert.match(docsLayout, /<SiteHeader \/>/);
+  assert.match(docsLayout, /site-shell--chrome/);
+  assert.match(docsLayout, /--fd-banner-height/);
   assert.match(docsLayout, /nav=\{\{[\s\S]*url:\s*'\/'/);
   assert.doesNotMatch(docsLayout, /nav=\{\{[\s\S]*url:\s*getDocsUrl\(locale\)/);
 });
@@ -352,7 +360,12 @@ test('docs expose complete and symmetric Chinese and English content', () => {
   const docsPage = readFileSync('src/app/docs/[[...slug]]/page.tsx', 'utf8');
   const englishDocsPage = readFileSync('src/app/en/docs/[[...slug]]/page.tsx', 'utf8');
   const languageSwitch = readFileSync(
-    'src/app/docs/_components/DocsLanguageSwitch.tsx',
+    'src/components/site/DocsLanguageSwitch.tsx',
+    'utf8',
+  );
+  const siteHeader = readFileSync('src/components/site/SiteHeader.tsx', 'utf8');
+  const docsPageContent = readFileSync(
+    'src/app/docs/_components/DocsPageContent.tsx',
     'utf8',
   );
   const documentLanguage = readFileSync(
@@ -360,15 +373,19 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 31);
+  assert.equal(chinese.length, 32);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
   assert.match(sourceConfig, /hideLocale: 'default-locale'/);
+  assert.match(sourceConfig, /getDocsAlternateHrefs/);
   assert.match(docsPage, /generateDocsStaticParams\('zh-CN'\)/);
   assert.match(englishDocsPage, /generateDocsStaticParams\('en'\)/);
-  assert.match(languageSwitch, /中文/);
+  assert.match(languageSwitch, />\s*中\s*</);
   assert.match(languageSwitch, />\s*EN\s*</);
+  assert.match(siteHeader, /DocsLanguageSwitch/);
+  assert.match(siteHeader, /getDocsAlternateHrefs/);
+  assert.doesNotMatch(docsPageContent, /DocsLanguageSwitch/);
   assert.match(documentLanguage, /document\.documentElement\.lang = locale/);
 });
 

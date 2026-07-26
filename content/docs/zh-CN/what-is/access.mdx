@@ -5,6 +5,8 @@ description: Lattice Hub 面向控制台、SDK、Kubernetes、Pole Sidecar 和�
 
 Lattice Hub 的接入方式按运行位置划分。平台团队通常先部署控制面和 Console，再按业务形态选择 SDK、Kubernetes Controller 或 Pole Sidecar。
 
+名词边界见 [术语与概念](/docs/what-is/concepts)。
+
 ## 接入路径
 
 | 场景 | 推荐入口 | 说明 |
@@ -15,6 +17,16 @@ Lattice Hub 的接入方式按运行位置划分。平台团队通常先部署�
 | Kubernetes 集群 | [Kubernetes Controller](/docs/components/kubernetes-controller) | 同步 Service，并承接注解、服务别名和自动化。 |
 | Pole Sidecar 数据面 | [Pole Sidecar](/docs/components/pingora-sidecar) | 用独立数据面承载路由、负载均衡和拦截器。 |
 | 协议与网关 | [Specification](/docs/components/specification) | 复用 protobuf 与多协议入口进行系统集成。 |
+
+## 端口速查
+
+| 用途 | 默认端口 |
+| --- | ---: |
+| Console | 8080 |
+| HTTP API | 8090 |
+| Discovery gRPC | 8091 |
+| Config gRPC | 8093 |
+| xDS v3 | 15010 |
 
 ## 推荐顺序
 

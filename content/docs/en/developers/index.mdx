@@ -1,22 +1,44 @@
 ---
 title: Developers
-description: Maintainer and Committer roles for Lattice Hub, plus the current roster.
+description: Maintainer/Committer roles, repository map, and how to contribute to Lattice Hub.
 ---
 
-This section documents project governance roles and the public roster. Lattice Hub is still early; the Maintainer and Committer roles are currently held by the same core contributor.
+This section records project governance roles and public membership. The project is early-stage; Maintainer and Committer duties are currently concentrated on the same core contributor.
 
 ## Roles
 
 | Role | Responsibility |
 | --- | --- |
-| Maintainer | Owns project direction, release cadence, critical change review, and community norms |
-| Committer | Has write access and can review and merge contributions that meet project standards |
+| Maintainer | Direction, release cadence, critical reviews, quality and community norms |
+| Committer | Write access; review and merge contributions that meet project standards |
 
-## Current roster
+## Membership
 
-- [Maintainers](/en/docs/developers/maintainers): people who steward the project
-- [Committers](/en/docs/developers/committers): contributors with commit access
+- [Maintainers](/en/docs/developers/maintainers)
+- [Committers](/en/docs/developers/committers)
+
+## Repositories
+
+| Repository | Purpose |
+| --- | --- |
+| [pole-control-plane](https://github.com/lattice-hub/pole-control-plane) | Control plane and Console |
+| [specification](https://github.com/pole-io/specification) | protobuf / gRPC contracts |
+| [pole-client-rust](https://github.com/pole-io/pole-client-rust) | Rust SDK |
+| [pole-sidecar](https://github.com/pole-io/pole-sidecar) | Lightweight data plane |
+| [pole-controller](https://github.com/pole-io/pole-controller) | Kubernetes Controller |
+| [website](https://github.com/lattice-hub/website) | Website and docs |
+
+Organization: [Lattice Hub](https://github.com/lattice-hub).
 
 ## How to contribute
 
-Open issues and pull requests in the [Lattice Hub organization](https://github.com/lattice-hub). Sustained, high-quality contributions can lead to Committer nomination. Committers who take ongoing responsibility for architecture and releases may become Maintainers.
+1. Read [Concepts](/en/docs/what-is/concepts) and [Control-plane assembly](/en/docs/principles/architecture).
+2. Open issues with reproduction steps.
+3. Keep PRs small and reviewable; keep docs aligned with code facts—no invented benchmarks or default passwords.
+4. Sustained contributors may be nominated as Committers; Committers who own architecture and releases may become Maintainers.
+
+## Docs tips
+
+- Product facts follow `product-facts.md` and control-plane implementation.
+- Namespace ≠ tenant; A2A ≠ runtime; Pole Agent ≠ auto-publish.
+- Put new diagrams under `public/diagrams/` and reference them from both locales.

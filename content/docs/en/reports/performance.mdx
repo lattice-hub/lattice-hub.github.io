@@ -1,24 +1,47 @@
 ---
-title: Performance report
-description: Confirmed runtime facts, measurement definitions, and the benchmark plan.
+title: Performance data report
+description: Confirmed configuration facts, observation dimensions, and planned benchmarks—without invented numbers.
 ---
 
-No formal benchmark result is published yet. This page therefore records the measurement boundary instead of inventing throughput, latency, or resource numbers.
+This first edition records confirmed facts and planned measurements only. There is no formal benchmark dataset to cite, so throughput/latency/resource numbers are not invented here.
 
-## Confirmed implementation facts
+![observability ops map](/diagrams/observability-ops-map.svg)
 
-- The control plane maintains incremental in-memory caches for read-heavy paths.
-- Cache refresh uses a short polling interval and overlap window to reduce missed updates.
-- HTTP, gRPC, xDS, Nacos, Apollo, and Eureka-compatible entry points share domain data.
-- Pole Sidecar currently forwards HTTP/1.1, HTTP/2, and gRPC-h2c traffic.
+## Confirmed configuration facts
 
-## Required benchmark dimensions
-
-| Target | Measurements |
+| Area | Fact |
 | --- | --- |
-| Control Plane | Read/write throughput, p50/p95/p99 latency, cache convergence, CPU, and memory. |
-| Discovery protocols | Registration, heartbeat, subscription, and large service-list behavior. |
-| Governance release | Publish latency, cache propagation, and runtime visibility. |
-| Pole Sidecar | Throughput and tail latency for HTTP/1.1, HTTP/2, and gRPC-h2c. |
+| Cache refresh | Core caches refresh about every 1s |
+| Overlap window | Incremental queries use `lastMtime - 5s` |
+| Config paging | Max page size 100 |
+| Config content | Max 20,000 characters |
+| Batch example | Queue 10000, wait 32ms, max batch 128, concurrency 128 |
+| MySQL pool example | `maxOpenConns=100`, `maxIdleConns=10` (overridable) |
+| Health-check example | `slotNum=30`, min 10s, max 60s |
+| Default ports | Console 8080; HTTP 8090; Discover 8091; Config 8093; xDS 15010 |
 
-Results will only be added with a reproducible environment, workload definition, commit, duration, and raw evidence.
+These are implementation facts, **not** benchmark conclusions.
+
+## Suggested observation dimensions
+
+| Scenario | Capture |
+| --- | --- |
+| Discovery | QPS, P95/P99, revision hit vs full response-cache hit |
+| Config watch | Connections, push/long-poll latency, client version convergence |
+| Governance publish | Time to active cache, rollback time |
+| Sidecar | HTTP/1.1, HTTP/2, gRPC-h2c throughput and tail latency |
+| Controller | Full vs demand sync event handling time |
+
+## Planned benchmarks
+
+- Control Plane discovery throughput, tail latency, and cache-hit behavior.
+- Configuration publish / progressive delivery / rollback latency.
+- SSE/long-poll connection count, memory, and CPU under many clients.
+- Pole Sidecar forward performance by protocol.
+- Kubernetes Controller sync latency for `all` and `demand`.
+
+## Reporting rules
+
+Separate configuration facts from benchmark conclusions. Do not publish numbers without reproducible commands, environment notes, and raw data.
+
+See also [Observability pipeline](/en/docs/principles/observability-chain) and [Server installation](/en/docs/guides/server-install).

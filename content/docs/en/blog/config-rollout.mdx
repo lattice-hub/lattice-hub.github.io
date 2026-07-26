@@ -5,8 +5,27 @@ description: Treat configuration as versioned runtime state instead of a mutable
 
 A configuration center must control how changes become visible. Editing a value, publishing a version, selecting a rollout scope, and delivering an update to listeners are separate operations.
 
-Progressive rollout limits exposure by client labels or other supported conditions. Rollback selects a known version instead of reconstructing old text. Long polling and cache refresh then move the active view to clients without requiring every read to hit storage.
+## Confirmed facts
 
-Operationally, teams should record the draft revision, release version, rollout condition, activation time, and recovery decision. Listener delivery should be monitored separately from successful publication.
+- Max config content length: 20,000 characters.
+- Max page size: 100.
+- Publish, progressive delivery, and rollback are supported.
+- Clients watch via SSE or long polling.
+- Pole Agent confirmed writes become drafts only; humans still publish.
 
-This model keeps “stored,” “published,” and “observed by the runtime” as distinct states.
+## Recommended rhythm
+
+1. Create the group and file in the correct Namespace.
+2. Edit the draft and validate content.
+3. Progressive-publish to a small client set and confirm adoption.
+4. Roll out fully, or roll back to the previous version.
+5. Audit the change in History.
+
+## Open measurements
+
+This site does not publish listener latency or concurrency claims without reproducible benchmarks.
+
+## Related docs
+
+- [Progressive delivery practice](/en/docs/practices/gray-release)
+- [Using the Console](/en/docs/guides/console-use)

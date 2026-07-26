@@ -5,6 +5,8 @@ description: 已确认配置事实、观测口径和待实测指标计划。
 
 本报告首版只记录已有事实和待实测计划。当前没有可引用的正式压测结果，因此不写吞吐、延迟、资源占用等推测数字。
 
+![observability ops map](/diagrams/observability-ops-map.svg)
+
 ## 已确认配置事实
 
 | 范围 | 当前事实 |
@@ -14,8 +16,23 @@ description: 已确认配置事实、观测口径和待实测指标计划。
 | 配置中心分页 | 最大分页 100 |
 | 配置内容 | 最大 20,000 字符 |
 | 批处理示例 | 队列 10000，等待 32ms，最大批量 128，并发 128 |
-| MySQL 连接池示例 | `maxOpenConns=100`，`maxIdleConns=10` |
+| MySQL 连接池示例 | `maxOpenConns=100`，`maxIdleConns=10`（部署可覆盖） |
 | 健康检查示例 | `slotNum=30`，最小 10s，最大 60s |
+| 默认端口 | Console 8080；HTTP 8090；Discover gRPC 8091；Config gRPC 8093；xDS 15010 |
+
+以上是配置与实现事实，**不是**压测结论。
+
+## 建议观测口径
+
+在补齐压测前，建议至少采集这些口径，便于后续报告对齐：
+
+| 场景 | 观测点 |
+| --- | --- |
+| 服务发现 | QPS、P95/P99、revision hit vs full response-cache hit |
+| 配置监听 | 连接数、推送/长轮询延迟、客户端版本收敛时间 |
+| 治理发布 | 发布到 cache active 的耗时、回滚耗时 |
+| Sidecar | HTTP/1.1、HTTP/2、gRPC-h2c 吞吐与尾延迟 |
+| Controller | 全量/按需同步事件处理耗时 |
 
 ## 待实测指标
 
@@ -28,3 +45,5 @@ description: 已确认配置事实、观测口径和待实测指标计划。
 ## 报告原则
 
 性能页必须区分“已确认配置事实”和“压测结论”。没有可复现实验命令、环境说明和原始数据前，不把任何数字写成性能结论。
+
+相关阅读：[观测链路](/docs/principles/observability-chain)、[服务端安装](/docs/guides/server-install)。

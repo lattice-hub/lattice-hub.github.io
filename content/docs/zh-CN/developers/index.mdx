@@ -1,6 +1,6 @@
 ---
 title: 开发者
-description: Lattice Hub 的 Maintainer、Committer 角色说明与当前名单。
+description: Lattice Hub 的 Maintainer、Committer 角色说明、仓库入口与参与方式。
 ---
 
 开发者分区记录项目治理角色与公开名单。当前项目仍处于早期阶段，Maintainer 与 Committer 主要由同一位核心贡献者兼任。
@@ -17,6 +17,28 @@ description: Lattice Hub 的 Maintainer、Committer 角色说明与当前名单�
 - [Maintainers](/docs/developers/maintainers)：项目维护者
 - [Committers](/docs/developers/committers)：具备提交权限的贡献者
 
+## 相关仓库
+
+| 仓库 | 用途 |
+| --- | --- |
+| [pole-control-plane](https://github.com/lattice-hub/pole-control-plane) | 控制面与 Console |
+| [specification](https://github.com/pole-io/specification) | protobuf / gRPC 契约 |
+| [pole-client-rust](https://github.com/pole-io/pole-client-rust) | Rust SDK |
+| [pole-sidecar](https://github.com/pole-io/pole-sidecar) | 轻量数据面 |
+| [pole-controller](https://github.com/pole-io/pole-controller) | Kubernetes Controller |
+| [website](https://github.com/lattice-hub/website) | 官网与文档站 |
+
+组织入口：[Lattice Hub organization](https://github.com/lattice-hub)。
+
 ## 如何参与
 
-欢迎通过 [Lattice Hub organization](https://github.com/lattice-hub) 提交 Issue 与 Pull Request。贡献被长期认可后，可被提名为 Committer；对架构与发布持续负责的 Committer，可进一步成为 Maintainer。
+1. 先读 [术语与概念](/docs/what-is/concepts) 与 [控制面装配架构](/docs/principles/architecture)，对齐事实边界。
+2. 通过 Issue 说明问题或提案；改动尽量附可复现步骤。
+3. Pull Request 保持小而可审；文档变更与代码事实保持一致，不编造压测数字或默认密码。
+4. 贡献被长期认可后，可被提名为 Committer；对架构与发布持续负责的 Committer，可进一步成为 Maintainer。
+
+## 文档贡献提示
+
+- 产品事实以 `product-facts.md` 与控制面实现为准。
+- Namespace ≠ 租户；A2A ≠ Runtime；Pole Agent ≠ 自动发布。
+- 新增原理图优先放 `public/diagrams/`，中英文页同步引用。

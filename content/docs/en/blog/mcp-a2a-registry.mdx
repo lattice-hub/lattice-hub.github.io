@@ -1,12 +1,26 @@
 ---
-title: How MCP and A2A registries expose capabilities to agents
-description: Reframe service catalogs, tools, and agent cards as structured control-plane resources.
+title: How MCP and A2A registries make governance discoverable to agents
+description: Put MCP servers and A2A agents into the same control-plane model as services and rules.
 ---
 
-AI-native discovery needs more than a service list embedded in a system prompt. Agents need typed capability records that can be searched, authorized, cached, and audited.
+For agents to use service governance, do not maintain a second prompt-time catalog. Register MCP servers, tools, A2A agent cards, and skills as first-class control-plane resources.
 
-MCP Registry manages tool and resource endpoints. A2A Agent Registry manages agent cards, skills, and protocol endpoints. They may reference related services, but they serve different discovery contracts.
+## Why the control plane
 
-The control plane stores and indexes registry metadata; it does not become an MCP tool-execution proxy or an A2A task runtime. Actual calls remain in the approved client, gateway, or agent runtime.
+- Shared Namespace environment boundaries.
+- Reuse of API, store, CacheManager, and authorization.
+- Revisioned catalogs so clients know when to refresh.
+- Auditable History instead of local agent config drift.
 
-This separation lets an organization expose capabilities to agents while preserving the same identity, environment, and management boundaries used for ordinary services.
+## Boundaries
+
+| Capability | Does | Does not |
+| --- | --- | --- |
+| MCP Registry | Register servers/tools for discovery and allowlists | Replace backend execution semantics |
+| A2A Registry | Register cards, skills, protocol metadata | Act as a task proxy or runtime |
+| Pole Agent | Read queries + human-confirmed config drafts | Auto-publish or delete |
+
+## Related docs
+
+- [Agent capability discovery](/en/docs/practices/agent-discovery)
+- [AI Registry and Pole Agent](/en/docs/principles/ai-registry)

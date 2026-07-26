@@ -1,0 +1,91 @@
+---
+title: Concepts and terminology
+description: Shared vocabulary for Lattice Hub resources, release semantics, and AI registries—without treating Namespace as tenancy or A2A as a runtime.
+---
+
+Use this page to align on product language before reading guides or principles. Facts follow the control-plane implementation: a Namespace is an environment, A2A registers capability metadata only, and Pole Agent prepares drafts without publishing.
+
+![concepts resource model](/diagrams/concepts-resource-model.svg)
+
+## Brand and components
+
+| Term | Meaning |
+| --- | --- |
+| Lattice Hub | Product brand for the cloud-native control plane for services and agents. |
+| Pole Control Plane | Technical product (`pole-control-plane`) owning APIs, domain servers, cache, storage, and protocol entry points. |
+| Console | Platform UI; can run in-process (`--mode all`) or separately (`--mode console`). |
+| Pole Agent | Conversational Console workspace. Reads via allowlisted MCP tools; confirmed config writes become drafts only. |
+| Rust SDK | Proxyless client that consumes discovery, configuration, and governance views. |
+| Pole Sidecar | Pingora-based local data plane. Executes routing locally; facts still come from the control plane. |
+| Kubernetes Controller | Syncs Kubernetes Services/annotations and can inject the Sidecar. |
+
+## Environments and identity
+
+| Term | Meaning | Not this |
+| --- | --- | --- |
+| Namespace | Runtime environment boundary (dev/staging/prod). The same logical service has independent content and releases per Namespace. | Tenant, team space, or org boundary. |
+| Service | Directory entry that hosts instances, rules, and related resources. | Not automatically a Kubernetes Service. |
+| Instance | A callable endpoint with address, weight, health, isolation, and metadata. | Health failure is not the same as directory deletion. |
+| Revision | Fingerprint of a resource view for cache freshness. | Not a Git commit. |
+| Service Contract | Interface contract for callers. | Not a governance rule. |
+
+## Configuration
+
+| Term | Meaning |
+| --- | --- |
+| Config Group | Groups configuration files. |
+| Config File | Editable configuration content. |
+| Config Release | Immutable published snapshot consumed by clients. |
+| Progressive delivery | Ship a release to a subset of clients before full rollout or rollback. |
+| Long-poll / SSE | Client watch mechanisms for configuration changes. |
+
+Current limits: max content length 20,000 characters; max page size 100.
+
+## Governance releases
+
+| Term | Meaning |
+| --- | --- |
+| Rule object | Console-managed rule used for create/edit/delete. |
+| Rule Release | Version that can be published, activated, rolled back, or stopped. |
+| Active Release | Version clients, SDKs, xDS, and Sidecars actually read. |
+| Edit vs publish | Editing the rule object does not change runtime until publish. |
+
+Nine governance families: route, lane, rate limit, circuit breaker, fault detect, lossless lifecycle, traffic security, traffic mirror, traffic mock.
+
+## AI Registry
+
+| Term | Meaning | Boundary |
+| --- | --- | --- |
+| MCP Registry | Registers MCP servers and tools in API, cache, store, and Console. | Not a general workflow engine. |
+| A2A Agent Registry | Registers agent cards, skills, protocol interfaces, and metadata. | Not a task proxy or agent runtime. |
+| Pole MCP tools | Allowlisted tools Pole Agent may call. | Non-allowlisted tools are unavailable to the agent. |
+| Proposal / draft | Previewed config change saved only as a draft after confirmation. | Humans still publish. |
+
+## Control-plane internals
+
+| Term | Meaning |
+| --- | --- |
+| API server slots | Protocol plugins under `plugin/apiserver/*`. |
+| Domain server | Shared business semantics (discover, config, goverrule, admin). |
+| Interceptor chain | Cross-cutting proxies; current order `auth` → `paramcheck`. |
+| CacheManager | Low-latency read views with incremental refresh (`lastMtime - 5s` overlap). |
+| Store | Source of truth; default MySQL `pole_server` plus `pole_observability`. |
+| History / DiscoverEvent / Statis | Operation history, discovery events, and statistics plugin chains. |
+| OTel boundary | Metrics/logs via Collector and GreptimeDB—not a full APM product claim. |
+
+## Access patterns
+
+| Pattern | When to use |
+| --- | --- |
+| Console / API | Platform management and release review. |
+| Rust SDK | In-process proxyless governance. |
+| Kubernetes Controller | Cluster sync and injection. |
+| Pole Sidecar | Language-agnostic local proxy path. |
+| Compatible protocols | Existing Nacos / Apollo / Eureka / Envoy clients. |
+
+## Suggested reading
+
+1. [Features](/en/docs/what-is/features)
+2. [Control-plane assembly](/en/docs/principles/architecture)
+3. [Server installation](/en/docs/guides/server-install)
+4. [Using the Console](/en/docs/guides/console-use)

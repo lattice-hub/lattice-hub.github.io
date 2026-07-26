@@ -1,20 +1,33 @@
 ---
 title: MCP/A2A Registry 如何让服务治理被 Agent 发现
-description: 用 AI Native 视角重看服务目录、治理规则和 Agent 工具发现。
+description: 把 MCP Server 与 A2A Agent 纳入控制面资源模型后，Agent 发现能力可以复用鉴权、缓存与审计。
 ---
 
-传统服务治理面向应用和平台团队。AI Native 场景下，Agent 也需要理解服务目录、配置、治理规则和可调用工具。
+服务治理要被 Agent 使用，关键不是再做一套“提示词目录”，而是让 MCP Server、Tool、A2A Agent Card 与 Skill 进入和控制面其他资源相同的生命周期。
 
-## Registry 的价值
+## 为什么要进控制面
 
-MCP/A2A Registry 把服务治理资源变成 Agent 可发现、可理解、可检索的对象。Agent 不再只依赖人工写死的工具描述，而是可以通过控制面理解服务、规则和环境。
+- 统一 Namespace 运行环境边界。
+- 复用 API、store、CacheManager 与权限模型。
+- 目录具备 revision，客户端知道何时刷新。
+- 变更可进入 History，而不是散落在各 Agent 本地配置。
 
-## 不应该做成营销概念
+## MCP 与 A2A 的边界
 
-AI Native 的价值必须落到工程事实：资源模型、权限、协议、变更事件和观测数据。官网首版会强调这个方向，但不把未实现能力写成已完成能力。
+| 能力 | 做什么 | 不做什么 |
+| --- | --- | --- |
+| MCP Registry | 登记 Server/Tool，供发现与白名单调用 | 不替代业务后端执行语义 |
+| A2A Registry | 登记 Agent Card、技能与协议元数据 | 不负责任务代理或 Runtime |
+| Pole Agent | 只读查询 + 人工确认后的配置草稿 | 不自动发布/删除 |
 
-## 推荐落点
+## 实践结论
 
-- MCP server proto 与服务目录的关系。
-- Agent 访问治理资源时的鉴权边界。
-- 服务发现、配置中心和治理规则如何暴露为可理解的上下文。
+1. 能力目录只有一份，来源是控制面。
+2. Agent 也是鉴权主体，不能绕过策略。
+3. 写操作继续遵守“草稿 → 人工发布”。
+
+## 相关文档
+
+- [Agent 能力发现实践](/docs/practices/agent-discovery)
+- [AI Registry 与 Pole Agent](/docs/principles/ai-registry)
+- [术语与概念](/docs/what-is/concepts)

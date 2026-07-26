@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { DocsLanguageSwitch } from '@/components/site/DocsLanguageSwitch';
 import {
   GITHUB_ORGANIZATION_URL,
   isSiteNavActive,
   siteNav,
 } from '@/lib/site-content';
+import { getDocsAlternateHrefs } from '@/lib/source';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -31,6 +33,7 @@ export function SiteHeader() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [experienceOpen, setExperienceOpen] = useState(false);
   const pathname = usePathname();
+  const docsLanguage = getDocsAlternateHrefs(pathname);
   const experienceTriggerRef = useRef<HTMLButtonElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -120,6 +123,13 @@ export function SiteHeader() {
         </nav>
 
         <div className="nav-actions">
+          {docsLanguage ? (
+            <DocsLanguageSwitch
+              enHref={docsLanguage.enHref}
+              locale={docsLanguage.locale}
+              zhHref={docsLanguage.zhHref}
+            />
+          ) : null}
           <a
             aria-label="访问 Lattice Hub GitHub 组织（在新窗口打开）"
             className="github-link"
@@ -171,6 +181,15 @@ export function SiteHeader() {
         >
           体验
         </button>
+        {docsLanguage ? (
+          <div className="drawer-lang">
+            <DocsLanguageSwitch
+              enHref={docsLanguage.enHref}
+              locale={docsLanguage.locale}
+              zhHref={docsLanguage.zhHref}
+            />
+          </div>
+        ) : null}
         <a
           className="drawer-github"
           href={GITHUB_ORGANIZATION_URL}

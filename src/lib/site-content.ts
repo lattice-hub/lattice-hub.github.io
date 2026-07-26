@@ -74,16 +74,23 @@ export const productTopics: Array<SiteNavItem & { labelEn: string; summary: stri
 ];
 
 export function isSiteNavActive(pathname: string, href: string): boolean {
+  const normalizedPath =
+    pathname === '/en/docs' || pathname.startsWith('/en/docs/')
+      ? pathname.replace(/^\/en/, '')
+      : pathname;
   const productAliases = ['/architecture', '/governance', '/agent'];
   const isProductTopic = productAliases.some(
-    (topic) => pathname === topic || pathname.startsWith(`${topic}/`),
+    (topic) => normalizedPath === topic || normalizedPath.startsWith(`${topic}/`),
   );
 
   if (href === '/product' && isProductTopic) {
     return true;
   }
 
-  return href.startsWith('/') && (pathname === href || pathname.startsWith(`${href}/`));
+  return (
+    href.startsWith('/') &&
+    (normalizedPath === href || normalizedPath.startsWith(`${href}/`))
+  );
 }
 
 export const capabilityPillars: CapabilityPillar[] = [

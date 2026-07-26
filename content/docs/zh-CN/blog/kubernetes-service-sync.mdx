@@ -13,6 +13,23 @@ Kubernetes Controller 让 Lattice Hub 可以接入 K8s 生态。核心问题是�
 
 `demand` 模式默认不同步，需要通过 Namespace 或 Service annotation 显式开启，更适合渐进接入。
 
+常用注解：
+
+| 注解 | 作用 |
+| --- | --- |
+| `polarismesh.cn/sync` | `true` 同步 / `false` 不同步 |
+| `polarismesh.cn/aliasService` | 同步时创建的服务别名 |
+| `polarismesh.cn/aliasNamespace` | 别名所在控制面 Namespace |
+
 ## 服务别名
 
-`polarismesh.cn/aliasService` 与 `polarismesh.cn/aliasNamespace` 可以在同步时创建服务别名，适合兼容历史命名或跨团队访问习惯。
+`polarismesh.cn/aliasService` 与 `polarismesh.cn/aliasNamespace` 可以在同步时创建服务别名，适合兼容历史命名或跨团队访问习惯。别名应有团队约定，避免与真实服务名互相覆盖。
+
+## Namespace 语义
+
+控制面 Namespace 表示运行环境，不要把每个 Kubernetes Namespace 直接当成租户。常见做法是把集群 Namespace 映射到业务名，再落到 `dev`/`prod` 等环境。
+
+## 相关文档
+
+- [K8s 相关实践](/docs/practices/kubernetes-sync)
+- [Kubernetes Controller](/docs/components/kubernetes-controller)

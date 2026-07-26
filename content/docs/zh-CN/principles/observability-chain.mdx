@@ -81,9 +81,19 @@ history.GetHistory().Record(entry)
 
 这样可以保留现有插件职责，同时让 OTLP 后端成为可替换的输出目的地。
 
+## 排障时怎么读这张图
+
+![observability ops map](/diagrams/observability-ops-map.svg)
+
+1. **先确认主链路**：Console / HTTP / gRPC 端口、MySQL、CacheManager 刷新是否正常。
+2. **再看产品语义**：History 有没有操作记录，DiscoverEvent / Statis 有没有对应信号。
+3. **最后查导出与查询**：Collector、GreptimeDB、Console 平台监控页。缺观测栈时页面无数据，不等于控制面挂了。
+4. **客户端侧**：SDK 连错端口、未拉到 active release、Sidecar 路由未命中，要与控制面日志分开排查。
+
 ## 设计边界
 
 - `history`、`discoverEvent`、`statis` 是 Pole 内部观测语义，不等同于 OTel logs/metrics/traces。
 - `pkg/common/otel` 是 SDK 和导出层，不能替代业务侧的观测事件建模。
 - 缓存更新耗时已经通过 `metrics.RecordCacheUpdateCost` 接入 OTel 指标。
 - 发现缓存命中率目前通过 `statis.ReportCallMetrics` 汇总，后续可在 statis entry 中桥接到 OTel metrics。
+- 控制面观测不能替代应用或数据面的请求级遥测。

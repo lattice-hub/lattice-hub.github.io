@@ -1,19 +1,63 @@
 ---
 title: Specification
-description: Shared service-governance standards and protobuf contracts for Lattice Hub components.
+description: Shared protobuf/gRPC contracts for Lattice Hub across discovery, configuration, governance, security, and MCP.
 ---
 
-The Specification repository defines contracts shared by the Control Plane, SDKs, controllers, Sidecars, gateways, and supporting runtimes. Generated Java, Go, and Rust entry points reduce contract drift across repositories.
+Specification (`pole-io/specification`) is the cross-component contract layer. It defines messages and gRPC interfaces; it does not run the control plane. `pole-control-plane` is the primary server implementation. SDKs, Pole Sidecar, Controllers, and protocol adapters consume the same wire contract.
 
-## Scope
+![specification protocol map](/diagrams/specification-protocol-map.svg)
 
-- Service discovery and configuration protocol messages.
-- Governance rule structures and release metadata.
-- Authentication and managed service-identity contracts.
-- MCP and AI Native resource definitions where they belong in the shared model.
+## Role in the product
 
-## Design rule
+| Role | Responsibility |
+| --- | --- |
+| Specification | `api/v1` protobuf, error codes, Discover/Config request types, governance release enums |
+| Control Plane | Server implementation, storage, cache, auth, multi-protocol entry points |
+| SDK / Sidecar / Controller | Clients or data planes that speak the contract |
 
-The specification is a compatibility contract, not proof that every runtime implements every field. Each component must document the subset it consumes and its behavior for unknown or unsupported values.
+A field existing in the contract does not prove every runtime implements it. Check the target component docs for the capability matrix.
 
-Changes should preserve wire compatibility, regenerate affected language artifacts, and update consumers in a controlled sequence.
+## Modules
+
+| Directory | Contents |
+| --- | --- |
+| `api/v1/model` | Namespace, shared types, responses, error codes |
+| `api/v1/service_manage` | Services, instances, clients, contracts, heartbeat, `DiscoverGRPC` |
+| `api/v1/config_manage` | Config files and `ConfigGRPC` |
+| `api/v1/traffic_manage` | Route, rate limit, lane, lossless, mirror, mock (+ rate-limit gRPC) |
+| `api/v1/fault_tolerance` | Circuit breaker, fault detector |
+| `api/v1/security` | Management auth, traffic security, workload credentials |
+| `api/v1/ai` | MCP server/tool model (`mcp.proto`) |
+
+Nine governance release types align with the product: Route, RateLimit, CircuitBreaker, FaultDetect, Lane, Lossless, TrafficSecurity, TrafficMirror, TrafficMock.
+
+## Protocol entry points
+
+| Contract | Purpose | Default control-plane port |
+| --- | --- | ---: |
+| `DiscoverGRPC` | Register/discover instances and pull rules/contracts | 8091 |
+| `ConfigGRPC` | Create/update/publish/discover configuration | 8093 |
+| `WorkloadCredentialService` | Issue/renew workload credentials (separate from admin auth) | deployment-defined |
+| MCP proto | Server/Tool model; management APIs live on control-plane HTTP | 8090 / MCP SSE |
+
+## AI Native boundary
+
+- `mcp.proto` defines MCP registration metadata, not an execution engine.
+- A2A appears mainly via auth resource enums; full registry APIs live in the control plane.
+- Do not describe Specification as an agent runtime.
+
+## Multi-language consumption
+
+| Language | Build entry | Version fact |
+| --- | --- | --- |
+| Go | `cd source/go && bash build.sh` | Go 1.19; module `github.com/pole-io/specification` |
+| Rust | `cd source/rust && bash build.sh` | crate `pole-specification` `0.1.0` |
+| Java | README still mentions `source/java` | **No Java sources in the current repo**; do not treat `v1.3.0` as a verified release |
+
+Root `VERSION` is `0.1.0`. Prefer repository facts over historical README examples.
+
+## Further reading
+
+- [Control-plane assembly](/en/docs/principles/architecture)
+- [Rust SDK](/en/docs/components/rust-sdk)
+- [Concepts](/en/docs/what-is/concepts)

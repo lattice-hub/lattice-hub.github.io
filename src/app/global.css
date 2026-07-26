@@ -67,6 +67,13 @@ nextjs-portal,
   font-family: "Segoe UI Variable", "Segoe UI", -apple-system, BlinkMacSystemFont, "Noto Sans SC", sans-serif;
 }
 
+.site-shell--chrome {
+  min-height: 0;
+  overflow: visible;
+  background: transparent;
+  color: inherit;
+}
+
 .site-shell .container {
   width: min(var(--container), calc(100% - var(--gutter) * 2));
   margin-inline: auto;
@@ -75,8 +82,12 @@ nextjs-portal,
 .site-shell .topnav {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 40;
   border-bottom: 1px solid var(--border-subtle);
+  background: var(--page);
+}
+
+.site-shell--chrome .topnav {
   background: var(--page);
 }
 
@@ -170,6 +181,12 @@ nextjs-portal,
 }
 
 .drawer-github {
+  min-height: 44px;
+}
+
+.drawer-lang {
+  display: flex;
+  align-items: center;
   min-height: 44px;
 }
 

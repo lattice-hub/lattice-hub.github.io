@@ -23,3 +23,37 @@ export function getDocsUrl(locale: DocsLocale, slugs: string[] = []): string {
   const baseUrl = locale === 'en' ? '/en/docs' : '/docs';
   return slugs.length > 0 ? `${baseUrl}/${slugs.join('/')}` : baseUrl;
 }
+
+export function getDocsLocaleFromPathname(pathname: string): DocsLocale | null {
+  const path = pathname.replace(/\/+$/, '') || '/';
+
+  if (path === '/en/docs' || path.startsWith('/en/docs/')) {
+    return 'en';
+  }
+
+  if (path === '/docs' || path.startsWith('/docs/')) {
+    return 'zh-CN';
+  }
+
+  return null;
+}
+
+export function getDocsAlternateHrefs(pathname: string): {
+  locale: DocsLocale;
+  zhHref: string;
+  enHref: string;
+} | null {
+  const locale = getDocsLocaleFromPathname(pathname);
+  if (!locale) return null;
+
+  const path = pathname.replace(/\/+$/, '') || '/';
+  const slugPath =
+    locale === 'en' ? path.replace(/^\/en\/docs\/?/, '') : path.replace(/^\/docs\/?/, '');
+  const slugs = slugPath.length > 0 ? slugPath.split('/').filter(Boolean) : [];
+
+  return {
+    locale,
+    zhHref: getDocsUrl('zh-CN', slugs),
+    enHref: getDocsUrl('en', slugs),
+  };
+}

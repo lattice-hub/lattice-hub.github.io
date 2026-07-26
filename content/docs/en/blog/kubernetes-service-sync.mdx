@@ -1,12 +1,28 @@
 ---
-title: Synchronizing Kubernetes Service into Lattice Hub
-description: Compare full, selective, and annotation-driven synchronization models.
+title: Synchronizing Kubernetes Services into Lattice Hub
+description: Full sync, demand sync, annotations, and service aliases.
 ---
 
-Kubernetes Service synchronization answers three questions: what is authoritative, how names map to Lattice Hub environments and services, and how multiple clusters avoid ownership conflicts.
+The Kubernetes Controller brings cluster Services into Lattice Hub. The hard questions are which Services to sync, how names map, and how aliases stay understandable.
 
-Full synchronization offers broad visibility but can import resources that do not need governance. Selective synchronization reduces noise but requires an explicit allowlist. Annotation-driven synchronization keeps intent near the workload while adding policy and validation requirements.
+## Sync modes
 
-Whichever mode is selected, endpoint churn should update the same logical service rather than create unstable identities. Deletion must be reconciled explicitly, and controller restart should converge without duplicating records.
+- `all`: synchronize Services broadly—simple, but noisy on shared clusters.
+- `demand`: opt-in with Namespace/Service annotations—better for progressive adoption.
 
-Begin with one namespace, test lifecycle events, and only then expand the synchronization boundary.
+## Annotations
+
+| Annotation | Purpose |
+| --- | --- |
+| `polarismesh.cn/sync` | `true` / `false` |
+| `polarismesh.cn/aliasService` | Alias service name on sync |
+| `polarismesh.cn/aliasNamespace` | Alias Namespace |
+
+## Namespace semantics
+
+A control-plane Namespace is an **environment**, not “every Kubernetes Namespace is a tenant”. Map cluster namespaces onto business names, then into `dev`/`prod` environments.
+
+## Related docs
+
+- [Kubernetes integration practice](/en/docs/practices/kubernetes-sync)
+- [Kubernetes Controller](/en/docs/components/kubernetes-controller)

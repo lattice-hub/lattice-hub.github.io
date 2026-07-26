@@ -1,21 +1,30 @@
 ---
 title: Pole Sidecar
-description: Pole Sidecar is a lightweight data-plane skeleton implemented with Pingora.
+description: Pingora-based lightweight data-plane skeleton for local HTTP/gRPC forwarding.
 ---
 
-Pole Sidecar is Lattice Hub’s local data-plane component. The current implementation uses Pingora, reads TOML configuration, and supports HTTP/1.1, HTTP/2, and gRPC-h2c forwarding.
+Pole Sidecar is Lattice Hub’s lightweight data-plane direction. It uses TOML config, supports HTTP and gRPC forwarding, and keeps interceptor extension points. Facts still come from control-plane active views.
 
-## Current capability
+![sidecar data plane](/diagrams/sidecar-data-plane.svg)
 
-- Inbound HTTP and HTTP/2 traffic, including gRPC-h2c.
-- Prefix and gRPC-path routing to configured upstream clusters.
-- Simple round-robin load balancing.
-- Request and upstream interceptor extension points.
+## Current capabilities
 
-## Capability boundary
+- Inbound HTTP/1.1 and HTTP/2 including gRPC-h2c
+- Route by `grpc_prefix` then `prefix`
+- Round-robin load balancing in the sample path
+- Request/upstream interceptor hooks for ACL, limiting, breaking, and metrics
 
-Pole Sidecar is currently a lightweight proxy skeleton, not a complete service mesh. Dynamic governance delivery, richer policy execution, TLS modes, and production-grade observability must be described according to their implemented status.
+## Quick start
 
-The product name is **Pole Sidecar**; Pingora is its current implementation framework. The existing `pingora-sidecar` documentation slug remains stable for compatibility.
+```bash
+cargo build
+RUST_LOG=info cargo run
+SIDECAR_CONFIG=./sidecar.toml RUST_LOG=debug cargo run
+```
 
-Read [Pole Sidecar data-plane practices](/en/docs/practices/sidecar-data-plane) and the [Pole Sidecar roadmap](/en/docs/blog/pingora-sidecar).
+Requires Rust `1.74+`.
+
+## Further reading
+
+- [Pole Sidecar data plane practice](/en/docs/practices/sidecar-data-plane)
+- [Sidecar roadmap essay](/en/docs/blog/pingora-sidecar)

@@ -1,23 +1,38 @@
 ---
 title: Kubernetes Controller
-description: Synchronize Kubernetes services and coordinate Pole Sidecar or proxy injection with Lattice Hub.
+description: Synchronize Kubernetes Services and inject Pole Sidecar.
 ---
 
-Kubernetes Controller connects cluster resources to the Lattice Hub control-plane model. Its two primary jobs are resource synchronization and runtime injection.
+The Kubernetes Controller connects clusters to Lattice Hub through Service sync and Sidecar injection.
 
-## Resource synchronization
+## Sync modes
 
-The controller maps Kubernetes `Service`, `Endpoints`, `Namespace`, and selected `ConfigMap` resources into control-plane records. Deployments can choose full or selective synchronization and use annotations to control aliases and integration behavior.
+- `all`: synchronize Services broadly
+- `demand`: opt-in via annotations (preferred for shared production clusters)
 
-## Runtime injection
+## Annotations
 
-The controller can coordinate Pole Sidecar, Java Agent, or Envoy injection according to deployment configuration. Injection is a deployment mechanism; it does not guarantee that the injected runtime supports every governance policy.
+| Annotation | Purpose |
+| --- | --- |
+| `polarismesh.cn/sync` | `true` / `false` |
+| `polarismesh.cn/aliasService` | Alias service name |
+| `polarismesh.cn/aliasNamespace` | Alias namespace |
 
-## Operational guidance
+## Deploy
 
-- Define namespace and naming mappings before enabling synchronization.
-- Use deterministic ownership to avoid multiple clusters overwriting the same logical service.
-- Treat deletion, resync, and transient API errors as explicit reconciliation states.
-- Verify the connected runtime separately from the controller’s resource-sync health.
+```bash
+make build
+cd deploy/kubernetes_v1.22/kubernetes && bash install.sh
+```
 
-See [Kubernetes integration](/en/docs/practices/kubernetes-sync) for rollout guidance.
+Helm charts live under `deploy/kubernetes_v1.22/helm`. Configure control-plane host/token before install.
+
+## Injection
+
+- `dns`: DNS interception
+- `mesh`: traffic hijack with deeper governance
+
+## Further reading
+
+- [Kubernetes integration practice](/en/docs/practices/kubernetes-sync)
+- [Service sync model](/en/docs/blog/kubernetes-service-sync)

@@ -1,18 +1,78 @@
 ---
 title: Kubernetes integration
-description: Synchronize Kubernetes services without duplicating the control-plane domain model.
+description: Practice guide for Service sync modes, annotations, aliases, and Sidecar injection with pole-controller.
 ---
 
-Kubernetes integration should translate cluster resources into Lattice Hub resources rather than create a second service-governance model.
+Kubernetes integration maps cluster Services and annotations into control-plane resources. SDKs and Pole Sidecar then consume the same governance semantics.
 
-## Decisions to make first
+## Deploy the controller
 
-- Which clusters and namespaces are authoritative?
-- Is synchronization full, selective, or annotation-driven?
-- How are Kubernetes names mapped to logical services and environments?
-- Who owns deletion and conflict resolution?
-- Which runtime, if any, will be injected into application Pods?
+```bash
+make build
 
-Start with a limited namespace and verify create, update, endpoint churn, deletion, and controller restart behavior. Resource synchronization and Pole Sidecar health are separate signals and should be monitored independently.
+# static manifests
+cd deploy/kubernetes_v1.22/kubernetes && bash install.sh
 
-Read the [Kubernetes Controller](/en/docs/components/kubernetes-controller) component guide for its current boundary.
+# or Helm
+cd deploy && sh init_helm.sh
+cd kubernetes_v1.22/helm && helm upgrade -i pole-controller .
+```
+
+Configure control-plane address and token (`deploy/variables.txt`), then verify pods in `polaris-system`. The controller must reach Control Plane HTTP/gRPC ports.
+
+## Sync modes
+
+| Mode | Behavior | Best for |
+| --- | --- | --- |
+| `all` | Sync Services broadly | Small clusters, fast catalog unification |
+| `demand` | Opt-in via annotations | Shared production clusters |
+
+Prefer `demand` in shared production clusters to avoid system noise in the governance catalog.
+
+## Annotations
+
+| Annotation | Purpose |
+| --- | --- |
+| `polarismesh.cn/sync` | `true` / `false` |
+| `polarismesh.cn/aliasService` | Alias service name |
+| `polarismesh.cn/aliasNamespace` | Alias namespace |
+
+Example:
+
+```yaml
+metadata:
+  annotations:
+    polarismesh.cn/sync: "true"
+    polarismesh.cn/aliasService: "orders-api"
+    polarismesh.cn/aliasNamespace: "prod"
+```
+
+Document alias conventions so names do not collide with real services during incident response.
+
+## Namespace mapping
+
+Control-plane Namespace means **environment**, not “every Kubernetes Namespace is a tenant”. Common pattern: map cluster namespaces to business names, then land them in `dev`/`prod` environments. Keep `pole-system` out of business catalogs.
+
+## Sidecar injection
+
+| Mode | Notes |
+| --- | --- |
+| `dns` | DNS interception; lower intrusion |
+| `mesh` | Traffic hijack; deeper governance |
+
+Before inject: active releases exist, image/arch match the cluster, readiness probes do not fight lossless rules.
+
+## Checklist
+
+- [ ] Controller can reach Control Plane
+- [ ] Sync mode matches cluster scale
+- [ ] Annotation/alias conventions are documented
+- [ ] Console shows synced services
+- [ ] SDK or Sidecar can discover them
+- [ ] Injection (if enabled) preserves readiness and releases
+
+## Deeper reading
+
+- [Kubernetes Controller](/en/docs/components/kubernetes-controller)
+- [Service sync model](/en/docs/blog/kubernetes-service-sync)
+- [Pole Sidecar data plane](/en/docs/practices/sidecar-data-plane)

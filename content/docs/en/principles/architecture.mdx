@@ -3,43 +3,65 @@ title: Control-plane assembly
 description: The real pole-control-plane runtime structure across bootstrap, API plugins, domain servers, caches, and storage.
 ---
 
-`pole-control-plane` is assembled as an ordered set of domain services rather than a single HTTP CRUD application. Startup enters `bootstrap.Start`, then initializes storage, caches, authorization, namespaces, discovery, governance, configuration, operations, and protocol servers.
+`pole-control-plane` is not a single HTTP CRUD service. Startup enters `bootstrap.Start` from `cmd/start.go`, then `bootstrap/server.go` assembles storage, cache, authorization, namespaces, discovery, governance, configuration, operations, and API servers in dependency order.
+
+Protocol adapters can grow horizontally, but business capabilities reuse shared `service.DiscoverServer`, `goverrule.GoverRuleServer`, `config.ConfigCenterServer`, `admin.AdminOperateServer`, and `cache.CacheManager`.
 
 ## Startup order
 
-The bootstrap sequence matters because later services depend on initialized interfaces and caches:
+`bootstrap.StartComponents` matters:
 
-1. Load and validate runtime configuration.
-2. Initialize the selected storage implementation.
-3. Create cache managers and resource caches.
-4. Initialize access control and namespace services.
-5. Assemble discovery, configuration, and governance servers.
-6. Register operations and AI Registry modules.
-7. Start HTTP, gRPC, xDS, and compatible protocol plugins.
+1. Obtain the store from `storeapi.GetStore()`.
+2. `cache.Initialize` creates `CacheManager` and registers service, instance, governance, config, user, policy, MCP server, and A2A agent caches.
+3. `auth.Initialize` prepares user and strategy services required by auth interceptors.
+4. `namespace.Initialize` builds the namespace service.
+5. `StartDiscoverComponents` initializes discovery, batch controllers, health checks, and `service.Initialize`.
+6. `StartGoverRuleComponents` initializes governance servers.
+7. `StartConfigCenterComponents` initializes the configuration center.
+8. `admin.Initialize` assembles operations modules.
+9. `cache.Run` starts warm-up and periodic refresh.
+
+Business servers and cache objects are fully assembled before refresh loops start, so API servers serve already-initialized shared objects.
+
+![control plane startup](/diagrams/control-plane-startup.svg)
 
 ## API servers are plugin slots
 
-Protocol servers live under `plugin/apiserver/*` and register themselves through plugin interfaces. HTTP, gRPC, xDS, Nacos, Apollo, Eureka, MCP, and A2A adapters translate external requests into shared domain operations.
+Slots under `apis/apiserver` register HTTP, discovery gRPC, xDS v3, Nacos, Apollo, and Eureka entry points. `bootstrap.StartServers` walks `apiserver.Config`, initializes each slot, and runs listeners in goroutines.
 
-The protocol layer should not duplicate authorization or business rules. It extracts transport context, maps payloads, calls a domain server, and maps the response back to the protocol.
+HTTP `Run` pulls already-initialized domain servers (`admin`, `namespace`, `service`, `goverrule`, auth, healthcheck). HTTP is transport and routing—not an independent business state owner.
+
+![api shared servers](/diagrams/api-shared-servers.svg)
 
 ## Domain interceptors
 
-Domain servers use registered proxy factories for cross-cutting behavior. `GetChainOrder()` currently places `auth` before `paramcheck`; `InitServer` wraps the concrete server in that order.
+Discovery and governance share the same pattern:
 
-This makes authorization and parameter validation consistent across protocol entry points while keeping domain methods testable.
+- `RegisterServerProxy` registers proxy factories.
+- `GetChainOrder()` returns `["auth", "paramcheck"]`.
+- `InitServer` wraps the concrete server in that order.
+
+Authorization and parameter checks stay out of every protocol handler and remain consistent across HTTP, gRPC, and xDS.
+
+![interceptor chain](/diagrams/interceptor-chain.svg)
 
 ## Module boundaries
 
 | Layer | Main entry | Responsibility |
 | --- | --- | --- |
 | Bootstrap | `bootstrap/server.go` | Dependency-ordered assembly and lifecycle. |
-| Protocols | `plugin/apiserver/*` | Transport and ecosystem compatibility. |
-| Discovery | `pkg/service` | Services, instances, contracts, reporting, and discovery responses. |
-| Governance | `pkg/goverrule` | Routing, limiting, breaking, detection, lanes, lossless lifecycle, security, mirror, and Mock. |
-| Configuration | `pkg/config` | Groups, files, publishing, and protocol adapters. |
-| Authorization | `apis/access_control/auth`, `plugin/access_control/auth` | Users, policies, resource checks, and permissions. |
-| Cache | `pkg/cache` | Incremental views, active releases, force refresh, and AI registries. |
-| Storage | `plugin/store/mysql` | CRUD, revisions, releases, incremental queries, and transactions. |
+| Protocols | `plugin/apiserver/*` | HTTP, gRPC, xDS, Nacos, Apollo, Eureka, MCP/A2A adapters. |
+| Discovery | `pkg/service` | Services, instances, contracts, reporting, discovery responses. |
+| Governance | `pkg/goverrule` | Nine governance families and releases. |
+| Configuration | `pkg/config` | Groups, files, publishing, protocol adapters. |
+| Authorization | `apis/access_control/auth`, `plugin/access_control/auth` | Users, policies, resource checks. |
+| Cache | `pkg/cache` | Incremental views, active releases, AI registries. |
+| Storage | `plugin/store/mysql` | CRUD, releases, incremental queries, transactions. |
 
-The architecture keeps the Control Plane out of the synchronous application traffic path. SDKs and data planes consume published views and execute the capabilities they support.
+## Design implications
+
+- Do not draw the control plane as “one HTTP API in front of a database”.
+- API servers adapt protocols; domain servers own semantics; interceptors enforce cross-cutting rules; CacheManager serves low-latency reads; Store is the source of truth.
+- AI Native registries join the same cache and HTTP assembly path—they are not a side UI.
+
+See also [deployment and ports](/en/docs/guides/server-install) and [Control Plane](/en/docs/components/control-plane).

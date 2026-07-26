@@ -1,30 +1,237 @@
 ---
 title: 服务端安装
-description: Lattice Hub Control Plane 的服务端部署入口与最小检查项。
+description: 基于 pole-control-plane 真实部署路径，安装 Control Plane、初始化 MySQL，并验证 Console 与协议入口。
 ---
 
-服务端安装的目标是拉起 Control Plane、存储依赖和控制台入口，让服务发现、配置中心、治理规则和 AI Registry 都能进入同一个控制面。
+本指南覆盖本地二进制 / `go run` 与本地 Kubernetes 两种路径。命令与端口来自 `pole-control-plane` 仓库的 `AGENTS.md`、`deploy/conf/*` 与 `deploy/kubernetes/README.md`，不虚构 Helm Chart 或不存在的一键脚本。
 
-## 最小组成
+![deployment architecture](/diagrams/deployment-architecture.svg)
 
-- Control Plane：提供 HTTP、gRPC、xDS、Nacos、Apollo、Eureka 等入口。
-- Store：当前文档以 MySQL 配置事实为主，控制面缓存从 store 增量刷新。
-- Console：平台团队的可视化管理入口。
-- CacheManager：后台刷新服务、实例、规则、配置和 AI Registry 等缓存对象。
+## 你将得到什么
 
-## 安装检查
+安装完成后应具备：
 
-| 检查项 | 目标 |
+- Console：`http://127.0.0.1:8080`
+- HTTP API：`8090`
+- Discovery gRPC：`8091`
+- Config gRPC：`8093`
+- xDS v3：`15010`
+- 兼容入口（按配置启用）：Eureka `8761`、Nacos `8848`、Apollo `8890`
+
+## 前置条件
+
+| 依赖 | 要求 |
 | --- | --- |
-| API Server | HTTP / gRPC 入口可访问，控制面能完成初始化。 |
-| Store | 数据库连接池配置生效，初始化表结构可读写。 |
-| Cache | 后台缓存刷新协程启动，增量查询时间窗正常。 |
-| Console | 能登录并进入服务、配置、治理和权限页面。 |
-| 观测 | History、DiscoverEvent、Statis 或 OTel 边界按需开启。 |
+| Go | 可执行 `make build` / `go run` |
+| Node.js + npm | 构建 Console 前端静态资源（`console/web/dist`） |
+| MySQL | 可连接；需创建 `pole_server` 与 `pole_observability` |
+| Docker（可选） | 本地 K8s 镜像构建或观测栈 |
+| kubectl（可选） | 本地 Kubernetes 部署 |
+
+推荐环境变量（本地示例值，生产请替换）：
+
+```bash
+export MYSQL_USER=root
+export MYSQL_PWD='your-password'
+export MYSQL_HOST=127.0.0.1:3306
+export POLE_CONSOLE_JWT_SECRET='replace-with-console-jwt-secret'
+export POLE_AUTH_SALT='1234567890123456'   # 长度必须是 16 / 24 / 32
+export POLE_SYSTEM_SECRET_MASTER_KEY='replace-with-32-byte-master-key'
+```
+
+## 1. 准备数据库
+
+在 MySQL 中初始化业务库：
+
+```bash
+mysql -h127.0.0.1 -uroot -p < plugin/store/mysql/scripts/pole_server.sql
+```
+
+该 SQL 会创建 `pole_server`，并种子命名空间 `pole-system`、`default`。**不会**预置管理员账号。
+
+再创建观测库：
+
+```sql
+CREATE DATABASE IF NOT EXISTS pole_observability
+  DEFAULT CHARACTER SET utf8mb4
+  DEFAULT COLLATE utf8mb4_bin;
+```
+
+把 `deploy/conf/pole-server.yaml` 中的 MySQL 占位或环境变量替换为真实连接信息。业务库 DSN 形态：
+
+```text
+${MYSQL_USER}:${MYSQL_PWD}@tcp(${MYSQL_HOST})/pole_server?loc=Local
+```
+
+Console 观测库使用 `bootstrap.console.store.option.master`：`dbName=pole_observability`。
+
+## 2. 本地构建并启动（推荐先走这条）
+
+在 `pole-control-plane` 根目录：
+
+```bash
+make build
+```
+
+`make build` 会调用 `deploy/build.sh`，产出 `pole-server` 发布物，并把 SQL 打进 release 包。
+
+一键重建并启动（脚本内会处理前后端构建与启动编排）：
+
+```bash
+MYSQL_USER=root MYSQL_PWD='your-password' MYSQL_HOST=127.0.0.1:3306 \
+  ./scripts/rebuild-start-all.sh
+```
+
+后台运行：
+
+```bash
+MYSQL_USER=root MYSQL_PWD='your-password' MYSQL_HOST=127.0.0.1:3306 \
+  ./scripts/rebuild-start-all.sh --detach
+```
+
+或直接启动：
+
+```bash
+MYSQL_USER=root MYSQL_PWD='your-password' MYSQL_HOST=127.0.0.1:3306 \
+  go run . start -c ./deploy/conf/pole-server.yaml --mode all
+```
+
+`--mode` 取值：
+
+| 模式 | 作用 |
+| --- | --- |
+| `all` | Control Plane + 内嵌 Console（默认本地体验） |
+| `server` | 仅控制面 API / 协议入口 |
+| `console` | 仅 Console 网关，通过网络访问 `poleServer.address` |
+
+## 3. 关键配置文件
+
+主配置：`deploy/conf/pole-server.yaml`  
+API 端口：`deploy/conf/pole-apiserver.yaml`  
+日志：`deploy/conf/pole-log.yaml`
+
+至少确认这些字段：
+
+| 字段 | 说明 |
+| --- | --- |
+| `bootstrap.mode` | `all` / `server` / `console` |
+| `bootstrap.console.webServer.listenPort` | Console 端口，默认 `8080` |
+| `bootstrap.console.webServer.jwt.secretKey` | Console JWT，可用 `POLE_CONSOLE_JWT_SECRET` 覆盖 |
+| `bootstrap.console.webPath` | 前端产物路径，默认 `console/web/dist/` |
+| `bootstrap.console.poleServer.address` | Console 反代目标，默认 `127.0.0.1:8090` |
+| `bootstrap.console.systemSecrets.masterKey` | 系统密钥主密钥 |
+| `auth.user.option.salt` | 认证 salt，长度 16/24/32 |
+| `store.option.master.dns` | 业务库 MySQL DSN |
+| `apiservers` | 指向 `pole-apiserver.yaml` |
+
+Pole Agent 仅在 LLM Gateway `baseURL` 与 API key 解析为非空时可用；未配置时不影响控制面主链路。
+
+## 4. 首次初始化管理员
+
+控制面**没有**代码内硬编码默认管理员密码。首次打开 Console：
+
+1. 访问 `http://127.0.0.1:8080`
+2. 若主账号不存在，进入 `/init-admin`
+3. 创建主账号（配置里的 `mainUser` 默认标签为 `pole`，这是期望名，不是密码）
+
+健康探活可使用：
+
+```bash
+curl -fsS http://127.0.0.1:8080/admin/v1/server/functions
+curl -fsS http://127.0.0.1:8090/admin/v1/server/functions
+```
+
+仓库未提供独立 `/health` 路径；Kubernetes 清单以 `/admin/v1/server/functions` 作为 readiness/liveness。
+
+## 5. 本地 Kubernetes 部署
+
+适用已有 OrbStack / 本地集群，且宿主机 MySQL 可被 Pod 访问的场景。仓库提供静态清单，**没有 Helm Chart**。
+
+```bash
+./deploy/kubernetes/build-image.sh
+
+MYSQL_USER=root MYSQL_PWD='your-password' \
+POLE_CONSOLE_JWT_SECRET='replace-with-local-console-secret' \
+POLE_AUTH_SALT='1234567890123456' \
+  ./deploy/kubernetes/deploy-local.sh
+```
+
+验证：
+
+```bash
+kubectl -n pole-system get pods,svc
+kubectl -n pole-system logs deployment/pole-control-plane --tail=100
+```
+
+本地域名（依赖集群内 Gateway 与 HTTPRoute）：
+
+```text
+http://pole.localhost/
+```
+
+排障时可 port-forward：
+
+```bash
+kubectl -n pole-system port-forward service/pole-control-plane 18080:8080 18090:8090
+```
+
+## 6. 可选观测栈
+
+`deploy/observability/docker-compose.yaml` 只拉起 GreptimeDB 与 OTel Collector，**不包含** Control Plane。按需：
+
+```bash
+cd deploy/observability && docker compose up -d
+```
+
+并保证 `bootstrap.console.observabilityQuery` 指向可访问的 GreptimeDB。
+
+## 安装检查表
+
+| 检查项 | 期望结果 |
+| --- | --- |
+| MySQL | `pole_server`、`pole_observability` 可读写 |
+| Console | 能打开页面并完成主账号初始化 |
+| HTTP API | `8090` 可访问 admin/naming/config 路由 |
+| gRPC | SDK 能连 `8091` / `8093` |
+| Cache | 日志显示 CacheManager warm-up / 周期刷新 |
+| Auth | 未授权写操作被拒绝；salt/JWT 已替换为部署密钥 |
+| 观测（可选） | Collector / GreptimeDB 连通，平台监控页有数据 |
+
+## 常见问题
+
+**Console 打不开，但进程在跑**  
+确认 `console/web/dist` 已构建，且 `webPath` 指向该目录。
+
+**CrashLoop / 连不上数据库**  
+先检查 MySQL 是否监听、库是否创建、DSN 用户密码是否匹配。K8s 场景还要确认 `host.docker.internal:3306` 可达。
+
+**忘记主账号密码**  
+没有内置重置口令文档流程时，需按运维规范在 auth 存储中处理；不要假设存在默认 `admin/admin123`。
+
+**`make build-docker` 失败**  
+当前仓库以 `deploy/kubernetes/build-image.sh` 为 K8s 镜像构建入口；不要依赖缺失的 `deploy/build_docker.sh`。
+
+**SDK 连不上发现/配置**  
+确认连的是 gRPC 端口 `8091` / `8093`，而不是 Console `8080` 或 HTTP API `8090`。
+
+**平台监控无数据**  
+先确认控制面主链路（Console/API/缓存）正常，再检查 `deploy/observability` 或 GreptimeDB / Collector 是否部署。观测栈缺失不等于控制面失败。
+
+**鉴权 salt / JWT 报错**  
+`POLE_AUTH_SALT` 长度必须是 16、24 或 32；生产环境务必替换示例密钥。
+
+## 排障顺序
+
+![observability ops map](/diagrams/observability-ops-map.svg)
+
+1. 进程是否监听预期端口（8080/8090/8091/8093）。
+2. MySQL 两个库是否可读写，CacheManager 是否 warm-up。
+3. 资源是否已发布为 active（客户端读不到草稿）。
+4. 调用方身份与策略是否允许该操作。
+5. 观测栈与客户端地址是否部署/配置正确。
 
 ## 下一步
 
-- 看 [控制面装配架构](/docs/principles/architecture) 理解启动链路。
-- 看 [Control Plane](/docs/components/control-plane) 理解核心职责。
-- 看 [性能数据报告](/docs/reports/performance) 理解当前已确认配置事实。
-
+- [控制台使用](/docs/guides/console-use)：完成服务、配置与治理发布。
+- [控制面装配架构](/docs/principles/architecture)：理解启动顺序与模块边界。
+- [Control Plane 组件](/docs/components/control-plane)：查看能力清单与工程事实。

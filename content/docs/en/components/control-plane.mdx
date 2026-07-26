@@ -1,27 +1,40 @@
 ---
 title: Control Plane
-description: The core Lattice Hub component for service discovery, configuration, governance, authorization, and AI Native registries.
+description: Core Lattice Hub control plane for discovery, configuration, governance, and AI Native registries.
 ---
 
-The Control Plane owns the shared domain model and exposes it through HTTP, gRPC, xDS, Nacos, Apollo, and Eureka-compatible entry points. It keeps management writes separate from the published views consumed by clients and data planes.
+The Control Plane owns APIs, domain logic, caches, and storage, and exposes HTTP, gRPC, xDS, Nacos, Apollo, and Eureka-compatible entry points.
+
+![deployment architecture](/diagrams/deployment-architecture.svg)
 
 ## Responsibilities
 
-- Assemble storage, caches, authorization, namespaces, discovery, configuration, governance, operations, and API servers.
-- Maintain service, instance, configuration, governance release, MCP, and A2A registry resources.
-- Provide incremental in-memory views for low-latency reads.
-- Enforce management permissions before domain operations execute.
-- Publish versioned data for SDKs, controllers, Sidecars, gateways, and compatible clients.
+- Service discovery for namespaces, services, instances, and health.
+- Configuration publishing, progressive delivery, rollback, and watches.
+- Nine governance families with active releases.
+- MCP Registry and A2A Agent Registry in API, cache, store, and Console.
+- Pole Agent with human-confirmed configuration drafts only.
+- Typed system configuration and OTel export into shared GreptimeDB.
+- Fine-grained authorization for management and client APIs.
 
-## Internal layers
+## Default ports
 
-| Layer | Responsibility |
-| --- | --- |
-| `apis/` | Interfaces and protocol-facing contracts. |
-| `pkg/` | Domain services, caches, validation, and authorization interceptors. |
-| `plugin/` | HTTP/gRPC/xDS servers, storage adapters, and access-control implementations. |
-| `bootstrap/` | Ordered assembly and lifecycle management. |
+| Entry | Port |
+| --- | ---: |
+| Console HTTP | 8080 |
+| HTTP API | 8090 |
+| Discovery gRPC | 8091 |
+| Config gRPC | 8093 |
+| xDS v3 | 15010 |
 
-The Control Plane does not sit in the synchronous path of every application request. Traffic policies execute in connected runtimes according to their supported capability set.
+## Confirmed engineering facts
 
-See [control-plane assembly](/en/docs/principles/architecture) and [incremental cache and events](/en/docs/principles/cache-eventhub).
+- Stack includes Go, gRPC, MySQL, go-control-plane, mcp-go, OpenTelemetry, and Pebble.
+- Assembly layers: protocol adapters, domain servers, interceptors, cache, store.
+- Caches refresh about every 1s with a `lastMtime - 5s` overlap window.
+- Modes: `all` / `server` / `console`.
+
+## Deeper reading
+
+- [Control-plane assembly](/en/docs/principles/architecture)
+- [Server installation](/en/docs/guides/server-install)

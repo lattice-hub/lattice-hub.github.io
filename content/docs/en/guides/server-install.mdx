@@ -1,26 +1,133 @@
 ---
 title: Server installation
-description: Deploy the Lattice Hub Control Plane and verify the minimum service, storage, and Console boundaries.
+description: Install the Control Plane from pole-control-plane, initialize MySQL, and verify Console and protocol listeners.
 ---
 
-The server can run the control plane and Console together or as separate processes. A production deployment also needs a persistent MySQL instance and explicit bootstrap configuration.
+This guide covers local binary / `go run` and local Kubernetes paths. Commands and ports come from `AGENTS.md`, `deploy/conf/*`, and `deploy/kubernetes/README.md`. There is no Helm chart for the control plane in that repository.
 
-## Runtime modes
+![deployment architecture](/diagrams/deployment-architecture.svg)
+
+## What you get
+
+- Console: `http://127.0.0.1:8080`
+- HTTP API: `8090`
+- Discovery gRPC: `8091`
+- Config gRPC: `8093`
+- xDS v3: `15010`
+- Compatible listeners when enabled: Eureka `8761`, Nacos `8848`, Apollo `8890`
+
+## Prerequisites
+
+| Dependency | Need |
+| --- | --- |
+| Go | `make build` / `go run` |
+| Node.js + npm | Build Console assets into `console/web/dist` |
+| MySQL | Databases `pole_server` and `pole_observability` |
+| Docker / kubectl | Optional for local Kubernetes and observability |
+
+```bash
+export MYSQL_USER=root
+export MYSQL_PWD='your-password'
+export MYSQL_HOST=127.0.0.1:3306
+export POLE_CONSOLE_JWT_SECRET='replace-with-console-jwt-secret'
+export POLE_AUTH_SALT='1234567890123456'   # length 16 / 24 / 32
+export POLE_SYSTEM_SECRET_MASTER_KEY='replace-with-32-byte-master-key'
+```
+
+## 1. Prepare MySQL
+
+```bash
+mysql -h127.0.0.1 -uroot -p < plugin/store/mysql/scripts/pole_server.sql
+```
+
+This creates `pole_server` and seed namespaces `pole-system` and `default`. It does **not** create an admin user.
+
+```sql
+CREATE DATABASE IF NOT EXISTS pole_observability
+  DEFAULT CHARACTER SET utf8mb4
+  DEFAULT COLLATE utf8mb4_bin;
+```
+
+Business DSN shape:
+
+```text
+${MYSQL_USER}:${MYSQL_PWD}@tcp(${MYSQL_HOST})/pole_server?loc=Local
+```
+
+## 2. Build and start locally
+
+```bash
+make build
+
+MYSQL_USER=root MYSQL_PWD='your-password' MYSQL_HOST=127.0.0.1:3306 \
+  ./scripts/rebuild-start-all.sh
+
+# or
+MYSQL_USER=root MYSQL_PWD='your-password' MYSQL_HOST=127.0.0.1:3306 \
+  go run . start -c ./deploy/conf/pole-server.yaml --mode all
+```
 
 | Mode | Purpose |
 | --- | --- |
-| `all` | Starts the control-plane server and Console gateway in one process. |
-| `server` | Starts only the control-plane APIs and protocol servers. |
-| `console` | Starts only the Console gateway and connects to an existing server over the network. |
+| `all` | Control Plane + embedded Console |
+| `server` | APIs and protocol servers only |
+| `console` | Console gateway only |
 
-The command-line `--mode` value takes precedence over YAML configuration. If no mode is supplied, the current default is `all`.
+## 3. Key configuration
 
-## Minimum validation
+Primary file: `deploy/conf/pole-server.yaml`  
+API ports: `deploy/conf/pole-apiserver.yaml`
 
-1. Confirm MySQL is reachable and the configured database user has the required schema permissions.
-2. Start the selected mode with a reviewed configuration file.
-3. Check the HTTP and gRPC listeners, then open the Console when enabled.
-4. Verify that service discovery, configuration, governance, and AI Registry APIs return authorized responses.
-5. Review logs for bootstrap failures without copying credentials into diagnostics.
+Confirm `bootstrap.mode`, Console JWT/salt/master key, MySQL DSN, `webPath`, and `poleServer.address`. Pole Agent requires a non-empty LLM gateway URL and API key; otherwise the rest of the control plane still works.
 
-For component responsibilities, read [Control Plane](/en/docs/components/control-plane). For the startup sequence and plugin assembly, see [control-plane assembly](/en/docs/principles/architecture).
+## 4. Initialize the main user
+
+There is no hardcoded default admin password. Open the Console, use `/init-admin` when prompted, then sign in.
+
+```bash
+curl -fsS http://127.0.0.1:8080/admin/v1/server/functions
+curl -fsS http://127.0.0.1:8090/admin/v1/server/functions
+```
+
+Kubernetes probes use the same admin functions path; there is no dedicated `/health` endpoint in-tree.
+
+## 5. Local Kubernetes
+
+```bash
+./deploy/kubernetes/build-image.sh
+
+MYSQL_USER=root MYSQL_PWD='your-password' \
+POLE_CONSOLE_JWT_SECRET='replace-with-local-console-secret' \
+POLE_AUTH_SALT='1234567890123456' \
+  ./deploy/kubernetes/deploy-local.sh
+```
+
+Optional observability stack: `deploy/observability/docker-compose.yaml` (GreptimeDB + Collector only).
+
+## Checklist
+
+| Check | Expectation |
+| --- | --- |
+| MySQL | Both databases readable/writable |
+| Console | Page loads; main user created |
+| HTTP / gRPC | `8090` / `8091` / `8093` reachable |
+| Cache | Warm-up and incremental refresh in logs |
+| Secrets | JWT/salt/master key replaced for the environment |
+
+## Troubleshooting order
+
+![observability ops map](/diagrams/observability-ops-map.svg)
+
+1. Confirm listeners on 8080/8090/8091/8093.
+2. Confirm MySQL databases and CacheManager warm-up.
+3. Confirm resources are published active (clients do not read drafts).
+4. Confirm caller identity/policy allows the operation.
+5. Confirm observability stack and client addresses only after the main path works.
+
+Common misses: SDK pointed at Console `8080` instead of gRPC `8091`/`8093`; auth salt length not 16/24/32; platform metrics empty because GreptimeDB/Collector were never deployed.
+
+## Next steps
+
+- [Using the Console](/en/docs/guides/console-use)
+- [Control-plane assembly](/en/docs/principles/architecture)
+- [Control Plane component](/en/docs/components/control-plane)

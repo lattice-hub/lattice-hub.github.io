@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520" role="img" aria-label="Lattice Hub Resource Model Concepts">
+
+<defs>
+  <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#2563eb"/></marker>
+  <marker id="arrow-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#ea580c"/></marker>
+  <marker id="arrow-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#6b7280"/></marker>
+  <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 Z" fill="#059669"/></marker>
+</defs>
+
+<style>
+  .title{font:700 18px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#111827}
+  .caption{font:500 12px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#6b7280}
+  .label{font:600 13px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#111827}
+  .sub{font:500 11px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#6b7280}
+  .tiny{font:500 10px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#6b7280}
+  .group-title{font:700 12px Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Segoe UI",sans-serif;fill:#334155}
+  .box{stroke:#8fb5ff;stroke-width:1.4;fill:#eef5ff;rx:10;ry:10}
+  .box-green{stroke:#34d399;stroke-width:1.4;fill:#ecfdf5;rx:10;ry:10}
+  .box-orange{stroke:#fb923c;stroke-width:1.4;fill:#fff7ed;rx:10;ry:10}
+  .box-purple{stroke:#a78bfa;stroke-width:1.4;fill:#f5f3ff;rx:10;ry:10}
+  .box-gray{stroke:#cbd5e1;stroke-width:1.2;fill:#f8fafc;rx:10;ry:10}
+  .box-white{stroke:#d1d5db;stroke-width:1.2;fill:#ffffff;rx:10;ry:10}
+  .group{stroke:#d7e3f8;stroke-width:1.2;stroke-dasharray:6 5;fill:#fbfdff;rx:14;ry:14}
+  .arrow{stroke:#2563eb;stroke-width:2;fill:none;marker-end:url(#arrow-blue)}
+  .ctrl{stroke:#ea580c;stroke-width:1.7;fill:none;marker-end:url(#arrow-orange)}
+  .async{stroke:#6b7280;stroke-width:1.6;stroke-dasharray:5 4;fill:none;marker-end:url(#arrow-gray)}
+  .read{stroke:#059669;stroke-width:1.7;fill:none;marker-end:url(#arrow-green)}
+</style>
+
+<rect width="960" height="520" fill="#ffffff"/>
+<text x="40" y="36" class="title">核心资源模型</text>
+<text x="40" y="58" class="caption">Namespace 是运行环境边界；配置与治理走发布链，服务与 Registry 走注册发现链</text>
+
+<!-- Namespace -->
+<rect x="40" y="90" width="880" height="390" class="group"/>
+<text x="60" y="118" class="group-title">Namespace（运行环境，不是租户）</text>
+
+<!-- Discovery lane -->
+<rect x="70" y="140" width="400" height="200" class="box-white"/>
+<text x="90" y="168" class="label">注册发现链路</text>
+<rect x="90" y="190" width="160" height="50" class="box"/>
+<text x="170" y="220" text-anchor="middle" class="sub">Service</text>
+<rect x="280" y="190" width="160" height="50" class="box"/>
+<text x="360" y="220" text-anchor="middle" class="sub">Instance</text>
+<rect x="90" y="260" width="160" height="50" class="box-purple"/>
+<text x="170" y="290" text-anchor="middle" class="sub">MCP Server</text>
+<rect x="280" y="260" width="160" height="50" class="box-purple"/>
+<text x="360" y="290" text-anchor="middle" class="sub">A2A Agent</text>
+<path d="M250,215 L280,215" class="arrow"/>
+
+<!-- Release lane -->
+<rect x="500" y="140" width="390" height="200" class="box-white"/>
+<text x="520" y="168" class="label">发布链路（配置 / 治理）</text>
+<rect x="520" y="190" width="100" height="50" class="box-orange"/>
+<text x="570" y="220" text-anchor="middle" class="sub">草稿</text>
+<rect x="650" y="190" width="100" height="50" class="box"/>
+<text x="700" y="220" text-anchor="middle" class="sub">版本</text>
+<rect x="780" y="190" width="90" height="50" class="box-green"/>
+<text x="825" y="220" text-anchor="middle" class="sub">Active</text>
+<path d="M620,215 L650,215" class="arrow"/>
+<path d="M750,215 L780,215" class="arrow"/>
+<text x="520" y="280" class="tiny">Config File Release · Governance Rule Release</text>
+<text x="520" y="304" class="tiny">支持灰度、回滚、停止灰度、历史审计</text>
+
+<!-- Consumers -->
+<rect x="70" y="370" width="820" height="80" class="box-green"/>
+<text x="480" y="402" text-anchor="middle" class="label">运行时视图：revision / active release / Registry 目录</text>
+<text x="480" y="426" text-anchor="middle" class="sub">SDK · Pole Sidecar · Controller · xDS · 协议适配层 · Pole Agent（只读/草稿）</text>
+</svg>

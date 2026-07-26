@@ -1,19 +1,48 @@
 ---
 title: Rust SDK
-description: A proxyless service-governance integration for Rust applications.
+description: Use pole_rust for proxyless discovery, configuration, and governance.
 ---
 
-The Rust SDK connects an application directly to Lattice Hub without requiring a local data-plane proxy. It is appropriate when a Rust service wants low-hop discovery and governance decisions inside the process.
+The Rust SDK (`pole_rust`) connects applications to Lattice Hub without a data-plane proxy. Clients talk to discovery and config gRPC ports and evaluate routing/load-balancing locally.
 
-## Integration model
+## Install
 
-The SDK discovers control-plane endpoints, consumes service and governance views, maintains local state, and exposes runtime decisions to the application integration layer. Production deployments should use authenticated and encrypted control-plane transport.
+```toml
+[dependencies]
+pole_rust = "0.2.0"
+```
 
-## Trade-offs
+Requires Rust `>= 1.63.0`.
 
-- Proxyless execution avoids an additional network hop.
-- Policy behavior and observability must be implemented and upgraded in the SDK.
-- Application integration is language-specific.
-- The SDK executes only the governance capabilities available in its current version.
+## Configuration
 
-Use the shared [Specification](/en/docs/components/specification) for protocol contracts. Compare this model with the language-neutral [Pole Sidecar](/en/docs/components/pingora-sidecar) before choosing a runtime path.
+Defaults to `./pole.yaml` / `./pole.yml`, or `POLE_RUST_CONFIG`. Point `global.serverConnectors.discover` at `8091` and `config` at `8093`. See `tests/data/default-config.yml` in the SDK repo.
+
+## Minimal discovery flow
+
+Repository examples:
+
+- `examples/discover.rs` — Provider register, Consumer get/watch/get_one_instance
+- `examples/config.rs` — create, publish, and watch configuration files
+
+```rust
+let ctx = Arc::new(SDKContext::default()?);
+let provider = new_provider_api_by_context(ctx.clone())?;
+let consumer = new_consumer_api_by_context(ctx)?;
+// provider.register(...).await
+// consumer.get_one_instance(...).await
+```
+
+## Verification
+
+```bash
+cargo test
+cargo run -p e2e_tests -- \
+  --console-url http://127.0.0.1:8080 \
+  --client-addr 127.0.0.1:8091
+```
+
+## Further reading
+
+- [Integration options](/en/docs/what-is/access)
+- [Incremental cache and event flow](/en/docs/principles/cache-eventhub)

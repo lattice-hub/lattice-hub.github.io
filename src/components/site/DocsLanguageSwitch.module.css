@@ -1,0 +1,33 @@
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--border, var(--color-fd-border));
+  border-radius: 999px;
+  background: var(--surface-subtle, var(--color-fd-muted));
+}
+
+.switch a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  min-height: 30px;
+  border-radius: 999px;
+  color: var(--text-tertiary, var(--color-fd-muted-foreground));
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.switch a:hover {
+  color: var(--text, var(--color-fd-foreground));
+}
+
+.switch a[aria-current="page"] {
+  background: var(--text, var(--color-fd-foreground));
+  color: var(--surface, #fff);
+}
