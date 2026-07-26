@@ -22,11 +22,11 @@ Full port matrix: [Protocol ports](/en/docs/api/ports). Authoritative config: `p
 
 1. **Control-plane HTTP OpenAPI** is not the same as **user service-contract OpenAPI**. The former is the control plane REST surface; the latter is contract text that services may report via discovery (`ReportServiceContract`).
 2. Protocol adapters parse requests and identity carriers; authorization runs in domain Server interceptors. See [Authorization and resources](/en/docs/principles/auth-protocols).
-3. [HTTP OpenAPI](/en/docs/api/http-openapi) already uses a parameters-left / examples-right layout for core endpoints. Full schemas still follow control-plane annotations and the running server.
+3. [HTTP OpenAPI](/en/docs/api/http-openapi) is split by scenario (namespaces, services, instances, config, governance, and more), with a parameters-left / examples-right layout. Full schemas still follow control-plane annotations and the running server.
 
 ## Suggested order
 
 1. [Protocol ports](/en/docs/api/ports): confirm which listeners are enabled.
-2. [HTTP OpenAPI](/en/docs/api/http-openapi): management and client REST prefixes.
+2. [HTTP OpenAPI](/en/docs/api/http-openapi): browse management and client REST by scenario.
 3. [gRPC](/en/docs/api/grpc) or [xDS](/en/docs/api/xds): pick by runtime.
 4. For legacy registries, read [Compatibility](/en/docs/api/compatibility).

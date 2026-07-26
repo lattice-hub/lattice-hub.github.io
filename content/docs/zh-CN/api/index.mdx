@@ -22,11 +22,11 @@ description: Control Plane 多协议入口地图：HTTP OpenAPI、gRPC、xDS 与
 
 1. **控制面 HTTP OpenAPI** 与 **用户服务契约 OpenAPI** 不是一回事。前者是控制面自身的 REST 管理/客户端 API；后者是业务服务可上报的契约原文，见发现侧 `ReportServiceContract`。
 2. 协议层只负责解析请求与身份载体；鉴权在领域 Server 的 interceptor 中统一完成。见 [鉴权链与资源映射](/docs/principles/auth-protocols)。
-3. [HTTP OpenAPI](/docs/api/http-openapi) 已按「左参数 / 右示例」展示核心接口；完整 schema 仍以控制面注解与运行时为准。
+3. [HTTP OpenAPI](/docs/api/http-openapi) 按业务场景分子目录（命名空间、服务、实例、配置、治理等），页面为「左参数 / 右示例」；完整 schema 仍以控制面注解与运行时为准。
 
 ## 推荐阅读顺序
 
 1. [协议端口](/docs/api/ports)：确认监听了哪些入口。
-2. [HTTP OpenAPI](/docs/api/http-openapi)：管理面与客户端 REST 前缀。
+2. [HTTP OpenAPI](/docs/api/http-openapi)：按场景浏览管理面与客户端 REST。
 3. [gRPC](/docs/api/grpc) 或 [xDS](/docs/api/xds)：按运行时选择。
 4. 需要兼容存量注册中心时，再看 [兼容协议](/docs/api/compatibility)。

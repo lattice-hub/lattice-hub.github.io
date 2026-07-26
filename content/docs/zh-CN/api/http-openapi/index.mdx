@@ -1,0 +1,43 @@
+---
+title: HTTP OpenAPI
+description: 控制面 8090 HTTP API 按业务场景组织：命名空间、服务、实例、配置与治理规则。
+full: true
+---
+
+HTTP API 由 `api-http` 插件提供，默认监听 **8090**。按场景选择子文档；每页采用**左参数 / 右多语言示例**布局。
+
+## 场景目录
+
+| 场景 | 说明 |
+| --- | --- |
+| [鉴权](/docs/api/http-openapi/auth) | 登录与鉴权状态 |
+| [命名空间](/docs/api/http-openapi/namespaces) | 环境 Namespace |
+| [服务 · 基本信息](/docs/api/http-openapi/services) | 服务 CRUD |
+| [服务 · 契约](/docs/api/http-openapi/services/contracts) | 契约查询与上报 |
+| [服务 · 调用拓扑](/docs/api/http-openapi/services/topology) | 订阅者 / 调用关系 |
+| [实例](/docs/api/http-openapi/instances) | 实例注册与管理 |
+| [配置分组](/docs/api/http-openapi/config-groups) | Config group |
+| [配置文件](/docs/api/http-openapi/config-files) | 文件读写 |
+| [配置灰度](/docs/api/http-openapi/config-gray) | normal / gray 发布 |
+| [路由](/docs/api/http-openapi/routing) | 路由规则 |
+| [限流](/docs/api/http-openapi/rate-limit) | 限流规则 |
+| [熔断](/docs/api/http-openapi/circuit-breaker) | 熔断规则 |
+| [故障探测](/docs/api/http-openapi/fault-detect) | 主动探测 |
+| [泳道](/docs/api/http-openapi/lane) | 泳道规则 |
+| [无损上下线](/docs/api/http-openapi/lossless) | 无损规则 |
+| [流量鉴权](/docs/api/http-openapi/traffic-security) | 调用鉴权 |
+| [流量镜像](/docs/api/http-openapi/traffic-mirror) | 镜像规则 |
+| [流量 Mock](/docs/api/http-openapi/traffic-mock) | Mock 规则 |
+| [MCP Registry](/docs/api/http-openapi/mcp) | MCP Server / Tool |
+| [A2A Registry](/docs/api/http-openapi/a2a) | A2A Agent / Skill |
+| [客户端接口](/docs/api/http-openapi/client) | Discover / Register / 拉配置 |
+
+## 使用约定
+
+| 项 | 说明 |
+| --- | --- |
+| Base URL | `http://127.0.0.1:8090` |
+| 管理面鉴权 | `Authorization` + `X-Pole-User` |
+| 分组开关 | `api-http.api.{console,client,admin,aimcp,aia2a}` |
+
+完整 schema 以控制面注解与运行时为准。

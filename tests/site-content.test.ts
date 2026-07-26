@@ -374,7 +374,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 55);
+  assert.equal(chinese.length, 76);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
@@ -480,18 +480,26 @@ test('global styles do not override fumadocs document theming', () => {
 });
 
 test('HTTP OpenAPI reference uses dual-column endpoint component', () => {
-  const zh = readFileSync('content/docs/zh-CN/api/http-openapi.mdx', 'utf8');
-  const en = readFileSync('content/docs/en/api/http-openapi.mdx', 'utf8');
+  const zhIndex = readFileSync('content/docs/zh-CN/api/http-openapi/index.mdx', 'utf8');
+  const enIndex = readFileSync('content/docs/en/api/http-openapi/index.mdx', 'utf8');
+  const zhAuth = readFileSync('content/docs/zh-CN/api/http-openapi/auth.mdx', 'utf8');
+  const enAuth = readFileSync('content/docs/en/api/http-openapi/auth.mdx', 'utf8');
   const mdx = readFileSync('src/mdx-components.tsx', 'utf8');
   const reference = readFileSync('src/components/docs/HttpOpenApiReference.tsx', 'utf8');
+  const data = readFileSync('src/lib/http-openapi-reference.ts', 'utf8');
   const endpoint = readFileSync('src/components/docs/ApiEndpoint.tsx', 'utf8');
 
-  assert.match(zh, /full:\s*true/);
-  assert.match(en, /full:\s*true/);
-  assert.match(zh, /<HttpOpenApiReference\s*\/>/);
-  assert.match(en, /<HttpOpenApiReference\s*\/>/);
+  assert.match(zhIndex, /场景目录/);
+  assert.match(enIndex, /Scenario index/);
+  assert.match(zhAuth, /full:\s*true/);
+  assert.match(enAuth, /full:\s*true/);
+  assert.match(zhAuth, /<HttpOpenApiReference\s+section="auth"\s*\/>/);
+  assert.match(enAuth, /<HttpOpenApiReference\s+section="auth"\s*\/>/);
   assert.match(mdx, /HttpOpenApiReference/);
-  assert.match(reference, /httpOpenApiSections/);
+  assert.match(reference, /getHttpOpenApiSection/);
+  assert.match(data, /export const httpOpenApiSections/);
+  assert.match(data, /'services-contracts'/);
+  assert.match(data, /'config-gray'/);
   assert.match(endpoint, /styles\.grid/);
   assert.match(endpoint, /samples\.map/);
 });
@@ -625,7 +633,42 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
         index: { type: 'page', name: 'API 与协议总览', url: '/docs/api' },
         children: [
           { type: 'page', name: '协议端口', url: '/docs/api/ports' },
-          { type: 'page', name: 'HTTP OpenAPI', url: '/docs/api/http-openapi' },
+          {
+            type: 'folder',
+            name: 'HTTP OpenAPI',
+            index: { type: 'page', name: 'HTTP OpenAPI', url: '/docs/api/http-openapi' },
+            children: [
+              { type: 'page', name: '鉴权', url: '/docs/api/http-openapi/auth' },
+              { type: 'page', name: '命名空间', url: '/docs/api/http-openapi/namespaces' },
+              {
+                type: 'folder',
+                name: '服务',
+                index: {
+                  type: 'page',
+                  name: '服务基本信息',
+                  url: '/docs/api/http-openapi/services',
+                },
+                children: [
+                  {
+                    type: 'page',
+                    name: '服务契约',
+                    url: '/docs/api/http-openapi/services/contracts',
+                  },
+                  {
+                    type: 'page',
+                    name: '调用拓扑',
+                    url: '/docs/api/http-openapi/services/topology',
+                  },
+                ],
+              },
+              { type: 'page', name: '实例', url: '/docs/api/http-openapi/instances' },
+              {
+                type: 'page',
+                name: '配置灰度',
+                url: '/docs/api/http-openapi/config-gray',
+              },
+            ],
+          },
           { type: 'page', name: 'gRPC 接口', url: '/docs/api/grpc' },
           { type: 'page', name: 'xDS v3', url: '/docs/api/xds' },
           { type: 'page', name: '兼容协议', url: '/docs/api/compatibility' },
