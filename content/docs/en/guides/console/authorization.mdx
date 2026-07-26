@@ -1,0 +1,65 @@
+---
+title: Authorization
+description: Users, groups, roles, tokens, access policies, and in-place resource authorization.
+---
+
+Menus: **Auth → Principals** (`/auth/principals`), **Policies** (`/auth/policies`). Resources also expose “Authorize” entry points.
+
+## Principals
+
+Page header “Identity principals”, three tabs: **Users** / **Groups** / **Roles**.
+
+### Users
+
+1. “Create user” for an account.
+2. List shows token status (enabled / disabled).
+3. “View token” opens a read-only dialog with copy.
+4. On user detail “Access credentials”:
+   - **Copy**
+   - **Reset** (success toast that credentials were reset)
+   - **Disable / enable**
+5. Edit can toggle “Token enabled”.
+
+### Groups
+
+1. “Create group” and maintain members.
+2. Same view / copy / reset / enable-disable for group credentials.
+3. Batch delete when permitted.
+
+### Roles
+
+- Custom roles: create, edit, delete.
+- **Built-in roles** (admin, full read, full write, and similar): UI allows adjusting user/group membership only; do not treat them as freely editable custom permission models.
+
+## Access policies
+
+Path: `/auth/policies`, header “Access policies”.
+
+1. Tabs: **Custom policies** / **Default policies**.
+2. “Create policy”: name, effect, resource scope, principals, and so on.
+3. List shows type, source, default flag, timestamps.
+4. Open detail to edit or delete; batch-delete custom policies when allowed.
+
+Policy resource types may include services, config, governance rules, MCP, A2A, and a ServiceContract action resource—that does **not** mean the Console has a service-contract management page.
+
+## In-place resource authorization
+
+On namespaces, config groups/files, governance rules, MCP, A2A, and similar pages, “Authorize” opens a drawer binding principals to that resource’s operable scope. This is a second path beside the global policies page; check both when troubleshooting.
+
+## Recommended cadence
+
+1. After bootstrap with the main account, create day-to-day platform accounts immediately.
+2. Grant publishers the matching Publish actions instead of sharing the main account.
+3. On token leak, reset and disable the old credential immediately.
+4. Close temporary “everyone can write” debug policies.
+
+## Auth boundaries
+
+- Edit rights ≠ Publish rights.
+- Buttons may disable when the server marks `editable` / `deleteable` false.
+- See [Authorization and resources](/en/docs/principles/auth-protocols).
+
+## Next
+
+- [Governance](/en/docs/guides/console/governance)
+- [Console overview](/en/docs/guides/console)

@@ -11,7 +11,7 @@ See [Concepts and terminology](/en/docs/what-is/concepts) for vocabulary boundar
 
 | Scenario | Start here | Notes |
 | --- | --- | --- |
-| Platform management | [Using the Console](/en/docs/guides/console-use) | Services, config, governance, users, and policies. |
+| Platform management | [Using the Console](/en/docs/guides/console) | Services, config, governance, users, and policies. |
 | Control-plane deploy | [Server installation](/en/docs/guides/server-install) | Control Plane, MySQL, and bootstrap config. |
 | Proxyless clients | [Rust SDK](/en/docs/components/rust-sdk) | Direct discovery/config/governance consumption. |
 | Kubernetes clusters | [Kubernetes Controller](/en/docs/components/kubernetes-controller) | Service sync, annotations, injection. |
@@ -27,6 +27,11 @@ See [Concepts and terminology](/en/docs/what-is/concepts) for vocabulary boundar
 | Discovery gRPC | 8091 |
 | Config gRPC | 8093 |
 | xDS v3 | 15010 |
+| Eureka | 8761 |
+| Nacos | 8848 |
+| Apollo | 8890 |
+
+Compatible protocol ports follow `deploy/conf/pole-apiserver.yaml`; they listen only when the matching entry is enabled.
 
 ## Recommended order
 

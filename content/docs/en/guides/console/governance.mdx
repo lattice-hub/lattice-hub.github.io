@@ -1,0 +1,88 @@
+---
+title: Governance
+description: Create nine rule families, three detail tabs, full/gray publish, rollback, and lane immediate-push caveats.
+---
+
+Menu: **Governance → Workbench** (`/governance/workbench`). Also reachable from the service detail “Traffic governance” tab.
+
+![Governance workbench](/images/console/governance.png)
+
+## Workbench list
+
+Page header: “Rule governance workbench”.
+
+1. Summary: total rules / enabled / pending publish / rule-type count.
+2. Filters: environment, rule type, status (all/enabled/disabled), search by name/service/condition.
+3. “Create rule” opens the type wizard for one of nine families:
+   - Route, rate limit, circuit break, probe, lossless, lane, auth, mirror, mock
+4. List actions: open detail, delete (gated by permission and `editable` / `deleteable`).
+5. Resource **Authorize** when needed.
+
+The embedded service workbench can switch “as caller” / “as callee” and associate rules.
+
+## Three detail tabs
+
+![Governance rule detail](/images/console/governance-detail.png)
+
+| Tab | Purpose |
+| --- | --- |
+| Rule | Edit rule body and save |
+| Versions | View releases, roll back, delete versions |
+| Listeners | Client listeners (may be disabled while creating) |
+
+During create, Versions / Listeners may stay unavailable until the rule exists.
+
+## Publish rule
+
+Click “Publish” on the detail page to open “Rule publish”:
+
+1. Confirm rule ID / name.
+2. Version name (required ≤64), description (≤255).
+3. Strategy:
+   - **Full publish**: all clients; copy emphasizes confirmed safe release.
+   - **Gray publish**: only requests matching **client label** conditions; at least one label; keys must be unique.
+4. Gray labels may include client IP / client ID / client language; match types include exact, regex, contains, range, and so on.
+5. Click “Publish”.
+
+Unlike configuration gray rules (AND), governance gray hits when **any** label condition matches (OR).
+
+## Version actions
+
+On the Versions tab:
+
+- Status: “In use” / “History”; type: full / gray.
+- **Rollback**: “Roll back to this version” for eligible historical versions.
+- **Delete**: deleting an in-use version removes the rule from clients; confirm carefully.
+
+Governance release history does **not** use the configuration four-tab model (formal draft / submit as formal draft / delete gray). Do not mix the two semantics.
+
+## Lane caveat
+
+The lane editor save copy for enable state is along the lines of: enable state is pushed to the data plane immediately on save; success toast indicates saved and pushed.
+
+That enable toggle differs from the usual “publish to take effect” model. Treat enable changes as immediate data-plane impact; versioned publish still uses Publish. If docs disagree with on-screen copy, trust the UI.
+
+## Pre-publish checklist
+
+- [ ] Namespace / target services are correct
+- [ ] Matching Publish permission (for example `PublishRouteRules`)
+- [ ] Gray labels are explainable and reversible
+- [ ] Rollback target still in the list
+- [ ] Resource authorization done when needed
+
+## Observation focus by type
+
+| Type | After publish, watch |
+| --- | --- |
+| Route / lane | Traffic lands on expected instances or lanes |
+| Rate limit | Rejects match thresholds |
+| Circuit break / probe | Open and recover as conditioned |
+| Lossless | Online delay and drain are smooth |
+| Auth | Rejects are accurate |
+| Mirror / mock | Side effects stay in target scope |
+
+## Further reading
+
+- [Governance releases](/en/docs/principles/governance-release)
+- [Progressive delivery](/en/docs/practices/gray-release)
+- [Console overview](/en/docs/guides/console)

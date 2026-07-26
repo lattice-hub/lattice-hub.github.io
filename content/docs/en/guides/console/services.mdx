@@ -1,0 +1,91 @@
+---
+title: Services and environments
+description: Manage namespaces, services, instances, aliases, subscriptions, and in-service governance entry points in the Console.
+---
+
+Menus: **Namespaces**, **Discovery → Service instances**. Stabilize environment and discovery before layering configuration and governance.
+
+## Namespaces
+
+Path: sidebar “Namespaces” → `/namespace`.
+
+### What you can do
+
+1. View the list and summary metrics (namespaces, services, config files, healthy instances, and so on).
+2. Search by namespace name.
+3. **Create namespace**: name, description, labels.
+4. **View / edit**: description and labels (name is immutable after create).
+5. **Authorize**: open the resource-authorization drawer for that namespace.
+6. **Delete**: non-protected namespaces (requires permission).
+
+### Fields and constraints
+
+| Item | Notes |
+| --- | --- |
+| Name | Digits, letters, `.`, `-`, `_`; max 128; immutable after create |
+| Description | Prefer environment purpose or stage; max 1024 |
+| Protected | `default` and `pole-system` (internal) cannot be deleted |
+
+A Namespace is a **runtime environment**, not a tenant or team space.
+
+## Service list
+
+Path: sidebar “Discovery → Service instances” → `/discovery/service`.
+
+### Steps
+
+1. Filter by namespace and other criteria.
+2. Click “Create service” and fill in:
+   - Identity: namespace, service name (immutable after create), description
+   - Ownership: department, business
+   - Service labels
+3. After submit, open the service detail, or use “View / edit” from the list.
+4. Delete when needed (confirm dialog).
+
+## Five tabs on service detail
+
+| Tab | Purpose |
+| --- | --- |
+| Service detail | Edit description, department, business, labels; copy service ID |
+| Instances | Instance list and health checks |
+| Aliases | Cross-namespace access aliases |
+| Subscriptions | Who subscribes / is subscribed |
+| Traffic governance | Embedded governance workbench filtered as caller/callee |
+
+The page may also offer environment switching (jump same-named services across namespaces). Always confirm the current environment before acting.
+
+### Instances
+
+1. Open the Instances tab; search by host if needed.
+2. Create or edit instances.
+3. Common fields: host, port (read-only when editing after create), protocol (TCP/UDP/HTTP/gRPC/DUBBO), version, weight (0–100), location, instance labels.
+4. Toggles: isolate, health, health check on/off.
+
+**Health-check types:**
+
+| Type | Fields | Notes |
+| --- | --- | --- |
+| Heartbeat | TTL (1–60s) | **Not selectable at create** (only when editing later) |
+| TCP probe | Interval (1–60s) | |
+| HTTP probe | Path (for example `/health`) + interval | Path required |
+
+### Aliases
+
+1. Open Aliases → create alias.
+2. Fill target service, alias namespace, alias name, notes.
+3. Alias rules: start with a lowercase letter; lowercase letters/digits/hyphens only; unique in the namespace.
+4. View, copy, or delete.
+
+### Subscriptions
+
+Read-only view of who subscribes to this service and what it subscribes to. Empty state: no subscription relationships. Used for call topology; subscriptions are not created here.
+
+## Documentation boundary
+
+The Console currently has **no** standalone Service Contract management page. If ServiceContract appears as a policy resource type, that does not imply a contract CRUD UI here.
+
+## Next
+
+- [Configuration](/en/docs/guides/console/configuration)
+- [Governance](/en/docs/guides/console/governance)
+- [Console overview](/en/docs/guides/console)

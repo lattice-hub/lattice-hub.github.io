@@ -11,7 +11,7 @@ Lattice Hub 的接入方式按运行位置划分。平台团队通常先部署�
 
 | 场景 | 推荐入口 | 说明 |
 | --- | --- | --- |
-| 平台管理 | [控制台使用](/docs/guides/console-use) | 管理服务、配置、治理规则、用户和权限。 |
+| 平台管理 | [控制台使用](/docs/guides/console) | 管理服务、配置、治理规则、用户和权限。 |
 | 控制面部署 | [服务端安装](/docs/guides/server-install) | 部署 Control Plane、存储和必要配置。 |
 | Proxyless 客户端 | [Rust SDK](/docs/components/rust-sdk) | 应用直接消费发现、配置和治理视图。 |
 | Kubernetes 集群 | [Kubernetes Controller](/docs/components/kubernetes-controller) | 同步 Service，并承接注解、服务别名和自动化。 |
@@ -27,6 +27,11 @@ Lattice Hub 的接入方式按运行位置划分。平台团队通常先部署�
 | Discovery gRPC | 8091 |
 | Config gRPC | 8093 |
 | xDS v3 | 15010 |
+| Eureka | 8761 |
+| Nacos | 8848 |
+| Apollo | 8890 |
+
+兼容协议端口按 `deploy/conf/pole-apiserver.yaml` 启用；未启用对应入口时不会监听。
 
 ## 推荐顺序
 

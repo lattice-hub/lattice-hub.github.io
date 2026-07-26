@@ -1,0 +1,53 @@
+---
+title: 控制台概览
+description: Console 作为 Control Plane 内嵌管理面的总览、入口说明与各板块操作指南索引。
+---
+
+Console 是控制面资源的可视化管理层，与 Control Plane 同仓部署。变更仍经鉴权与存储；配置和多数治理规则只有发布后才会进入客户端可见的 active 视图。
+
+![console operation flow](/diagrams/console-operation-flow.svg)
+
+## 入口与模式
+
+| 入口 | 说明 |
+| --- | --- |
+| 普通控制台 | 侧栏菜单进入各业务板块；默认落地 `/namespace` |
+| Agent 工作台 | 顶栏/侧栏模式切换「进入 Agent 工作台」；路径 `/agent`（**不在侧栏菜单中**） |
+| 系统配置 | 侧栏「系统配置」；仅 `main` / `admin` 可进 |
+
+本地默认地址：`http://127.0.0.1:8080`。首次部署无主账号时走 `/init-admin`。不要假设存在硬编码默认密码。
+
+## 侧栏板块地图
+
+| 菜单 | 操作文档 |
+| --- | --- |
+| 命名空间 | [服务与环境](/docs/guides/console/services) |
+| 注册发现 → 服务实例 | [服务与环境](/docs/guides/console/services) |
+| 配置管理 → 配置分组 | [配置中心](/docs/guides/console/configuration) |
+| 治理管理 → 治理工作台 | [治理工作台](/docs/guides/console/governance) |
+| 认证管理 → 主体 / 策略 | [权限管理](/docs/guides/console/authorization) |
+| AI 工具 → MCP / A2A | [AI Registry 与 Pole Agent](/docs/guides/console/ai-registry) |
+| Agent 工作台（模式切换） | [AI Registry 与 Pole Agent](/docs/guides/console/ai-registry) |
+| 系统配置 | [系统配置](/docs/guides/console/system) |
+| 监控指标（四页） | [监控指标](/docs/guides/console/metrics) |
+
+## 推荐第一次操作路径
+
+1. 创建业务 Namespace（勿把 Namespace 当团队空间）→ [服务与环境](/docs/guides/console/services)
+2. 新建服务并注册实例 → [服务与环境](/docs/guides/console/services)
+3. 创建配置并走发布记录验证 → [配置中心](/docs/guides/console/configuration)
+4. 在治理工作台创建并发布一条规则 → [治理工作台](/docs/guides/console/governance)
+5. 收敛非管理员权限与 Token → [权限管理](/docs/guides/console/authorization)
+
+## 贯穿原则
+
+- **编辑态 ≠ 生效态**：保存草稿或改规则本体，不等于客户端已看到新版本。
+- **Publish 权限独立**：有编辑权不等于有发布权。
+- **Namespace = 运行环境**：同名资源在不同环境内容与发布态互相独立。
+- **Agent 只到草稿**：确认写操作后只保存草稿，发布仍在配置中心完成。
+
+## 相关文档
+
+- [服务端安装](/docs/guides/server-install)
+- [Control Plane](/docs/components/control-plane)
+- [术语与概念](/docs/what-is/concepts)

@@ -1,0 +1,82 @@
+---
+title: Configuration
+description: Config groups, file editing, full/gray publish, four release tabs, stop-gray, and subscription queries.
+---
+
+Menu: **Configuration → Config groups**. Configuration keeps edit state and published state separate; clients consume published results via long polling / SSE.
+
+![Config groups](/images/console/config-groups.png)
+
+## Config groups
+
+Path: `/configuration/group`.
+
+1. Filter by namespace, publish status (“Pending publish” / “No pending”), and name search.
+2. “Create config group”: namespace, group name, description, department, business, labels.
+3. List shows file count, encrypted count, pending markers (“Has changes” / “None”).
+4. Actions: view files, **Authorize**, delete.
+   - Cannot delete a group that still has files (“Delete N config files first”).
+
+## Config files
+
+Open a file inside a group:
+
+| Control / tab | Role |
+| --- | --- |
+| Edit / Save draft | Save body as formal draft (edit state) |
+| Discard | Drop unsaved edits |
+| Publish | Open publish wizard |
+| Hand to Agent | Jump to Agent workspace with file context |
+| Authorize | Resource authorization for this file |
+| Tab “Content” | Edit or read-only preview |
+| Tab “Basic info” | Description, encryption, algorithm, file labels |
+| Tab “Release history” | Four release tabs (below) |
+| Tab “Subscriptions” | Subscribed clients and gray-hit status |
+
+Limits: max 20,000 characters per file; list page size max 100.
+
+Common status copy: pending publish, gray in progress, publish succeeded/failed, unpublished.
+
+## Publish (two steps)
+
+“Publish” opens the “Publish configuration” drawer:
+
+1. **Version diff** → Next
+2. **Publish info**
+   - Version name (required, ≤64; duplicate name prompts republish)
+   - Release notes (≤255)
+   - Publish type:
+     - **Full publish**: replaces the current full baseline. UI copy: full publish replaces the baseline and does **not** end active gray versions.
+     - **Gray publish**: needs at least one gray rule; optional priority (1–9999, default 100). Clients must match **all** gray rules (AND).
+
+Confirm with “Confirm publish”.
+
+## Four release tabs (must understand)
+
+On the file “Release history” tab:
+
+| Tab | Meaning |
+| --- | --- |
+| Formal releases | Current full baseline; formal publish does **not** end active gray |
+| Gray releases | Multiple active gray versions can apply independently |
+| Formal drafts | From promote-gray or manual edit; **not yet** visible to online clients |
+| History | Archived, rollback-generated, or deleted records |
+
+### Common actions
+
+| Scenario | Action | Result |
+| --- | --- | --- |
+| Stop gray | Gray version → “Delete gray” | Matched clients fall back to current full; toast success |
+| Prepare promote | Gray → “Submit as formal draft” | Creates formal draft; then “Publish formal draft” for full |
+| Rollback | History / non-current → “Roll back to this version” | New current full; does **not** auto-stop active gray |
+| Delete current full | Confirm delete | Clients not matching gray may lose config; be careful |
+
+## Hand-off from Pole Agent
+
+Agent-confirmed writes **only save drafts**. You still must return here and run Publish. See [AI Registry and Pole Agent](/en/docs/guides/console/ai-registry).
+
+## Next
+
+- [Progressive delivery](/en/docs/practices/gray-release)
+- [Governance](/en/docs/guides/console/governance)
+- [Console overview](/en/docs/guides/console)

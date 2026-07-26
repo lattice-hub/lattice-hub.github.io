@@ -1,0 +1,13 @@
+{
+  "title": "Using the Console",
+  "pages": [
+    "index",
+    "services",
+    "configuration",
+    "governance",
+    "authorization",
+    "ai-registry",
+    "system",
+    "metrics"
+  ]
+}

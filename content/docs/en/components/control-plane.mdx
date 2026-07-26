@@ -16,7 +16,7 @@ The Control Plane owns APIs, domain logic, caches, and storage, and exposes HTTP
 - Pole Agent with human-confirmed configuration drafts only.
 - Typed system configuration and OTel export into shared GreptimeDB.
 - Fine-grained authorization for management and client APIs.
-- Embedded Console: Fluent UI workbenches for resources, governance, auth, registries, system settings, and platform metrics.
+- Embedded Console: Fluent UI workbenches for resources, governance, auth, registries, system configuration, and metrics.
 
 ## Embedded Console
 
@@ -28,7 +28,7 @@ Console is delivered with the Control Plane and can run via `--mode all|server|c
 | `server` | APIs and protocol servers only |
 | `console` | Console gateway only; reaches `poleServer.address` over the network |
 
-Step-by-step operations: [Using the Console](/en/docs/guides/console-use).
+Step-by-step operations: [Using the Console](/en/docs/guides/console).
 
 ![Configuration groups](/images/console/config-groups.png)
 
@@ -45,6 +45,7 @@ Step-by-step operations: [Using the Console](/en/docs/guides/console-use).
 | Discovery gRPC | 8091 |
 | Config gRPC | 8093 |
 | xDS v3 | 15010 |
+| Eureka / Nacos / Apollo | 8761 / 8848 / 8890 |
 
 ## Confirmed engineering facts
 
@@ -56,4 +57,4 @@ Step-by-step operations: [Using the Console](/en/docs/guides/console-use).
 
 - [Control-plane assembly](/en/docs/principles/architecture)
 - [Server installation](/en/docs/guides/server-install)
-- [Using the Console](/en/docs/guides/console-use)
+- [Using the Console](/en/docs/guides/console)

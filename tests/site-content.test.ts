@@ -374,7 +374,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 31);
+  assert.equal(chinese.length, 38);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
@@ -495,9 +495,27 @@ test('docs layout uses fumadocs section switcher for docs blog reports and devel
         name: '使用指南',
         children: [
           { type: 'page', name: '服务端安装', url: '/docs/guides/server-install' },
-          { type: 'page', name: '控制台使用', url: '/docs/guides/console-use' },
+          {
+            type: 'folder',
+            name: '控制台使用',
+            index: { type: 'page', name: '控制台概览', url: '/docs/guides/console' },
+            children: [
+              { type: 'page', name: '服务与环境', url: '/docs/guides/console/services' },
+              { type: 'page', name: '配置中心', url: '/docs/guides/console/configuration' },
+              { type: 'page', name: '治理工作台', url: '/docs/guides/console/governance' },
+              { type: 'page', name: '权限管理', url: '/docs/guides/console/authorization' },
+              {
+                type: 'page',
+                name: 'AI Registry 与 Pole Agent',
+                url: '/docs/guides/console/ai-registry',
+              },
+              { type: 'page', name: '系统配置', url: '/docs/guides/console/system' },
+              { type: 'page', name: '监控指标', url: '/docs/guides/console/metrics' },
+            ],
+          },
         ],
       },
+
       {
         type: 'folder',
         name: '原理',

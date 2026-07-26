@@ -1,0 +1,53 @@
+---
+title: Console overview
+description: Overview of the embedded Console, entry points, and index of operational guides.
+---
+
+The Console is the visual management layer for control-plane resources and ships inside Control Plane. Changes still go through authorization and storage; configuration and most governance rules only reach the client-visible active view after publish.
+
+![console operation flow](/diagrams/console-operation-flow.svg)
+
+## Entry points and modes
+
+| Entry | Notes |
+| --- | --- |
+| Normal Console | Sidebar menus; default landing `/namespace` |
+| Agent workspace | Workspace switch “Enter Agent workspace”; path `/agent` (**not** in the sidebar) |
+| System configuration | Sidebar “System configuration”; `main` / `admin` only |
+
+Local default: `http://127.0.0.1:8080`. First boot without a main account uses `/init-admin`. Do not assume a hardcoded default password.
+
+## Sidebar map
+
+| Menu | Guide |
+| --- | --- |
+| Namespaces | [Services and environments](/en/docs/guides/console/services) |
+| Discovery → Service instances | [Services and environments](/en/docs/guides/console/services) |
+| Configuration → Config groups | [Configuration](/en/docs/guides/console/configuration) |
+| Governance → Workbench | [Governance](/en/docs/guides/console/governance) |
+| Auth → Principals / Policies | [Authorization](/en/docs/guides/console/authorization) |
+| AI tools → MCP / A2A | [AI Registry and Pole Agent](/en/docs/guides/console/ai-registry) |
+| Agent workspace (mode switch) | [AI Registry and Pole Agent](/en/docs/guides/console/ai-registry) |
+| System configuration | [System configuration](/en/docs/guides/console/system) |
+| Metrics (four pages) | [Metrics](/en/docs/guides/console/metrics) |
+
+## Recommended first path
+
+1. Create a business Namespace (do not treat Namespace as a team space) → [Services and environments](/en/docs/guides/console/services)
+2. Create a service and register instances → [Services and environments](/en/docs/guides/console/services)
+3. Create config and verify via release history → [Configuration](/en/docs/guides/console/configuration)
+4. Create and publish one rule in the governance workbench → [Governance](/en/docs/guides/console/governance)
+5. Tighten non-admin permissions and tokens → [Authorization](/en/docs/guides/console/authorization)
+
+## Principles
+
+- **Edit ≠ active**: Saving a draft or editing a rule body does not mean clients already see the new version.
+- **Publish is separate**: Edit rights do not imply publish rights.
+- **Namespace = environment**: Same-named resources are independent across environments and publish states.
+- **Agent stops at drafts**: Confirmed writes save drafts only; publish still happens in Configuration.
+
+## Related docs
+
+- [Server installation](/en/docs/guides/server-install)
+- [Control Plane](/en/docs/components/control-plane)
+- [Concepts](/en/docs/what-is/concepts)
