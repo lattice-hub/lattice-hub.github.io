@@ -14,7 +14,7 @@ Lattice Hub 的功能不是一组分散 API，而是一套控制面资源视图�
 | 服务注册发现 | 维护命名空间、服务、实例、健康状态和 revision，让客户端稳定拿到运行时视图。 | [Control Plane](/docs/components/control-plane) |
 | 运行环境 | Namespace 表达开发、预发、生产等运行边界，同一逻辑资源在不同环境独立维护版本与发布状态。 | [接入方式](/docs/what-is/access) |
 | 流量治理 | 路由、泳道、限流、熔断、故障探测、无损上下线、镜像、Mock、调用鉴权九类能力通过 release 生效。 | [治理规则与灰度发布](/docs/principles/governance-release) |
-| 配置中心 | 配置发布、监听、灰度和回滚进入控制面统一链路。 | [配置灰度实践](/docs/practices/gray-release) |
+| 配置中心 | 配置发布、监听、回滚进入统一链路；**同一文件支持多条 active 灰度版本并存**，全量发布不结束灰度。 | [配置中心操作](/docs/guides/console/configuration) · [灰度实践](/docs/practices/gray-release) |
 | 权限审计 | 用户、角色、策略和资源映射约束控制面操作，并记录操作历史。 | [鉴权链与资源映射](/docs/principles/auth-protocols) |
 | AI Registry | MCP Server 与 A2A Agent 作为控制面资源进入 API、缓存和存储链路。 | [AI Registry 与 Pole Agent](/docs/principles/ai-registry) |
 | Pole Agent | 使用真实 LLM/MCP 最小闭环读取资源；配置更新必须经过预览、确认并只保存草稿。 | [AI Registry 与 Pole Agent](/docs/principles/ai-registry) |

@@ -10,6 +10,8 @@ A configuration center must control how changes become visible. Editing a value,
 - Max config content length: 20,000 characters.
 - Max page size: 100.
 - Publish, progressive delivery, and rollback are supported.
+- **One file can keep multiple active gray releases**; full publish does not end them; stop-gray is per release.
+- When a client matches several grays, the newest by version/mtime wins.
 - Clients watch via SSE or long polling.
 - Pole Agent confirmed writes become drafts only; humans still publish.
 
@@ -17,9 +19,9 @@ A configuration center must control how changes become visible. Editing a value,
 
 1. Create the group and file in the correct Namespace.
 2. Edit the draft and validate content.
-3. Progressive-publish to a small client set and confirm adoption.
-4. Roll out fully, or roll back to the previous version.
-5. Audit the change in History.
+3. Publish one or more grays by client labels; watch hits under Release history → Gray and Subscriptions.
+4. “Submit as formal draft” on the validated gray, then full-publish; keep or stop other grays independently.
+5. On issues, roll back full or stop the relevant gray; audit History.
 
 ## Open measurements
 
@@ -27,5 +29,6 @@ This site does not publish listener latency or concurrency claims without reprod
 
 ## Related docs
 
+- [Configuration guide (multi-gray)](/en/docs/guides/console/configuration)
 - [Progressive delivery practice](/en/docs/practices/gray-release)
 - [Using the Console](/en/docs/guides/console)

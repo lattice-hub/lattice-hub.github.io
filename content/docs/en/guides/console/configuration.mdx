@@ -1,9 +1,11 @@
 ---
 title: Configuration
-description: Config groups, file editing, full/gray publish, four release tabs, stop-gray, and subscription queries.
+description: "Config groups, file editing, full and multi-gray publish, four release tabs, stop-gray, and subscription queries."
 ---
 
 Menu: **Configuration → Config groups**. Configuration keeps edit state and published state separate; clients consume published results via long polling / SSE.
+
+**Key capability: one config file can have multiple active gray releases at the same time.** They apply independently; a full publish does not end those grays.
 
 ![Config groups](/images/console/config-groups.png)
 
@@ -45,19 +47,53 @@ Common status copy: pending publish, gray in progress, publish succeeded/failed,
 
 “Publish” opens the “Publish configuration” drawer:
 
+![Publish wizard](/images/console/config-publish-wizard.png)
+
+![Gray publish options](/images/console/config-publish-gray.png)
+
 1. **Version diff** → Next
 2. **Publish info**
    - Version name (required, ≤64; duplicate name prompts republish)
    - Release notes (≤255)
    - Publish type:
      - **Full publish**: replaces the current full baseline. UI copy: full publish replaces the baseline and does **not** end active gray versions.
-     - **Gray publish**: needs at least one gray rule; optional priority (1–9999, default 100). Clients must match **all** gray rules (AND).
+     - **Gray publish**: needs at least one gray rule; optional priority (1–9999, default 100). Within one gray release, clients must match **all** gray rules (AND).
 
 Confirm with “Confirm publish”.
 
-## Four release tabs (must understand)
+## Multi-gray releases (must understand)
+
+Configuration is not “one gray at a time per file”. The model is:
+
+| Dimension | Semantics |
+| --- | --- |
+| Full (normal) | At most **one** active full baseline per file |
+| Gray | **Multiple** active grays per file, keyed by `releaseName` |
+| Full vs gray | Full publish neither blocks nor ends active grays |
+| Gray vs gray | A new gray does not displace other still-active grays |
+
+The Gray releases tab copy states that multiple active gray releases take effect independently and can be submitted as a formal draft or deleted.
+
+![Gray releases](/images/console/config-gray-releases.png)
+
+### How clients resolve
+
+1. Match no gray rules → fall back to current full.  
+2. Match exactly one gray → receive that gray content.  
+3. **Match multiple grays** → control plane picks the newest among matches by **version, then mtime**.  
+4. Console “gray priority” is shown for publish/list identity; multi-match selection follows version/mtime above (not percentage traffic splitting).
+
+### Recommended use
+
+- Use different `releaseName` / gray rules for different client label sets.  
+- After validation, “Submit as formal draft” on the target gray, then full-publish; keep or stop other grays independently.  
+- Stop-gray is **per release**: stopping A leaves B active.
+
+## Four release tabs
 
 On the file “Release history” tab:
+
+![Release history](/images/console/config-release-history.png)
 
 | Tab | Meaning |
 | --- | --- |
@@ -70,8 +106,8 @@ On the file “Release history” tab:
 
 | Scenario | Action | Result |
 | --- | --- | --- |
-| Stop gray | Gray version → “Delete gray” | Matched clients fall back to current full; toast success |
-| Prepare promote | Gray → “Submit as formal draft” | Creates formal draft; then “Publish formal draft” for full |
+| Stop gray | Gray version → “Delete gray” | Clients that hit that gray fall back to current full; other active grays stay |
+| Prepare promote | Gray → “Submit as formal draft” | Creates formal draft; then full-publish; does **not** auto-stop gray |
 | Rollback | History / non-current → “Roll back to this version” | New current full; does **not** auto-stop active gray |
 | Delete current full | Confirm delete | Clients not matching gray may lose config; be careful |
 

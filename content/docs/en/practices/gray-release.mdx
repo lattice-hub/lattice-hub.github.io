@@ -26,7 +26,10 @@ Services, MCP servers, and A2A agents use registration/discovery and revisions�
 
 ## Configuration notes
 
-- Validate parse/compatibility on a small set first.
+Configuration supports **multiple concurrent active gray releases** per file (keyed by releaseName). Full publish does not end them; stop-gray is per release. When a client matches several grays, the control plane returns the newest by version/mtime. See [Configuration guide](/en/docs/guides/console/configuration).
+
+- Publish independent grays for different client-label sets, then watch subscription hits.
+- After validation, “submit as formal draft” then full-publish; keep or stop other grays independently.
 - Keep history so rollback targets a known version.
 - Stay under the 20,000-character content limit.
 - Pole Agent only prepares drafts; humans click publish.
