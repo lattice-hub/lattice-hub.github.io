@@ -78,11 +78,12 @@ Content-Type: application/json
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
-| `GET` | `/config/v1/groups` | 配置分组 |
-| `GET` | `/config/v1/file` | 读配置文件 |
+| `GET` | `/config/v1/groups` | 配置分组（Console / 管理面） |
+| `GET` | `/config/v1/file` | 读配置文件（管理面） |
 | `POST` | `/config/v1/files/release` | 发布（含 `normal` / `gray`） |
+| `GET` | `/v1/GetConfigFile` | **客户端**拉配置；`tags=key=value` 命中灰度 |
 
-配置灰度的 curl 演示见 [配置中心指南](/docs/guides/console/configuration)。
+客户端多灰度 curl（无标签回落全量 / `tags=env=gray-a|gray-b` 命中不同灰度）见 [配置中心指南](/docs/guides/console/configuration)。
 
 ### 治理规则（节选）
 

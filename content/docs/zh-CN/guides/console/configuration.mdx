@@ -74,41 +74,45 @@ description: 配置分组、文件编辑、全量/多灰度发布、四态发布
 
 页面「灰度发布」Tab 文案：**多条 active gray release 独立生效，可提交为正式草稿或删除灰度。**
 
-![多灰度演示：OpenAPI 发布后 Console 并存与按条停灰度](/images/console/config-multi-gray-demo.gif)
+关键能力要用**客户端拉配置**验证，而不是只看 Console 列表：同一文件、不同 `tags`，会返回不同的 active 灰度内容；未命中则回落正式全量。
+
+![客户端 curl 拉配置：无标签 / gray-a / gray-b / 未命中回落全量](/images/console/config-multi-gray-demo.gif)
 
 ![灰度发布列表（两条 active 灰度并存）](/images/console/config-gray-releases.png)
 
-### 用 OpenAPI / curl 复现
+### 客户端 OpenAPI：curl 拉到不同版本
 
-本地 Console（默认 `http://pole.localhost`）可用仓库脚本一键造数：
+客户端接口（HTTP API，默认 `http://127.0.0.1:8090`，路径是 `/v1/...`，不是 Console 的 `/config/v1/...`）：
+
+```bash
+# 正式全量（无 tags / 未命中灰度）
+curl -sS "$CLIENT/v1/GetConfigFile?namespace=default&group=docs-multi-gray&fileName=app.yaml&version=0" \
+  | jq '{name:.file.name, release_type:.file.release_type, content:.file.content}'
+
+# 命中灰度 A
+curl -sS "$CLIENT/v1/GetConfigFile?namespace=default&group=docs-multi-gray&fileName=app.yaml&version=0&tags=env%3Dgray-a" \
+  | jq '{name:.file.name, release_type:.file.release_type, content:.file.content}'
+
+# 命中灰度 B
+curl -sS "$CLIENT/v1/GetConfigFile?namespace=default&group=docs-multi-gray&fileName=app.yaml&version=0&tags=env%3Dgray-b" \
+  | jq '{name:.file.name, release_type:.file.release_type, content:.file.content}'
+```
+
+`tags` 格式为 `key=value`（可重复传多个 `tags`）。期望结果示例：
+
+| 客户端 tags | `release_type` | 内容特征 |
+| --- | --- | --- |
+| （无）或 `env=other` | `normal` | `mode: baseline` |
+| `env=gray-a` | `gray` | `mode: gray-a` |
+| `env=gray-b` | `gray` | `mode: gray-b` |
+
+一键造数 + 客户端断言：
 
 ```bash
 ./scripts/demo-config-multi-gray.sh
 ```
 
-核心调用顺序：
-
-1. `POST /auth/v1/user/login` 取 `token` 与 `user_id`  
-2. `POST /config/v1/groups`、`POST|PUT /config/v1/files` 准备分组与文件  
-3. `POST /config/v1/files/release`，`release_type=normal` 发全量基线  
-4. 再两次 `PUT` 文件内容 + `POST .../release`，`release_type=gray` 并带不同 `beta_labels` / `name`  
-5. `GET /config/v1/files/releases?...` 应看到 **1 条 active normal + ≥2 条 active gray**
-
-灰度发布 body 示例（第二条换 `name` / `beta_labels` 即可并存）：
-
-```bash
-curl -sS -X POST "$BASE/config/v1/files/release" \
-  -H "Authorization: $TOKEN" -H "X-Pole-User: $USER_ID" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "namespace":"default","group":"docs-multi-gray","file_name":"app.yaml",
-    "name":"gray-env-a","release_description":"gray for env=gray-a",
-    "release_type":"gray",
-    "beta_labels":[{"key":"env","value":{"type":0,"value":"gray-a","value_type":0}}]
-  }'
-```
-
-Console 打开：`/configuration/group/files?namespace=default&group=docs-multi-gray&file=app.yaml` →「发布记录」→「灰度发布」。
+脚本会：Console 登录发布 1 条全量 + 2 条灰度，再分别用无标签 / `env=gray-a` / `env=gray-b` / `env=other` 调用 `GetConfigFile`，校验内容与类型。
 
 ### 客户端如何命中
 

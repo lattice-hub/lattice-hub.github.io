@@ -78,9 +78,10 @@ These routes build a mental model; they are **not** a complete catalog.
 
 | Method | Path | Notes |
 | --- | --- | --- |
-| `GET` | `/config/v1/groups` | Config groups |
-| `GET` | `/config/v1/file` | Read a config file |
+| `GET` | `/config/v1/groups` | Config groups (Console / admin) |
+| `GET` | `/config/v1/file` | Read a config file (admin) |
 | `POST` | `/config/v1/files/release` | Publish (`normal` / `gray`) |
+| `GET` | `/v1/GetConfigFile` | **Client** pull; `tags=key=value` selects gray |
 
 Curl walkthrough for multi-gray: [Configuration guide](/en/docs/guides/console/configuration).
 

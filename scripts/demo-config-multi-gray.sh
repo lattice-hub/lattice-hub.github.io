@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# Create a real multi-gray configuration demo against a running Control Plane Console API.
+# Publish 1 normal + 2 gray releases via Console OpenAPI, then prove client
+# GetConfigFile pulls hit different bodies by tags.
 # Requires: curl, jq
 set -euo pipefail
 
 BASE_URL="${POLE_BASE_URL:-http://pole.localhost}"
+CLIENT_URL="${POLE_CLIENT_URL:-http://127.0.0.1:8090}"
 USER="${POLE_USER:-admin}"
 PASSWORD="${POLE_PASSWORD:-admin123}"
 NAMESPACE="${POLE_NAMESPACE:-default}"
@@ -32,6 +34,15 @@ json_req() {
   fi
 }
 
+client_get() {
+  local tags="${1-}"
+  local url="${CLIENT_URL}/v1/GetConfigFile?namespace=${NAMESPACE}&group=${GROUP}&fileName=${FILE_NAME}&version=0"
+  if [[ -n "$tags" ]]; then
+    url="${url}&tags=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$tags")"
+  fi
+  curl -sS "$url"
+}
+
 echo "==> login ${BASE_URL}"
 LOGIN="$(curl -sS -X POST "${BASE_URL}/auth/v1/user/login" \
   -H 'Content-Type: application/json' \
@@ -43,7 +54,6 @@ TOKEN="$(echo "$LOGIN" | jq -r '.data.token')"
 USER_ID="$(echo "$LOGIN" | jq -r '.data.user_id')"
 
 echo "==> ensure group ${NAMESPACE}/${GROUP}"
-# recreate group if needed (ignore failure if exists)
 json_req POST /config/v1/groups "[{\"namespace\":\"${NAMESPACE}\",\"name\":\"${GROUP}\",\"comment\":\"docs multi-gray demo\",\"metadata\":{}}]" \
   | tee "${OUT_DIR}/02-create-group.json" >/dev/null || true
 
@@ -72,19 +82,50 @@ json_req PUT /config/v1/files "[{\"namespace\":\"${NAMESPACE}\",\"group\":\"${GR
 json_req POST /config/v1/files/release "{\"namespace\":\"${NAMESPACE}\",\"group\":\"${GROUP}\",\"file_name\":\"${FILE_NAME}\",\"name\":\"${GRAY_B}\",\"release_description\":\"gray for env=gray-b\",\"release_type\":\"gray\",\"beta_labels\":[{\"key\":\"env\",\"value\":{\"type\":0,\"value\":\"gray-b\",\"value_type\":0}}]}" \
   | tee "${OUT_DIR}/09-publish-gray-b.json" >/dev/null
 
-echo "==> list releases"
-RELEASES="$(json_req GET "/config/v1/files/releases?namespace=${NAMESPACE}&group=${GROUP}&file_name=${FILE_NAME}&offset=0&limit=20")"
-echo "$RELEASES" | tee "${OUT_DIR}/10-list-releases.json" >/dev/null
-ACTIVE_GRAY="$(echo "$RELEASES" | jq '[((.data // .configFileReleases // [])[]) | select(.release_type=="gray" and (.active==true or .active==1))] | length')"
-ACTIVE_NORMAL="$(echo "$RELEASES" | jq '[((.data // .configFileReleases // [])[]) | select(.release_type=="normal" and (.active==true or .active==1))] | length')"
-echo "active normal count: ${ACTIVE_NORMAL}"
-echo "active gray count: ${ACTIVE_GRAY}"
-[[ "${ACTIVE_NORMAL}" -ge 1 ]] || { echo "expected >=1 active normal"; echo "$RELEASES" | jq .; exit 1; }
-[[ "${ACTIVE_GRAY}" -ge 2 ]] || { echo "expected >=2 active grays"; echo "$RELEASES" | jq .; exit 1; }
+echo "==> list releases (best-effort; client pulls are the source of truth)"
+RELEASES="$(json_req GET "/config/v1/files/releases?namespace=${NAMESPACE}&group=${GROUP}&file_name=${FILE_NAME}&offset=0&limit=20" || true)"
+echo "$RELEASES" | tee "${OUT_DIR}/10-list-releases.json" >/dev/null || true
+if [[ "$(echo "$RELEASES" | jq -r '.code // empty')" == "200000" ]]; then
+  ACTIVE_GRAY="$(echo "$RELEASES" | jq '[((.data // .configFileReleases // [])[]) | select(.release_type=="gray" and (.active==true or .active==1))] | length')"
+  ACTIVE_NORMAL="$(echo "$RELEASES" | jq '[((.data // .configFileReleases // [])[]) | select(.release_type=="normal" and (.active==true or .active==1))] | length')"
+  echo "active normal count: ${ACTIVE_NORMAL}"
+  echo "active gray count: ${ACTIVE_GRAY}"
+else
+  echo "list releases skipped/failed: $(echo "$RELEASES" | jq -c '{code,info}' 2>/dev/null || echo "$RELEASES")"
+fi
+
+echo "==> client pull via ${CLIENT_URL}/v1/GetConfigFile"
+PULL_NONE="$(client_get)"
+PULL_A="$(client_get "env=gray-a")"
+PULL_B="$(client_get "env=gray-b")"
+PULL_OTHER="$(client_get "env=other")"
+echo "$PULL_NONE" | tee "${OUT_DIR}/11-client-no-tags.json" >/dev/null
+echo "$PULL_A" | tee "${OUT_DIR}/12-client-gray-a.json" >/dev/null
+echo "$PULL_B" | tee "${OUT_DIR}/13-client-gray-b.json" >/dev/null
+echo "$PULL_OTHER" | tee "${OUT_DIR}/14-client-other.json" >/dev/null
+
+assert_pull() {
+  local label="$1" resp="$2" expect_type="$3" expect_content_substr="$4"
+  local got_type got_name got_content
+  got_type="$(echo "$resp" | jq -r '.file.release_type // empty')"
+  got_name="$(echo "$resp" | jq -r '.file.name // empty')"
+  got_content="$(echo "$resp" | jq -r '.file.content // empty')"
+  echo "client[${label}] -> type=${got_type} name=${got_name}"
+  echo "$got_content" | sed 's/^/  | /'
+  [[ "$(echo "$resp" | jq -r '.code')" == "200000" ]] || { echo "pull failed: $resp"; exit 1; }
+  [[ "$got_type" == "$expect_type" ]] || { echo "expected release_type=${expect_type}, got ${got_type}"; exit 1; }
+  [[ "$got_content" == *"$expect_content_substr"* ]] || { echo "content missing ${expect_content_substr}"; exit 1; }
+}
+
+assert_pull "no-tags" "$PULL_NONE" "normal" "mode: baseline"
+assert_pull "env=gray-a" "$PULL_A" "gray" "mode: gray-a"
+assert_pull "env=gray-b" "$PULL_B" "gray" "mode: gray-b"
+assert_pull "env=other" "$PULL_OTHER" "normal" "mode: baseline"
 
 CONSOLE_URL="${BASE_URL}/configuration/group/files?namespace=${NAMESPACE}&group=${GROUP}&file=${FILE_NAME}"
 cat > "${OUT_DIR}/demo.env" <<EOF
 BASE_URL=${BASE_URL}
+CLIENT_URL=${CLIENT_URL}
 NAMESPACE=${NAMESPACE}
 GROUP=${GROUP}
 FILE_NAME=${FILE_NAME}
@@ -98,4 +139,5 @@ EOF
 
 echo "==> done"
 echo "CONSOLE_URL=${CONSOLE_URL}"
+echo "CLIENT_GET=${CLIENT_URL}/v1/GetConfigFile?namespace=${NAMESPACE}&group=${GROUP}&fileName=${FILE_NAME}&version=0"
 echo "OUT_DIR=${OUT_DIR}"

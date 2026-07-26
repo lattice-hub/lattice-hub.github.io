@@ -74,41 +74,45 @@ Configuration is not “one gray at a time per file”. The model is:
 
 The Gray releases tab copy states that multiple active gray releases take effect independently and can be submitted as a formal draft or deleted.
 
-![Multi-gray demo: OpenAPI publish, concurrent grays in Console, stop one gray](/images/console/config-multi-gray-demo.gif)
+Prove it with **client pulls**, not only the Console list: same file, different `tags`, different active gray bodies; unmatched clients fall back to the formal release.
+
+![Client curl pulls: no tags / gray-a / gray-b / unmatched → formal](/images/console/config-multi-gray-demo.gif)
 
 ![Gray releases (two active grays)](/images/console/config-gray-releases.png)
 
-### Reproduce with OpenAPI / curl
+### Client OpenAPI: curl different versions
 
-Against a local Console (default `http://pole.localhost`), seed data with:
+Client HTTP API (default `http://127.0.0.1:8090`, path `/v1/...`, not Console `/config/v1/...`):
+
+```bash
+# Formal baseline (no tags / unmatched gray)
+curl -sS "$CLIENT/v1/GetConfigFile?namespace=default&group=docs-multi-gray&fileName=app.yaml&version=0" \
+  | jq '{name:.file.name, release_type:.file.release_type, content:.file.content}'
+
+# Hit gray A
+curl -sS "$CLIENT/v1/GetConfigFile?namespace=default&group=docs-multi-gray&fileName=app.yaml&version=0&tags=env%3Dgray-a" \
+  | jq '{name:.file.name, release_type:.file.release_type, content:.file.content}'
+
+# Hit gray B
+curl -sS "$CLIENT/v1/GetConfigFile?namespace=default&group=docs-multi-gray&fileName=app.yaml&version=0&tags=env%3Dgray-b" \
+  | jq '{name:.file.name, release_type:.file.release_type, content:.file.content}'
+```
+
+`tags` is `key=value` (repeat `tags` for multiple labels). Expected:
+
+| Client tags | `release_type` | Content |
+| --- | --- | --- |
+| (none) or `env=other` | `normal` | `mode: baseline` |
+| `env=gray-a` | `gray` | `mode: gray-a` |
+| `env=gray-b` | `gray` | `mode: gray-b` |
+
+Seed + assert in one shot:
 
 ```bash
 ./scripts/demo-config-multi-gray.sh
 ```
 
-Call sequence:
-
-1. `POST /auth/v1/user/login` → `token` and `user_id`  
-2. `POST /config/v1/groups`, `POST|PUT /config/v1/files`  
-3. `POST /config/v1/files/release` with `release_type=normal`  
-4. Two more file updates + gray releases (`release_type=gray`, distinct `beta_labels` / `name`)  
-5. `GET /config/v1/files/releases?...` should show **1 active normal + ≥2 active gray**
-
-Gray publish body (change `name` / `beta_labels` for a second concurrent gray):
-
-```bash
-curl -sS -X POST "$BASE/config/v1/files/release" \
-  -H "Authorization: $TOKEN" -H "X-Pole-User: $USER_ID" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "namespace":"default","group":"docs-multi-gray","file_name":"app.yaml",
-    "name":"gray-env-a","release_description":"gray for env=gray-a",
-    "release_type":"gray",
-    "beta_labels":[{"key":"env","value":{"type":0,"value":"gray-a","value_type":0}}]
-  }'
-```
-
-Open Console: `/configuration/group/files?namespace=default&group=docs-multi-gray&file=app.yaml` → Release history → Gray releases.
+The script publishes 1 normal + 2 grays via Console APIs, then calls `GetConfigFile` with no tags / `env=gray-a` / `env=gray-b` / `env=other` and checks type + content.
 
 ### How clients resolve
 
