@@ -1,9 +1,9 @@
 ---
 title: Progressive delivery
-description: End-to-end practice for editing, validating, rolling out, and rolling back configuration and governance releases.
+description: Real configs, community demos, verification steps, and observable effects for multi-gray configuration and governance releases.
 ---
 
-Progressive delivery separates edit state from runtime state. Rules and configuration are edited and validated first, then immutable releases become the client-visible active view.
+Progressive delivery separates **edit state** from **runtime state**. Rules and configuration are edited and validated first; immutable releases become the client-visible active view.
 
 ![gray release practice](/diagrams/gray-release-practice.svg)
 
@@ -11,60 +11,243 @@ Progressive delivery separates edit state from runtime state. Rules and configur
 
 | Object | Release unit | Client reads |
 | --- | --- | --- |
-| Configuration | Config File Release | Long-poll / SSE published versions |
-| Governance | Rule Release | Active release cache views |
+| Configuration | Config File Release | `GetConfigFile` / long-poll published versions |
+| Governance | Rule Release | Discover active-release cache views |
 
 Services, MCP servers, and A2A agents use registration/discovery and revisions—not the same draft → active release lifecycle.
 
 ## Standard flow
 
-1. Edit the draft in Console.
-2. Pass auth, parameter, and resource-existence checks.
-3. Publish to a progressive scope or fully.
-4. Observe client adoption, business errors, and history.
-5. Complete rollout or roll back / stop gray.
+1. **Edit draft** — change config/rule body in Console/API; runtime unchanged.  
+2. **Pre-publish checks** — auth, parameters, resource existence.  
+3. **Choose scope** — full or gray (define client labels / environments first).  
+4. **Observe** — client adoption, business errors, History.  
+5. **Finish or roll back** — full publish, or stop gray / roll back per release.
 
-## Configuration notes
+---
 
-Configuration supports **multiple concurrent active gray releases** per file (keyed by releaseName). Full publish does not end them; stop-gray is per release. When a client matches several grays, the control plane returns the newest by version/mtime. See [Configuration guide](/en/docs/guides/console/configuration).
+## A. Configuration multi-gray (run this first)
 
-- Publish independent grays for different client-label sets, then watch subscription hits.
-- After validation, “submit as formal draft” then full-publish; keep or stop other grays independently.
-- Keep history so rollback targets a known version.
-- Stay under the 20,000-character content limit.
-- Pole Agent only prepares drafts; humans click publish.
+### Actual configuration
 
-## Governance notes
+One file can keep **1 active normal + multiple active grays** (keyed by `releaseName`). Gray publish body:
 
-| Family | Watch during progressive delivery |
+```json
+{
+  "namespace": "default",
+  "group": "docs-multi-gray",
+  "file_name": "app.yaml",
+  "name": "gray-env-a",
+  "release_description": "gray for env=gray-a",
+  "release_type": "gray",
+  "beta_labels": [{
+    "key": "env",
+    "value": { "type": 0, "value": "gray-a", "value_type": 0 }
+  }]
+}
+```
+
+Full publish uses `release_type=normal` without `beta_labels`. Sample bodies:
+
+| Release | content |
 | --- | --- |
-| Route / lane | Traffic lands on the expected instance set |
-| Rate limit | Rejects match the threshold without collateral damage |
-| Circuit breaker / fault detect | Open/recover conditions behave as intended |
-| Lossless | Register delay, drain, and readiness stay smooth |
-| Traffic security | Denies are accurate; no unintended allow |
-| Mirror / Mock | Side effects stay inside the intended scope |
+| Formal | `mode: baseline` / `version: 1` |
+| Gray A | `mode: gray-a` / `cohort: env=gray-a` |
+| Gray B | `mode: gray-b` / `cohort: env=gray-b` |
 
-Publish permissions are split by resource (`PublishRouteRules`, `PublishRateLimitRules`, …). Grant least privilege.
+See [Configuration guide](/en/docs/guides/console/configuration) for semantics.
+
+### Community demo
+
+| Entry | What it does |
+| --- | --- |
+| Website script | `website/scripts/demo-config-multi-gray.sh` — publish 1 normal + 2 grays, then **assert client pulls** |
+| Control-plane smoke | `pole-control-plane/console/web/scripts/smoke-configuration-flow.mjs` |
+| Docs GIF | Client curl demo on the [configuration guide](/en/docs/guides/console/configuration) |
+
+```bash
+# from the website repo root
+./scripts/demo-config-multi-gray.sh
+```
+
+Env: `POLE_BASE_URL` (Console, default `http://pole.localhost`), `POLE_CLIENT_URL` (client HTTP API, default `http://127.0.0.1:8090`).
+
+### How to verify
+
+```bash
+CLIENT="${POLE_CLIENT_URL:-http://127.0.0.1:8090}"
+FILE_Q='namespace=default&group=docs-multi-gray&fileName=app.yaml&version=0'
+
+curl -sS "$CLIENT/v1/GetConfigFile?$FILE_Q" \
+  | jq '{name:.file.name, type:.file.release_type, content:.file.content}'
+
+curl -sS "$CLIENT/v1/GetConfigFile?$FILE_Q&tags=env%3Dgray-a" | jq '{name:.file.name, type:.file.release_type, content:.file.content}'
+curl -sS "$CLIENT/v1/GetConfigFile?$FILE_Q&tags=env%3Dgray-b" | jq '{name:.file.name, type:.file.release_type, content:.file.content}'
+```
+
+Console: Configuration → group `docs-multi-gray` → `app.yaml` → Release history → Gray releases.
+
+### Expected effects
+
+| Client tags | `release_type` | Content |
+| --- | --- | --- |
+| (none) or `env=other` | `normal` | `mode: baseline` |
+| `env=gray-a` | `gray` | `mode: gray-a` |
+| `env=gray-b` | `gray` | `mode: gray-b` |
+
+- Full publish does **not** end active grays.  
+- Stop-gray is **per** `releaseName`.  
+- Multi-match → newest by **version → mtime**.
+
+---
+
+## B. Governance gray (route / rate limit / lane)
+
+### Actual configuration
+
+Rule body and release are separate. Shapes from community e2e fixtures (`pole-control-plane/test/e2e/internal/e2e/fixtures.go`):
+
+**Route** — header `x-tenant=vip` → destination label `version=v1`:
+
+```json
+{
+  "name": "vip-route-demo",
+  "enable": true,
+  "priority": 10,
+  "routing_config": {
+    "@type": "type.googleapis.com/v1.RuleRoutingConfig",
+    "caller": { "namespace": "default", "service": "order" },
+    "callee": { "namespace": "default", "service": "payment" },
+    "rules": [{
+      "name": "vip-route",
+      "arguments": {
+        "matchMode": "AND",
+        "arguments": [{
+          "type": "HEADER", "key": "x-tenant",
+          "value": { "type": "EXACT", "value": "vip", "value_type": "TEXT" }
+        }]
+      },
+      "destinations": [{
+        "namespace": "default", "service": "payment",
+        "name": "primary", "weight": 100,
+        "labels": {
+          "version": { "type": "EXACT", "value": "v1", "value_type": "TEXT" }
+        }
+      }]
+    }]
+  }
+}
+```
+
+**Rate limit** — `POST /api/v1/payments` + `x-tenant=vip`, local QPS 120, `REJECT`:
+
+```json
+{
+  "name": "vip-rl-demo",
+  "namespace": "default",
+  "service": "payment",
+  "enable": true,
+  "priority": 10,
+  "rules": [{
+    "method": { "type": "EXACT", "value": "POST /api/v1/payments" },
+    "arguments": [{
+      "type": "HEADER", "key": "x-tenant",
+      "value": { "type": "EXACT", "value": "vip", "value_type": "TEXT" }
+    }],
+    "amounts": [{ "validDuration": "1s", "maxAmount": 120 }],
+    "resource": "QPS", "type": "LOCAL", "action": "REJECT",
+    "failover": "FAILOVER_LOCAL"
+  }]
+}
+```
+
+**Lane** — after entry match, destinations carry `lane=blue` (see fixture `LaneGroup`; traffic match uses header `x-lane=blue`).
+
+Gray release body (only labeled clients see the new rule):
+
+```json
+{
+  "rule_id": "<id>",
+  "rule_name": "vip-route-demo",
+  "resource": "RouteRules",
+  "version": 2,
+  "release_name": "e2e-gray",
+  "release_type": "ReleaseTypeGray",
+  "client_labels": [{
+    "key": "e2e-gray",
+    "value": { "type": "EXACT", "value": "true", "value_type": "TEXT" }
+  }],
+  "active": true
+}
+```
+
+Full release: `ReleaseTypeNormal` without `client_labels`.
+
+### Community demo
+
+| Entry | What it does |
+| --- | --- |
+| e2e fixtures | `fixtures.go` — `RouteRule` / `RateLimitRule` / `LaneGroup` / `GrayRuleRelease` |
+| e2e tests | `test/e2e/console_api`, `test/e2e/client` |
+| Console guides | [Route](/en/docs/guides/console/governance/route), [Rate limit](/en/docs/guides/console/governance/rate-limit), [Lane](/en/docs/guides/console/governance/lane) |
+
+```bash
+# in pole-control-plane (needs a reachable control plane for e2e)
+CGO_ENABLED=0 go test -tags=e2e ./test/e2e/console_api/... -count=1
+CGO_ENABLED=0 go test -tags=e2e ./test/e2e/client/... -count=1
+```
+
+### How to verify
+
+1. Console: Governance → create route/rate-limit/lane → publish gray with `client_labels`.  
+2. Or HTTP: `POST /naming/v1/routings` (or `ratelimits` / `lane/groups`) → `POST .../releases`.  
+3. Client Discover:
+
+```bash
+curl -sS -X POST "$CLIENT/naming/v1/Discover" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "type": "CUSTOM_ROUTE_RULE",
+    "service": { "namespace": "default", "name": "payment" },
+    "filter": {}
+  }' | jq .
+```
+
+Use `RATE_LIMIT` for rate-limit rules. Labeled clients should see the gray release; others keep the formal one.
+
+### Expected effects
+
+| Rule | Trigger | Effect |
+| --- | --- | --- |
+| Route | Header `x-tenant: vip` | Traffic to `version=v1` instances; weights sum to 100% |
+| Rate limit | VIP path QPS > 120/s | Matched requests `REJECT`; other tenants unaffected |
+| Lane | Entry matches lane rule | Downstream only `lane=blue` destinations |
+| Rule gray | Client label `e2e-gray=true` | Discover returns gray rule; unlabeled clients stay on formal |
+
+After stop-gray / rollback, Discover no longer shows that release name (or reverts to previous active).
+
+---
 
 ## Checklist
 
-- [ ] Correct Namespace (not accidental production)
-- [ ] Target resources exist and revisions are traceable
-- [ ] Publisher has the matching Publish permission
-- [ ] Progressive scope is explainable and reversible
-- [ ] Previous active version is still available to roll back
-- [ ] History / platform metrics show the change
+- [ ] Correct Namespace (not accidental production)  
+- [ ] Targets exist; revisions are traceable  
+- [ ] Publisher has the matching Publish permission  
+- [ ] Progressive scope is reversible (config by `releaseName`, governance by `client_labels`)  
+- [ ] Verified with **client APIs** (`GetConfigFile` / `Discover`), not Console lists alone  
+- [ ] Rollback path ready; History shows the change  
 
 ## Anti-patterns
 
-- Writing “effective” data directly into the database.
-- Treating unpublished drafts as runtime truth.
-- Full rollout with no observation window.
-- Letting Pole Agent auto-publish or delete.
+- Writing “effective” data directly into the database.  
+- Treating unpublished drafts as runtime truth.  
+- Screenshotting Console badges without client pull / Discover checks.  
+- Full rollout with no observation window.  
+- Letting Pole Agent auto-publish or delete.  
 
 ## Deeper reading
 
+- [Configuration guide (client curl)](/en/docs/guides/console/configuration)
 - [Governance rules and releases](/en/docs/principles/governance-release)
 - [Configuration rollout](/en/docs/blog/config-rollout)
-- [Using the Console](/en/docs/guides/console)
+- [HTTP OpenAPI](/en/docs/api/http-openapi)

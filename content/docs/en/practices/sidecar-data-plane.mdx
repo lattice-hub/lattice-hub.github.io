@@ -23,7 +23,43 @@ RUST_LOG=info cargo run
 SIDECAR_CONFIG=./sidecar.toml RUST_LOG=debug cargo run
 ```
 
-Requires Rust `1.74+`. Match `grpc_prefix` before `prefix`. Sample LB is round-robin.
+Requires Rust `1.74+`. Match `grpc_prefix` before `prefix`. Sample LB is round-robin. Full sample TOML is in the Chinese practice page / `pole-sidecar/sidecar.toml` (inbound `8080`, `/api/` → `backend_http`, gRPC Greeter → `backend_grpc`).
+
+## Community demo
+
+| Entry | What it does |
+| --- | --- |
+| Local sample | `pole-sidecar/sidecar.toml` + `RUST_LOG=info cargo run` |
+| Design docs | `pole-sidecar/docs/design/` |
+| K8s inject | `pole-controller` `sidecarInject.mode=dns|mesh` |
+| SDK contrast | `pole-client-rust/examples/{discover,config}.rs` |
+
+```bash
+cd pole-sidecar
+cargo build
+# start a local upstream on 127.0.0.1:9000, then:
+RUST_LOG=info cargo run
+```
+
+## How to verify
+
+```bash
+curl -sS -D - http://127.0.0.1:8080/api/hello
+# expect forward to cluster backend_http endpoints per [[routes]] prefix=/api/
+```
+
+Also verify gRPC via `grpc_prefix` + `content-type: application/grpc`, and on Kubernetes check injected sidecar containers, readiness, and outbound targets. When pairing with governance, publish active route/rate-limit releases first, then observe proxy behavior—separate “rule not published” from “proxy not consuming”.
+
+## Expected effects
+
+| Scenario | Effect |
+| --- | --- |
+| HTTP `prefix=/api/` match | Forward to `backend_http` (round-robin) |
+| gRPC `grpc_prefix` match | Forward to `backend_grpc` |
+| No route match | Local reject / no forward (per Sidecar version) |
+| dns inject | Discovery via DNS interception |
+| mesh inject | Traffic hijack; deeper intercept hooks |
+| Local TOML only | Local routing may change; TOML is **not** cluster governance truth |
 
 ## Collaboration rules
 

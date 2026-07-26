@@ -33,6 +33,90 @@ Suitable for authorized reads and human-confirmed configuration drafts. Not allo
 
 Write path: read → proposal → preview → concurrency checks → confirm → **draft only** → human publish in the config center.
 
+## Actual configuration
+
+Community e2e payloads (`pole-control-plane/test/e2e/internal/e2e/fixtures.go`):
+
+**MCP server**
+
+```json
+{
+  "name": "demo-mcp",
+  "namespace": "default",
+  "protocol": "MCP_PROTOCOL_SSE",
+  "backend_type": "service",
+  "backend_service": { "namespace": "default", "name": "gateway" },
+  "tools": [{
+    "name": "orders.query",
+    "description": "query orders",
+    "input_schema": {
+      "type": "object",
+      "properties": { "id": { "type": "string" } }
+    }
+  }]
+}
+```
+
+**A2A agent** (registry card only — does not run tasks)
+
+```json
+{
+  "name": "demo-a2a",
+  "namespace": "default",
+  "source_type": "custom",
+  "backend": { "type": "service", "namespace": "default", "service": "gateway" },
+  "agent_card": {
+    "name": "demo-a2a",
+    "description": "demo card",
+    "version": "1.0.0",
+    "url": "http://127.0.0.1/a2a",
+    "skills": [{ "id": "order-query", "name": "Order Query", "description": "query orders" }]
+  },
+  "skills": [{ "id": "order-query", "name": "Order Query", "description": "query orders" }]
+}
+```
+
+APIs: `/ai/mcp/v1/servers`, `/ai/a2a/v1/agents`, `/ai/a2a/v1/agents/{id}/card`, `/ai/mcp/v1/server/tools`. SSE baseline: `/ai/mcp/v1/sse`.
+
+## Community demo
+
+| Entry | What it does |
+| --- | --- |
+| e2e | `test/e2e/console_api` — MCP/A2A CRUD + card/skills |
+| Agent smoke | `console/web/scripts/smoke-agent-workbench.mjs` — confirm writes **draft only** |
+| Auth contract | `console/web/scripts/verify-ai-resource-authorization.mjs` |
+| Console | [MCP](/en/docs/guides/console/mcp), [A2A](/en/docs/guides/console/a2a), [Pole Agent](/en/docs/guides/console/agent) |
+
+```bash
+CGO_ENABLED=0 go test -tags=e2e ./test/e2e/console_api/... -count=1 -run MCP
+POLE_BASE_URL=http://127.0.0.1:8080 node console/web/scripts/smoke-agent-workbench.mjs
+```
+
+## How to verify
+
+```bash
+curl -sS -X POST "$BASE/ai/mcp/v1/servers" -H 'Content-Type: application/json' \
+  -H "Authorization: $TOKEN" -H "X-Pole-User: $USER_ID" \
+  -d @mcp-server.json | jq '{code,info}'
+
+curl -sS "$BASE/ai/mcp/v1/servers?namespace=default&offset=0&limit=20" \
+  -H "Authorization: $TOKEN" -H "X-Pole-User: $USER_ID" \
+  | jq '.data[]? | {name,namespace,protocol}'
+```
+
+Console: `/ai/mcps`, `/ai/a2a` → create → inspect tools/skills/card.  
+Pole Agent: after confirm, config center shows a **draft**; active release must not change by itself.
+
+## Expected effects
+
+| Step | Effect |
+| --- | --- |
+| Create MCP | Server listed; tools API returns `orders.query` |
+| Create A2A | Agent listed; card endpoint returns skills |
+| Tighten auth | Unauthorized principals fail reads (`MCPServerResources` / `A2AAgentResources`) |
+| Agent confirm write | Draft only; human publish required for clients |
+| Delete resource | Catalog/cache stop returning it |
+
 ## Checklist
 
 - [ ] MCP/A2A resources land in the correct Namespace

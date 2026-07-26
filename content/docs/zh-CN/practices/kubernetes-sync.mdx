@@ -84,6 +84,63 @@ Controller 支持给应用 Pod 注入数据面：
 2. 注入模板与镜像版本匹配集群架构。
 3. 应用就绪探针与无损上下线规则不冲突。
 
+## 实际配置（Controller）
+
+社区清单里的关键字段（`pole-controller/deploy/kubernetes_v1.22/kubernetes/configmap.yaml`）：
+
+```yaml
+serviceSync:
+  enable: true
+  mode: "demand"           # 或 all
+  serverAddress: "<control-plane-host>"
+  accessToken: "<token>"
+configSync:
+  enable: true
+  syncDirection: both      # kubernetesToPolaris | polarisToKubernetes | both
+sidecarInject:
+  mode: "dns"              # 或 mesh
+```
+
+按需同步的 Service 注解见上文示例。部署变量写在 `deploy/variables.txt`（如 `POLARIS_HOST`、`POLARIS_TOKEN`）。
+
+## 社区 Demo
+
+| 入口 | 说明 |
+| --- | --- |
+| 静态清单 | `pole-controller/deploy/kubernetes_v1.22/kubernetes` + `install.sh` |
+| Helm | `pole-controller/deploy/kubernetes_v1.22/helm`（先 `deploy/init_helm.sh`） |
+| 组件说明 | [Kubernetes Controller](/docs/components/kubernetes-controller) |
+
+> Console 配置中心里的 “Kubernetes” 页不是同步实现入口；**同步能力在 `pole-controller` 仓库**。
+
+## 怎么触发验证
+
+```bash
+cd pole-controller
+# 填好 deploy/variables.txt 后
+cd deploy/kubernetes_v1.22/kubernetes && bash install.sh
+
+kubectl get pods -n polaris-system
+# demand 模式：给目标 Service 打 polarismesh.cn/sync=true
+kubectl annotate svc orders -n payments polarismesh.cn/sync=true --overwrite
+```
+
+然后：
+
+1. 看 Controller 日志 `syncnaming` / 同步成功事件。  
+2. Console → 注册发现：服务 / 别名 / 实例是否出现。  
+3. SDK 或 Sidecar：`Discover INSTANCE` 能拉到这些实例。
+
+## 效果是什么
+
+| 操作 | 预期效果 |
+| --- | --- |
+| `mode=demand` + 打 `sync=true` | 仅该 Service 进入控制面目录 |
+| `mode=all` | 集群 Service 尽量全量出现（注意噪声） |
+| 配置别名注解 | Console 出现 `aliasService` / `aliasNamespace` 指向 |
+| 启用 `sidecarInject` | 符合模板的 Pod 注入 dns/mesh 数据面 |
+| 去掉 sync / 删 Service | 控制面目录随同步策略收敛（以 Controller 版本行为为准） |
+
 ## 观察与排障
 
 - 看 Controller 日志中的同步成功/失败事件。

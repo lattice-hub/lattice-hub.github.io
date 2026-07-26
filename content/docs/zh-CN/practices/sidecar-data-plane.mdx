@@ -68,6 +68,48 @@ tls = false
 - 入站默认 HTTP/1.1 与 HTTP/2（含 gRPC-h2c）。
 - 负载均衡当前为简单轮询；生产前按版本确认是否已扩展其他策略。
 
+## 社区 Demo
+
+| 入口 | 说明 |
+| --- | --- |
+| 本地样例 | `pole-sidecar/sidecar.toml` + `RUST_LOG=info cargo run` |
+| 设计文档 | `pole-sidecar/docs/design/` |
+| K8s 注入 | `pole-controller` 的 `sidecarInject.mode=dns|mesh` + client config 模板 |
+| SDK 对照 | `pole-client-rust/examples/{discover,config}.rs`（Proxyless） |
+
+```bash
+cd pole-sidecar
+cargo build
+# 先起一个本机上游，例如 127.0.0.1:9000，再：
+RUST_LOG=info cargo run
+# 或
+SIDECAR_CONFIG=./sidecar.toml RUST_LOG=debug cargo run
+```
+
+## 怎么触发验证
+
+1. **本地转发**：对 Sidecar inbound（默认 `0.0.0.0:8080`）发请求：
+
+```bash
+curl -sS -D - http://127.0.0.1:8080/api/hello
+# 期望按 [[routes]] prefix=/api/ 转发到 cluster backend_http 的 endpoints
+```
+
+2. **gRPC 前缀**：`content-type: application/grpc` 且 path 匹配 `grpc_prefix` 时走对应 cluster。  
+3. **K8s**：装好 controller 并注入后，检查 Pod 是否多出 sidecar 容器、应用就绪探针仍绿、出站是否打到预期上游。  
+4. **与治理联调**（演进中）：在控制面发布路由/限流 active release，再观察 Sidecar 拦截器/转发是否变化；区分“规则未发布”和“代理未消费”。
+
+## 效果是什么
+
+| 场景 | 预期效果 |
+| --- | --- |
+| HTTP `prefix=/api/` 命中 | 请求转发到 `backend_http` endpoints（轮询） |
+| gRPC `grpc_prefix` 命中 | HTTP/2 gRPC 转到 `backend_grpc` |
+| 路由未命中 | 本地拒绝/未转发（以当前 Sidecar 版本行为为准） |
+| dns 注入 | 通过 DNS 拦截做发现，侵入较低 |
+| mesh 注入 | 流量劫持，治理拦截更深 |
+| 仅改本地 TOML、未发控制面规则 | 本地路由可变，但**不应**把 TOML 当作集群级治理真相源 |
+
 ## 与控制面协作
 
 正确职责划分：

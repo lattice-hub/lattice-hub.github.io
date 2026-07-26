@@ -67,6 +67,96 @@ Pole Agent 是 Console 的一等对话入口，适合：
 
 配置写路径：读取 → 提案 → 预览 → 哈希/并发检查 → 用户确认 → **仅保存草稿** → 用户在配置中心发布。
 
+## 实际配置是什么
+
+社区 e2e 载荷（`pole-control-plane/test/e2e/internal/e2e/fixtures.go`）：
+
+**MCP Server**
+
+```json
+{
+  "name": "demo-mcp",
+  "namespace": "default",
+  "protocol": "MCP_PROTOCOL_SSE",
+  "backend_type": "service",
+  "backend_service": { "namespace": "default", "name": "gateway" },
+  "tools": [{
+    "name": "orders.query",
+    "description": "query orders",
+    "input_schema": {
+      "type": "object",
+      "properties": { "id": { "type": "string" } }
+    }
+  }]
+}
+```
+
+**A2A Agent**（Registry 名片，不执行任务）
+
+```json
+{
+  "name": "demo-a2a",
+  "namespace": "default",
+  "source_type": "custom",
+  "backend": { "type": "service", "namespace": "default", "service": "gateway" },
+  "agent_card": {
+    "name": "demo-a2a",
+    "description": "demo card",
+    "version": "1.0.0",
+    "url": "http://127.0.0.1/a2a",
+    "skills": [{ "id": "order-query", "name": "Order Query", "description": "query orders" }]
+  },
+  "skills": [{ "id": "order-query", "name": "Order Query", "description": "query orders" }]
+}
+```
+
+主要 API：`/ai/mcp/v1/servers`、`/ai/a2a/v1/agents`、`/ai/a2a/v1/agents/{id}/card`、`/ai/mcp/v1/server/tools`。SSE 基线：`/ai/mcp/v1/sse`。
+
+## 社区 Demo
+
+| 入口 | 说明 |
+| --- | --- |
+| e2e | `pole-control-plane/test/e2e/console_api`：MCP/A2A CRUD + card/skills |
+| Agent 烟测 | `console/web/scripts/smoke-agent-workbench.mjs`：提案→确认**只改草稿** |
+| 授权契约 | `console/web/scripts/verify-ai-resource-authorization.mjs` |
+| Console | [MCP](/docs/guides/console/mcp)、[A2A](/docs/guides/console/a2a)、[Pole Agent](/docs/guides/console/agent) |
+
+```bash
+# 控制面仓库
+CGO_ENABLED=0 go test -tags=e2e ./test/e2e/console_api/... -count=1 -run MCP
+POLE_BASE_URL=http://127.0.0.1:8080 node console/web/scripts/smoke-agent-workbench.mjs
+```
+
+## 怎么触发验证
+
+```bash
+# 登录后（Authorization + X-Pole-User）
+curl -sS -X POST "$BASE/ai/mcp/v1/servers" -H 'Content-Type: application/json' \
+  -H "Authorization: $TOKEN" -H "X-Pole-User: $USER_ID" \
+  -d @mcp-server.json | jq '{code,info}'
+
+curl -sS "$BASE/ai/mcp/v1/servers?namespace=default&offset=0&limit=20" \
+  -H "Authorization: $TOKEN" -H "X-Pole-User: $USER_ID" \
+  | jq '.data[]? | {name,namespace,protocol}'
+
+curl -sS -X POST "$BASE/ai/a2a/v1/agents" -H 'Content-Type: application/json' \
+  -H "Authorization: $TOKEN" -H "X-Pole-User: $USER_ID" \
+  -d @a2a-agent.json | jq '{code,info}'
+```
+
+Console：`/ai/mcps`、`/ai/a2a` 新建 → 详情核对 tools / skills / card。  
+Pole Agent：对话改配置 → 确认后到配置中心看**草稿**，active release 不应自动变化。
+
+## 效果是什么
+
+| 步骤 | 预期效果 |
+| --- | --- |
+| 创建 MCP | 列表出现 Server；`/server/tools` 能列出 `orders.query` |
+| 创建 A2A | 列表出现 Agent；`/agents/{id}/card` 返回 skills |
+| 鉴权收紧 | 无权限主体读目录失败（资源类型 `MCPServerResources` / `A2AAgentResources`） |
+| Agent 确认写配置 | 仅保存草稿；须人工在配置中心发布才对客户端可见 |
+| 删除资源 | 目录与缓存不再返回该 Server/Agent |
+
 ## 与服务治理对齐
 
 | 实践 | 原因 |

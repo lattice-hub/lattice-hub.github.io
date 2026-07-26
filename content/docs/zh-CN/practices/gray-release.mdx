@@ -1,9 +1,9 @@
 ---
 title: 灰度发布
-description: 配置与治理规则从编辑、校验、灰度到全量或回滚的完整实践流程。
+description: 配置多灰度与治理规则灰度的实际配置、社区 Demo、触发验证与可观察效果。
 ---
 
-灰度发布的核心不是“多一个开关”，而是把编辑态与生效态分开：规则或配置先完成编辑与校验，再通过不可变版本进入客户端可见的 active 视图。
+灰度发布的核心不是“多一个开关”，而是把**编辑态**与**生效态**分开：规则或配置先完成编辑与校验，再通过不可变版本进入客户端可见的 active 视图。
 
 ![gray release practice](/diagrams/gray-release-practice.svg)
 
@@ -11,67 +11,245 @@ description: 配置与治理规则从编辑、校验、灰度到全量或回滚�
 
 | 对象 | 发布单元 | 客户端读取 |
 | --- | --- | --- |
-| 配置中心 | Config File Release | 长轮询 / SSE 拿到的发布版本 |
-| 治理规则 | Rule Release | active release 缓存视图 |
+| 配置中心 | Config File Release | `GetConfigFile` / 长轮询拿到的发布版本 |
+| 治理规则 | Rule Release | Discover 的 active release 缓存视图 |
 
 服务实例、MCP Server、A2A Agent 走注册发现与 revision，不套用同一套“草稿 → active release”生命周期。
 
 ## 标准流程
 
-1. **编辑草稿**  
-   在 Console 修改配置内容或规则本体。此时运行时行为不变。
-2. **发布前校验**  
-   控制面执行鉴权、参数校验、资源存在性检查。缺少目标服务、无权发布或参数非法时直接失败。
-3. **选择发布范围**  
-   全量或灰度。灰度应先定义客户端标签、百分比或环境范围，再观察。
-4. **观察**  
-   关注客户端是否拉到新版本、业务错误率、限流/熔断是否按预期触发，以及 History 是否记录操作。
-5. **全量或回滚**  
-   确认后全量生效；异常则回滚到上一 active 版本，或停止灰度。
+1. **编辑草稿** — Console / API 改配置或规则本体；运行时不变。  
+2. **发布前校验** — 鉴权、参数、资源存在性；失败则不生效。  
+3. **选择范围** — 全量或灰度（先定客户端标签 / 环境范围）。  
+4. **观察** — 客户端是否拉到新版本、业务错误率、History。  
+5. **全量或回滚** — 确认后全量；异常则回滚或按条停灰度。
 
-## 配置中心实践
+---
 
-配置中心支持**多灰度版本并存**：同一文件可有多条 active gray（按 releaseName 区分），全量发布不会自动结束它们；停灰度按单条操作。客户端同时命中多条灰度时，控制面按 version / mtime 选择最新一条。详见 [配置中心操作](/docs/guides/console/configuration)。
+## A. 配置中心多灰度（推荐先跑通）
 
-- 先为不同客户端标签集合发布独立灰度，再观察订阅命中。
-- 验证通过后「提交为正式草稿」再全量；其它灰度可继续保留或单独停止。
-- 保留历史版本，回滚时让客户端能明确识别版本变化。
-- 单文件不超过 20,000 字符；超大配置应拆分。
-- Pole Agent 只帮助生成草稿，发布按钮仍由人点击。
+### 实际配置是什么
 
-## 治理规则实践
+同一文件可有 **1 条 active 全量 + 多条 active 灰度**（按 `releaseName` 区分）。灰度发布体示例：
 
-九类规则共用发布模型，但验证方式不同：
+```json
+{
+  "namespace": "default",
+  "group": "docs-multi-gray",
+  "file_name": "app.yaml",
+  "name": "gray-env-a",
+  "release_description": "gray for env=gray-a",
+  "release_type": "gray",
+  "beta_labels": [{
+    "key": "env",
+    "value": { "type": 0, "value": "gray-a", "value_type": 0 }
+  }]
+}
+```
 
-| 规则类型 | 灰度时重点观察 |
+全量把 `release_type` 设为 `normal`，且不带 `beta_labels`。文件内容示例：
+
+| 版本 | content |
 | --- | --- |
-| 路由 / 泳道 | 流量是否打到预期实例集合与标签 |
-| 限流 | 被限请求是否符合阈值，是否误伤 |
-| 熔断 / 故障探测 | 打开与恢复是否符合错误率/探测条件 |
-| 无损上下线 | 上线延迟、摘流与 readiness 是否平滑 |
-| 调用鉴权 | 拒绝是否准确，是否出现越权放行 |
-| 镜像 / Mock | 镜像副本与 Mock 短路是否只影响目标范围 |
+| 全量 | `mode: baseline` / `version: 1` |
+| 灰度 A | `mode: gray-a` / `cohort: env=gray-a` |
+| 灰度 B | `mode: gray-b` / `cohort: env=gray-b` |
 
-发布权限点按资源拆分（如 `PublishRouteRules`、`PublishRateLimitRules` 等）。给操作者最小化权限，而不是共享主账号。
+语义细节见 [配置中心操作](/docs/guides/console/configuration)。
+
+### 社区 Demo
+
+| 入口 | 说明 |
+| --- | --- |
+| 本站脚本 | `website/scripts/demo-config-multi-gray.sh`：登录 → 发 1 全量 + 2 灰度 → **客户端拉配置断言** |
+| 控制面烟测 | `pole-control-plane/console/web/scripts/smoke-configuration-flow.mjs`：多灰 / promote / stop / rollback |
+| 文档 GIF | [配置中心 · 多灰度](/docs/guides/console/configuration) 中的客户端 curl 演示 |
+
+```bash
+# 在 website 仓库根目录
+./scripts/demo-config-multi-gray.sh
+```
+
+环境变量：`POLE_BASE_URL`（Console，默认 `http://pole.localhost`）、`POLE_CLIENT_URL`（客户端 HTTP API，默认 `http://127.0.0.1:8090`）。
+
+### 怎么触发验证
+
+```bash
+CLIENT="${POLE_CLIENT_URL:-http://127.0.0.1:8090}"
+FILE_Q='namespace=default&group=docs-multi-gray&fileName=app.yaml&version=0'
+
+# 正式全量
+curl -sS "$CLIENT/v1/GetConfigFile?$FILE_Q" \
+  | jq '{name:.file.name, type:.file.release_type, content:.file.content}'
+
+# 命中灰度 A / B
+curl -sS "$CLIENT/v1/GetConfigFile?$FILE_Q&tags=env%3Dgray-a" | jq '{name:.file.name, type:.file.release_type, content:.file.content}'
+curl -sS "$CLIENT/v1/GetConfigFile?$FILE_Q&tags=env%3Dgray-b" | jq '{name:.file.name, type:.file.release_type, content:.file.content}'
+```
+
+Console：`配置中心 → 分组 docs-multi-gray → app.yaml → 发布记录 → 灰度发布`。
+
+### 效果是什么
+
+| 客户端 tags | `release_type` | 内容特征 |
+| --- | --- | --- |
+| （无）或 `env=other` | `normal` | `mode: baseline` |
+| `env=gray-a` | `gray` | `mode: gray-a` |
+| `env=gray-b` | `gray` | `mode: gray-b` |
+
+- 全量发布**不结束**已有 active 灰度。  
+- 停灰度按**单条** `releaseName`；停 A 不影响 B。  
+- 同时命中多条灰度时，控制面按 **version → mtime** 取最新。
+
+---
+
+## B. 治理规则灰度（路由 / 限流 / 泳道）
+
+### 实际配置是什么
+
+规则本体与 release 分离。社区 e2e fixture（`pole-control-plane/test/e2e/internal/e2e/fixtures.go`）中的形状：
+
+**路由** — Header `x-tenant=vip` → 目的实例标签 `version=v1`：
+
+```json
+{
+  "name": "vip-route-demo",
+  "enable": true,
+  "priority": 10,
+  "routing_config": {
+    "@type": "type.googleapis.com/v1.RuleRoutingConfig",
+    "caller": { "namespace": "default", "service": "order" },
+    "callee": { "namespace": "default", "service": "payment" },
+    "rules": [{
+      "name": "vip-route",
+      "arguments": {
+        "matchMode": "AND",
+        "arguments": [{
+          "type": "HEADER", "key": "x-tenant",
+          "value": { "type": "EXACT", "value": "vip", "value_type": "TEXT" }
+        }]
+      },
+      "destinations": [{
+        "namespace": "default", "service": "payment",
+        "name": "primary", "weight": 100,
+        "labels": {
+          "version": { "type": "EXACT", "value": "v1", "value_type": "TEXT" }
+        }
+      }]
+    }]
+  }
+}
+```
+
+**限流** — 方法 `POST /api/v1/payments` + `x-tenant=vip`，本地 QPS 120，超限 `REJECT`：
+
+```json
+{
+  "name": "vip-rl-demo",
+  "namespace": "default",
+  "service": "payment",
+  "enable": true,
+  "priority": 10,
+  "rules": [{
+    "method": { "type": "EXACT", "value": "POST /api/v1/payments" },
+    "arguments": [{
+      "type": "HEADER", "key": "x-tenant",
+      "value": { "type": "EXACT", "value": "vip", "value_type": "TEXT" }
+    }],
+    "amounts": [{ "validDuration": "1s", "maxAmount": 120 }],
+    "resource": "QPS", "type": "LOCAL", "action": "REJECT",
+    "failover": "FAILOVER_LOCAL"
+  }]
+}
+```
+
+**泳道** — 入口服务匹配后，目的带 `lane=blue`（完整字段见 fixture `LaneGroup`）。
+
+灰度 release 体（只让带标签的客户端看见新规则）：
+
+```json
+{
+  "rule_id": "<id>",
+  "rule_name": "vip-route-demo",
+  "resource": "RouteRules",
+  "version": 2,
+  "release_name": "e2e-gray",
+  "release_type": "ReleaseTypeGray",
+  "client_labels": [{
+    "key": "e2e-gray",
+    "value": { "type": "EXACT", "value": "true", "value_type": "TEXT" }
+  }],
+  "active": true
+}
+```
+
+全量把 `release_type` 设为 `ReleaseTypeNormal`，去掉 `client_labels`。
+
+### 社区 Demo
+
+| 入口 | 说明 |
+| --- | --- |
+| e2e fixtures | `pole-control-plane/test/e2e/internal/e2e/fixtures.go`：`RouteRule` / `RateLimitRule` / `LaneGroup` / `GrayRuleRelease` |
+| e2e 用例 | `test/e2e/console_api`（创建→发布→灰度→停灰→回滚）、`test/e2e/client`（Discover 可见性） |
+| Console 操作 | [路由](/docs/guides/console/governance/route)、[限流](/docs/guides/console/governance/rate-limit)、[泳道](/docs/guides/console/governance/lane) |
+
+```bash
+# 在 pole-control-plane 仓库（需可连控制面的 e2e 环境）
+CGO_ENABLED=0 go test -tags=e2e ./test/e2e/console_api/... -count=1
+CGO_ENABLED=0 go test -tags=e2e ./test/e2e/client/... -count=1
+```
+
+### 怎么触发验证
+
+1. Console：`治理工作台 → 新建路由/限流/泳道` → 按上表填规则 → **发布**（先选灰度 + `client_labels`）。  
+2. 或 HTTP：`POST /naming/v1/routings`（或 `ratelimits` / `lane/groups`）→ `POST .../releases`。  
+3. 客户端 Discover：
+
+```bash
+curl -sS -X POST "$CLIENT/naming/v1/Discover" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "type": "CUSTOM_ROUTE_RULE",
+    "service": { "namespace": "default", "name": "payment" },
+    "filter": {}
+  }' | jq .
+```
+
+限流把 `type` 换成 `RATE_LIMIT`。带灰度标签的客户端应看到灰度 release；未命中标签的仍看全量。
+
+### 效果是什么
+
+| 规则 | 触发条件 | 预期效果 |
+| --- | --- | --- |
+| 路由 | 请求带 `x-tenant: vip` | 流量落到 `version=v1` 实例集合；权重合计 100% |
+| 限流 | VIP 路径 QPS > 120/s | 被限请求 `REJECT`；未匹配租户不受影响 |
+| 泳道 | 入口命中泳道规则 | 下游只选带 `lane=blue` 的目的 |
+| 规则灰度 | 客户端带 `e2e-gray=true` | Discover 返回灰度版本规则；未带标签仍为正式版 |
+
+停灰度 / 回滚后，Discover 文本中对应 release 名消失或回到上一 active。
+
+---
 
 ## 检查清单
 
-- [ ] Namespace 选对，不是误发到生产环境
-- [ ] 目标服务 / 配置 / 规则存在且 revision 可追踪
-- [ ] 发布人具备对应 Publish 权限
-- [ ] 灰度范围可解释、可收回
-- [ ] 回滚路径已确认（上一版本仍在）
-- [ ] History / 平台监控可看到本次变更
+- [ ] Namespace 选对，不是误发到生产环境  
+- [ ] 目标服务 / 配置 / 规则存在且 revision 可追踪  
+- [ ] 发布人具备对应 Publish 权限  
+- [ ] 灰度范围可解释、可收回（配置按 `releaseName`，治理按 `client_labels`）  
+- [ ] 已用客户端接口验证（配置用 `GetConfigFile`，治理用 `Discover`），不只看 Console 列表  
+- [ ] 回滚路径已确认；History 可看到本次变更  
 
 ## 反模式
 
-- 直接改库或绕过 Console/API 写入“生效数据”。
-- 把未发布草稿当成客户端已生效配置。
-- 无观察窗口的一次性全量发布。
-- 用 Pole Agent 自动发布或删除资源。
+- 直接改库或绕过 Console/API 写入“生效数据”。  
+- 把未发布草稿当成客户端已生效配置。  
+- 只截 Console 空列表/徽章，不做客户端拉配置 / Discover 对照。  
+- 无观察窗口的一次性全量发布。  
+- 用 Pole Agent 自动发布或删除资源。  
 
 ## 深入阅读
 
+- [配置中心操作（含客户端 curl）](/docs/guides/console/configuration)
 - [治理规则与灰度发布](/docs/principles/governance-release)
 - [配置灰度、回滚与长轮询监听](/docs/blog/config-rollout)
-- [控制台使用](/docs/guides/console)
+- [HTTP OpenAPI](/docs/api/http-openapi)

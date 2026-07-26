@@ -62,6 +62,59 @@ Control-plane Namespace means **environment**, not “every Kubernetes Namespace
 
 Before inject: active releases exist, image/arch match the cluster, readiness probes do not fight lossless rules.
 
+## Actual controller configuration
+
+Key fields from community manifests (`pole-controller/deploy/kubernetes_v1.22/kubernetes/configmap.yaml`):
+
+```yaml
+serviceSync:
+  enable: true
+  mode: "demand"           # or all
+  serverAddress: "<control-plane-host>"
+  accessToken: "<token>"
+configSync:
+  enable: true
+  syncDirection: both      # kubernetesToPolaris | polarisToKubernetes | both
+sidecarInject:
+  mode: "dns"              # or mesh
+```
+
+Service annotations are listed above. Fill `deploy/variables.txt` (`POLARIS_HOST`, `POLARIS_TOKEN`, …) before install.
+
+## Community demo
+
+| Entry | What it does |
+| --- | --- |
+| Static manifests | `pole-controller/deploy/kubernetes_v1.22/kubernetes` + `install.sh` |
+| Helm | `pole-controller/deploy/kubernetes_v1.22/helm` (run `deploy/init_helm.sh` first) |
+| Component guide | [Kubernetes Controller](/en/docs/components/kubernetes-controller) |
+
+> The Console “Kubernetes” page is not the sync implementation. Sync lives in the **`pole-controller`** repo.
+
+## How to verify
+
+```bash
+cd pole-controller
+# fill deploy/variables.txt, then
+cd deploy/kubernetes_v1.22/kubernetes && bash install.sh
+
+kubectl get pods -n polaris-system
+# demand mode: opt in a Service
+kubectl annotate svc orders -n payments polarismesh.cn/sync=true --overwrite
+```
+
+Then check Controller sync logs, Console Discovery for the service/alias/instances, and SDK/Sidecar `Discover INSTANCE`.
+
+## Expected effects
+
+| Action | Effect |
+| --- | --- |
+| `mode=demand` + `sync=true` | Only that Service enters the control-plane catalog |
+| `mode=all` | Broad Service sync (watch for noise) |
+| Alias annotations | Console shows alias namespace/name |
+| `sidecarInject` enabled | Matching Pods get dns/mesh data-plane injection |
+| Remove sync / delete Service | Catalog converges per controller sync policy |
+
 ## Checklist
 
 - [ ] Controller can reach Control Plane
