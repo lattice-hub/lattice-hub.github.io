@@ -74,7 +74,41 @@ Configuration is not “one gray at a time per file”. The model is:
 
 The Gray releases tab copy states that multiple active gray releases take effect independently and can be submitted as a formal draft or deleted.
 
-![Gray releases](/images/console/config-gray-releases.png)
+![Multi-gray demo: OpenAPI publish, concurrent grays in Console, stop one gray](/images/console/config-multi-gray-demo.gif)
+
+![Gray releases (two active grays)](/images/console/config-gray-releases.png)
+
+### Reproduce with OpenAPI / curl
+
+Against a local Console (default `http://pole.localhost`), seed data with:
+
+```bash
+./scripts/demo-config-multi-gray.sh
+```
+
+Call sequence:
+
+1. `POST /auth/v1/user/login` → `token` and `user_id`  
+2. `POST /config/v1/groups`, `POST|PUT /config/v1/files`  
+3. `POST /config/v1/files/release` with `release_type=normal`  
+4. Two more file updates + gray releases (`release_type=gray`, distinct `beta_labels` / `name`)  
+5. `GET /config/v1/files/releases?...` should show **1 active normal + ≥2 active gray**
+
+Gray publish body (change `name` / `beta_labels` for a second concurrent gray):
+
+```bash
+curl -sS -X POST "$BASE/config/v1/files/release" \
+  -H "Authorization: $TOKEN" -H "X-Pole-User: $USER_ID" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "namespace":"default","group":"docs-multi-gray","file_name":"app.yaml",
+    "name":"gray-env-a","release_description":"gray for env=gray-a",
+    "release_type":"gray",
+    "beta_labels":[{"key":"env","value":{"type":0,"value":"gray-a","value_type":0}}]
+  }'
+```
+
+Open Console: `/configuration/group/files?namespace=default&group=docs-multi-gray&file=app.yaml` → Release history → Gray releases.
 
 ### How clients resolve
 
