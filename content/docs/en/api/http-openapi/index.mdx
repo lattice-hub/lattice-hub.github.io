@@ -43,5 +43,8 @@ The HTTP API is served by `api-http` on port **8090**. Pick a scenario below. Ea
 | Base URL | `http://127.0.0.1:8090` |
 | Management auth | `Authorization` (token from login) |
 | Feature gates | `api-http.api.{console,client,admin,aimcp,aia2a}` |
+| Write bodies | Usually a **protobuf message array** `[{...}]`; docs list the **full per-item field tree** (nested `children`) |
+| Nested shapes | `rules` / `routing_config` / `health_check` etc. are expanded from specification; `Any` lists unpackable messages by policy |
+| Response fields | Write APIs also list entity response field trees; sample JSON is on the right |
 
-Full schemas follow control-plane annotations and the running server.
+Parameters and paths follow control-plane `httpserver` Enrich annotations and specification protos; the running server is authoritative.

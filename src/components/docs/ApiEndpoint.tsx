@@ -1,10 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { ApiEndpointDef, ApiLocale } from '@/lib/http-openapi-reference';
+import type { ApiEndpointDef, ApiLocale, ApiParam } from '@/lib/http-openapi-reference';
 import styles from './ApiEndpoint.module.css';
 
-const locationLabel: Record<ApiLocale, Record<ApiEndpointDef['params'][number]['location'], string>> = {
+const locationLabel: Record<ApiLocale, Record<ApiParam['location'], string>> = {
   'zh-CN': {
     path: 'path',
     query: 'query',
@@ -18,6 +18,44 @@ const locationLabel: Record<ApiLocale, Record<ApiEndpointDef['params'][number]['
     body: 'body',
   },
 };
+
+function ParamTree({
+  params,
+  locale,
+  depth = 0,
+}: {
+  params: ApiParam[];
+  locale: ApiLocale;
+  depth?: number;
+}) {
+  return (
+    <ul className={depth === 0 ? styles.paramList : styles.paramChildren}>
+      {params.map((param) => (
+        <li key={`${depth}-${param.location}-${param.name}`}>
+          <div className={styles.paramHead}>
+            <span className={styles.paramName}>{param.name}</span>
+            <span className={styles.paramMeta}>
+              {locationLabel[locale][param.location]} · {param.type}
+            </span>
+            {param.required ? (
+              <span className={styles.required}>
+                {locale === 'en' ? 'required' : '必填'}
+              </span>
+            ) : (
+              <span className={styles.paramMeta}>
+                {locale === 'en' ? 'optional' : '可选'}
+              </span>
+            )}
+          </div>
+          <p className={styles.paramDesc}>{param.description[locale]}</p>
+          {param.children?.length ? (
+            <ParamTree depth={depth + 1} locale={locale} params={param.children} />
+          ) : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function ApiEndpoint({
   endpoint,
@@ -70,29 +108,17 @@ export function ApiEndpoint({
               {locale === 'en' ? 'No parameters.' : '无额外参数。'}
             </p>
           ) : (
-            <ul className={styles.paramList}>
-              {endpoint.params.map((param) => (
-                <li key={`${param.location}-${param.name}`}>
-                  <div className={styles.paramHead}>
-                    <span className={styles.paramName}>{param.name}</span>
-                    <span className={styles.paramMeta}>
-                      {locationLabel[locale][param.location]} · {param.type}
-                    </span>
-                    {param.required ? (
-                      <span className={styles.required}>
-                        {locale === 'en' ? 'required' : '必填'}
-                      </span>
-                    ) : (
-                      <span className={styles.paramMeta}>
-                        {locale === 'en' ? 'optional' : '可选'}
-                      </span>
-                    )}
-                  </div>
-                  <p className={styles.paramDesc}>{param.description[locale]}</p>
-                </li>
-              ))}
-            </ul>
+            <ParamTree locale={locale} params={endpoint.params} />
           )}
+
+          {endpoint.responseFields?.length ? (
+            <>
+              <p className={`${styles.sectionLabel} ${styles.responseFieldsLabel}`}>
+                {locale === 'en' ? 'Response fields' : '响应字段'}
+              </p>
+              <ParamTree locale={locale} params={endpoint.responseFields} />
+            </>
+          ) : null}
         </div>
 
         <div className={styles.right}>

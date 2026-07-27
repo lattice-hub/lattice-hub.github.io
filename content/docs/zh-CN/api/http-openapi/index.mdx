@@ -43,5 +43,8 @@ HTTP API 由 `api-http` 插件提供，默认监听 **8090**。按场景选择�
 | Base URL | `http://127.0.0.1:8090` |
 | 管理面鉴权 | `Authorization`（登录返回的 token） |
 | 分组开关 | `api-http.api.{console,client,admin,aimcp,aia2a}` |
+| 写接口 body | 多为 **protobuf 消息数组** `[{...}]`；文档列出单条对象的**完整字段树**（含嵌套 `children`） |
+| 嵌套结构 | `rules` / `routing_config` / `health_check` 等已按 specification 展开；`Any` 类型按策略列出可 unpack 的消息 |
+| 响应字段 | 写接口同步列出实体响应字段树；示例 JSON 见右侧 |
 
-完整 schema 以控制面注解与运行时为准。
+参数与路径对照控制面 `httpserver` Enrich 注解与 specification protos；运行时以服务端为准。

@@ -502,10 +502,15 @@ test('HTTP OpenAPI reference uses dual-column endpoint component', () => {
   assert.match(mdx, /HttpOpenApiReference/);
   assert.match(reference, /getHttpOpenApiSection/);
   assert.match(data, /export const httpOpenApiSections/);
-  assert.match(data, /'services-contracts'/);
-  assert.match(data, /'config-gray'/);
+  assert.match(data, /['"]services-contracts['"]/);
+  assert.match(data, /['"]config-gray['"]/);
+  assert.match(data, /"children"/);
+  assert.match(data, /"responseFields"/);
+  assert.match(data, /LimitTrigger/);
   assert.match(endpoint, /styles\.grid/);
   assert.match(endpoint, /samples\.map/);
+  assert.match(endpoint, /ParamTree|responseFields/);
+  assert.match(endpoint, /paramChildren|responseFieldsLabel/);
 });
 
 test('docs layout uses fumadocs section switcher for docs api blog reports and developers', () => {
