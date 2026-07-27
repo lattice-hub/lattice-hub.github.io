@@ -6,20 +6,9 @@
     "namespaces",
     "services",
     "instances",
-    "config-groups",
-    "config-files",
-    "config-gray",
-    "routing",
-    "rate-limit",
-    "circuit-breaker",
-    "fault-detect",
-    "lane",
-    "lossless",
-    "traffic-security",
-    "traffic-mirror",
-    "traffic-mock",
-    "mcp",
-    "a2a",
+    "config",
+    "governance",
+    "ai",
     "client"
   ]
 }

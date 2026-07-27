@@ -12,24 +12,28 @@ The HTTP API is served by `api-http` on port **8090**. Pick a scenario below. Ea
 | --- | --- |
 | [Authentication](/en/docs/api/http-openapi/auth) | Login and auth status |
 | [Namespaces](/en/docs/api/http-openapi/namespaces) | Environment namespaces |
+| **Services** | |
 | [Services · Basics](/en/docs/api/http-openapi/services) | Service CRUD |
 | [Services · Contracts](/en/docs/api/http-openapi/services/contracts) | Contracts and reporting |
 | [Services · Topology](/en/docs/api/http-openapi/services/topology) | Subscribers / call relations |
 | [Instances](/en/docs/api/http-openapi/instances) | Instance register and manage |
-| [Config groups](/en/docs/api/http-openapi/config-groups) | Config groups |
-| [Config files](/en/docs/api/http-openapi/config-files) | File read/write |
-| [Config gray](/en/docs/api/http-openapi/config-gray) | normal / gray publish |
-| [Routing](/en/docs/api/http-openapi/routing) | Route rules |
-| [Rate limit](/en/docs/api/http-openapi/rate-limit) | Rate-limit rules |
-| [Circuit breaker](/en/docs/api/http-openapi/circuit-breaker) | Circuit-breaker rules |
-| [Fault detect](/en/docs/api/http-openapi/fault-detect) | Active probing |
-| [Lane](/en/docs/api/http-openapi/lane) | Lane rules |
-| [Lossless](/en/docs/api/http-openapi/lossless) | Lossless rules |
-| [Traffic security](/en/docs/api/http-openapi/traffic-security) | Call authorization |
-| [Traffic mirror](/en/docs/api/http-openapi/traffic-mirror) | Mirror rules |
-| [Traffic mock](/en/docs/api/http-openapi/traffic-mock) | Mock rules |
-| [MCP Registry](/en/docs/api/http-openapi/mcp) | MCP Server / Tool |
-| [A2A Registry](/en/docs/api/http-openapi/a2a) | A2A Agent / Skill |
+| **Config** | |
+| [Config groups](/en/docs/api/http-openapi/config/groups) | Config groups |
+| [Config files](/en/docs/api/http-openapi/config/files) | File read/write |
+| [Config gray](/en/docs/api/http-openapi/config/gray) | normal / gray publish |
+| **Governance** | |
+| [Routing](/en/docs/api/http-openapi/governance/routing) | Route rules |
+| [Rate limit](/en/docs/api/http-openapi/governance/rate-limit) | Rate-limit rules |
+| [Circuit breaker](/en/docs/api/http-openapi/governance/circuit-breaker) | Circuit-breaker rules |
+| [Fault detect](/en/docs/api/http-openapi/governance/fault-detect) | Active probing |
+| [Lane](/en/docs/api/http-openapi/governance/lane) | Lane rules |
+| [Lossless](/en/docs/api/http-openapi/governance/lossless) | Lossless rules |
+| [Traffic security](/en/docs/api/http-openapi/governance/traffic-security) | Call authorization |
+| [Traffic mirror](/en/docs/api/http-openapi/governance/traffic-mirror) | Mirror rules |
+| [Traffic mock](/en/docs/api/http-openapi/governance/traffic-mock) | Mock rules |
+| **AI Registry** | |
+| [MCP Registry](/en/docs/api/http-openapi/ai/mcp) | MCP Server / Tool |
+| [A2A Registry](/en/docs/api/http-openapi/ai/a2a) | A2A Agent / Skill |
 | [Client APIs](/en/docs/api/http-openapi/client) | Discover / Register / pull config |
 
 ## Conventions
@@ -38,6 +42,6 @@ The HTTP API is served by `api-http` on port **8090**. Pick a scenario below. Ea
 | --- | --- |
 | Base URL | `http://127.0.0.1:8090` |
 | Management auth | `Authorization` + `X-Pole-User` |
-| Group switches | `api-http.api.{console,client,admin,aimcp,aia2a}` |
+| Feature gates | `api-http.api.{console,client,admin,aimcp,aia2a}` |
 
 Full schemas follow control-plane annotations and the running server.

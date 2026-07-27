@@ -667,10 +667,51 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
               },
               { type: 'page', name: '实例', url: '/docs/api/http-openapi/instances' },
               {
-                type: 'page',
-                name: '配置灰度',
-                url: '/docs/api/http-openapi/config-gray',
+                type: 'folder',
+                name: '配置',
+                children: [
+                  {
+                    type: 'page',
+                    name: '配置分组',
+                    url: '/docs/api/http-openapi/config/groups',
+                  },
+                  {
+                    type: 'page',
+                    name: '配置文件',
+                    url: '/docs/api/http-openapi/config/files',
+                  },
+                  {
+                    type: 'page',
+                    name: '配置灰度',
+                    url: '/docs/api/http-openapi/config/gray',
+                  },
+                ],
               },
+              {
+                type: 'folder',
+                name: '治理',
+                children: [
+                  {
+                    type: 'page',
+                    name: '路由',
+                    url: '/docs/api/http-openapi/governance/routing',
+                  },
+                  {
+                    type: 'page',
+                    name: '限流',
+                    url: '/docs/api/http-openapi/governance/rate-limit',
+                  },
+                ],
+              },
+              {
+                type: 'folder',
+                name: 'AI Registry',
+                children: [
+                  { type: 'page', name: 'MCP Registry', url: '/docs/api/http-openapi/ai/mcp' },
+                  { type: 'page', name: 'A2A Registry', url: '/docs/api/http-openapi/ai/a2a' },
+                ],
+              },
+              { type: 'page', name: '客户端接口', url: '/docs/api/http-openapi/client' },
             ],
           },
           { type: 'page', name: 'gRPC 接口', url: '/docs/api/grpc' },
