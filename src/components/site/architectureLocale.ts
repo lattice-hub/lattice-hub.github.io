@@ -8,7 +8,6 @@ const architectureCopy = {
       kicker: '组织架构',
       title: '治理与组件全景',
       topicSelector: '选择架构主题',
-      languageSelector: '切换架构图语言',
       frameStatus: (current: number, total: number, label: string) =>
         `第 ${current} / ${total} 帧：${label}`,
       viewArchitecture: '查看完整架构',
@@ -137,7 +136,6 @@ const architectureCopy = {
       kicker: 'ORGANIZATION ARCHITECTURE',
       title: 'Governance and component panorama',
       topicSelector: 'Choose an architecture topic',
-      languageSelector: 'Switch architecture diagram language',
       frameStatus: (current: number, total: number, label: string) =>
         `Frame ${current} of ${total}: ${label}`,
       viewArchitecture: 'View full architecture',

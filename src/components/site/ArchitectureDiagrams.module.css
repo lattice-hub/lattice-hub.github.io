@@ -972,13 +972,223 @@
 }
 
 :global(html.dark) .diagramBackground {
-  fill: var(--page);
+  fill: var(--page, #121314);
+}
+
+:global(html.dark) .gridDot {
+  fill: #8b8e8a;
+  opacity: .28;
+}
+
+:global(html.dark) .planeDepth {
+  fill: #2a2e31;
+  opacity: .9;
 }
 
 :global(html.dark) .planeTop {
-  fill: color-mix(in srgb, var(--surface) 42%, transparent);
+  fill: color-mix(in srgb, var(--surface, #1c1f21) 72%, transparent);
+  stroke: #3c4246;
+}
+
+:global(html.dark) .planeLabel {
+  fill: #c4c8c5;
+}
+
+:global(html.dark) .serviceVersionBoundary rect {
+  fill: rgba(88, 166, 255, .06);
+  stroke: rgba(88, 166, 255, .55);
+}
+
+:global(html.dark) .serviceVersionBoundary text {
+  fill: #7ec2ff;
+}
+
+:global(html.dark) .connection {
+  stroke: #8d9290;
+}
+
+:global(html.dark) .connectionMuted {
+  stroke: #6f7472;
+}
+
+:global(html.dark) .connectionTraffic {
+  stroke: #d7dbd8;
+}
+
+:global(html.dark) .connectionShadow {
+  stroke: #8a8e8b;
+}
+
+:global(html.dark) .connectionActiveTraffic {
+  stroke: #e8ebe8;
+}
+
+:global(html.dark) .dataPacketTraffic {
+  stroke: #e8ebe8;
+}
+
+:global(html.dark) .trafficArrow,
+:global(html.dark) .trafficActiveArrow {
+  fill: #e8ebe8;
+}
+
+:global(html.dark) .shadowArrow,
+:global(html.dark) .shadowActiveArrow {
+  fill: #9aa09c;
+}
+
+:global(html.dark) .mutedArrow {
+  fill: #8a8e8b;
+}
+
+:global(html.dark) .nodeBody {
+  fill: #2a2e31;
+  stroke: #4a5054;
+}
+
+:global(html.dark) .nodeTop {
+  fill: #1c1f21;
+  stroke: #5a6166;
+}
+
+:global(html.dark) .nodeRim {
+  stroke: #4f7fa8;
+}
+
+:global(html.dark) .nodeLabel {
+  fill: #f2f1ec;
+}
+
+:global(html.dark) .nodeMeta {
+  fill: #b4b8b5;
+}
+
+:global(html.dark) .toneblue .nodeBody {
+  fill: #0a4a82;
+  stroke: #073560;
+}
+
+:global(html.dark) .toneblue .nodeTop {
+  fill: #0f6cbd;
+  stroke: #073560;
+}
+
+:global(html.dark) .tonegreen .nodeBody {
+  fill: #2a4d3c;
+  stroke: #1d372b;
+}
+
+:global(html.dark) .tonegreen .nodeTop {
+  fill: #3f6a55;
+  stroke: #1d372b;
+}
+
+:global(html.dark) .tonedark .nodeBody {
+  fill: #0d0f10;
+  stroke: #050606;
+}
+
+:global(html.dark) .tonedark .nodeTop {
+  fill: #1a1d1f;
+  stroke: #050606;
+}
+
+:global(html.dark) .toneexternal .nodeBody,
+:global(html.dark) .toneexternal .nodeTop {
+  fill: rgba(28, 31, 33, .72);
+  stroke: #6a7074;
+}
+
+:global(html.dark) .coreTop {
+  fill: #23272a;
+  stroke: #5a6166;
+}
+
+:global(html.dark) .coreInset {
+  fill: #171a1c;
+  stroke: #4da3e8;
+}
+
+:global(html.dark) .coreTitle {
+  fill: #f2f1ec;
+}
+
+:global(html.dark) .contractDepth {
+  fill: #1a1d1f;
+}
+
+:global(html.dark) .contractTop {
+  fill: #23272a;
+  stroke: #6a7074;
+}
+
+:global(html.dark) .contractLabel {
+  fill: #f2f1ec;
+}
+
+:global(html.dark) .contractMeta {
+  fill: #b4b8b5;
+}
+
+:global(html.dark) .flowLabelTraffic {
+  fill: #d7dbd8;
+}
+
+:global(html.dark) .flowLabelShadow {
+  fill: #9aa09c;
+}
+
+:global(html.dark) .ratioLabel {
+  fill: #c4c8c5;
+}
+
+:global(html.dark) .boundaryLabel {
+  fill: #9aa09c;
+}
+
+:global(html.dark) .journeyTitle,
+:global(html.dark) .benefitTitle {
+  fill: #f2f1ec;
+}
+
+:global(html.dark) .journeyMeta,
+:global(html.dark) .benefitDetail {
+  fill: #b4b8b5;
+}
+
+:global(html.dark) .authShield,
+:global(html.dark) .healthFail,
+:global(html.dark) .healthOk {
+  fill: #1c1f21;
+}
+
+:global(html.dark) .profilePacketMuted {
+  fill: #6a7074;
+}
+
+:global(html.dark) .versionOld {
+  fill: #2a2e31;
+  stroke: #5a6166;
+}
+
+:global(html.dark) .versionText {
+  fill: #b4b8b5;
+}
+
+:global(html.dark) .secretRef {
+  fill: #1c1f21;
+  stroke: #5a6166;
+}
+
+:global(html.dark) .secretRefText {
+  fill: #c4c8c5;
+}
+
+:global(html.dark) .railLine,
+:global(html.dark) .secretRail {
+  stroke: #5a6166;
 }
 
 :global(html.dark) .diagramLarge {
-  filter: saturate(0.92) brightness(0.96);
+  filter: none;
 }

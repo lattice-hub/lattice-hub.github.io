@@ -178,6 +178,11 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.doesNotMatch(homepage, /负载均衡、超时、重试、节点熔断、故障转移/);
   assert.doesNotMatch(homeCss, /:root\s*{/);
   assert.doesNotMatch(globalCss, /aurora|glass-card|backdrop-filter|radial-gradient/);
+  assert.match(architectureDiagramCss, /:global\(html\.dark\) \.nodeLabel/);
+  assert.match(architectureDiagramCss, /:global\(html\.dark\) \.nodeMeta/);
+  assert.match(architectureDiagramCss, /:global\(html\.dark\) \.planeLabel/);
+  assert.doesNotMatch(architectureCss, /\.localeSwitcher/);
+  assert.doesNotMatch(architectureFlow, /localeSwitcher|setLocale/);
 
   for (const keyword of ['组件协作', '治理生效', '查看完整架构', 'ArchitectureDiagrams']) {
     assert.ok(
@@ -452,8 +457,8 @@ test('architecture diagram locale copy is symmetric and brand-safe', () => {
   assert.match(architectureDiagrams, /content\.benefits\.auth/);
   assert.match(architectureDiagrams, /content\.benefits\.resilience/);
   assert.match(architectureDiagrams, /content\.benefits\.secret/);
-  assert.match(flowSource, /aria-pressed=\{locale === option\}/);
-  assert.match(flowSource, /option === 'zh-CN' \? '中' : 'EN'/);
+  assert.doesNotMatch(flowSource, /localeSwitcher|切换架构图语言|option === 'zh-CN' \? '中' : 'EN'/);
+  assert.doesNotMatch(flowSource, /setLocale|useState<ArchitectureLocale>/);
   assert.doesNotMatch(visibleCopy, /Pingora Sidecar|Local Proxy\s*\/\s*Sidecar/);
 });
 

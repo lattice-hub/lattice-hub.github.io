@@ -6,11 +6,7 @@ import {
   ComponentCollaborationDiagram,
   GovernanceExecutionDiagram,
 } from './ArchitectureDiagrams';
-import {
-  DEFAULT_ARCHITECTURE_LOCALE,
-  getArchitectureCopy,
-  type ArchitectureLocale,
-} from './architectureLocale';
+import { getArchitectureCopy } from './architectureLocale';
 import styles from './ArchitectureFlow.module.css';
 
 const slideOrder = [
@@ -20,8 +16,7 @@ const slideOrder = [
 
 export function ArchitectureFlow() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [locale, setLocale] = useState<ArchitectureLocale>(DEFAULT_ARCHITECTURE_LOCALE);
-  const copy = getArchitectureCopy(locale);
+  const copy = getArchitectureCopy('zh-CN');
   const activeSlideDefinition = slideOrder[activeIndex];
   const activeSlide = copy.flow.slides[activeSlideDefinition.id];
 
@@ -30,27 +25,13 @@ export function ArchitectureFlow() {
       aria-describedby="architecture-flow-description"
       aria-labelledby="architecture-flow-title"
       className={styles.architectureFlow}
-      lang={locale}
+      lang="zh-CN"
     >
       <div className={styles.topbar}>
         <div className={styles.header}>
           <div>
             <span className={styles.kicker}>{copy.flow.kicker}</span>
             <strong id="architecture-flow-title">{copy.flow.title}</strong>
-          </div>
-
-          <div className={styles.localeSwitcher} aria-label={copy.flow.languageSelector}>
-            {(['zh-CN', 'en'] as const).map((option) => (
-              <button
-                aria-pressed={locale === option}
-                className={styles.localeButton}
-                key={option}
-                onClick={() => setLocale(option)}
-                type="button"
-              >
-                {option === 'zh-CN' ? '中' : 'EN'}
-              </button>
-            ))}
           </div>
         </div>
 
@@ -80,13 +61,13 @@ export function ArchitectureFlow() {
         aria-live="polite"
         className={styles.canvas}
         id="architecture-flow-canvas"
-        key={`${activeSlideDefinition.id}-${locale}`}
+        key={activeSlideDefinition.id}
         role="group"
       >
         {activeSlideDefinition.id === 'collaboration' ? (
-          <ComponentCollaborationDiagram locale={locale} />
+          <ComponentCollaborationDiagram locale="zh-CN" />
         ) : (
-          <GovernanceExecutionDiagram locale={locale} />
+          <GovernanceExecutionDiagram locale="zh-CN" />
         )}
       </div>
 
