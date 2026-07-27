@@ -137,6 +137,12 @@ test('docs brand navigation returns to the website homepage', () => {
     globalCss,
     /#nd-docs-layout\s*\{[\s\S]*padding-top:\s*var\(--fd-banner-height/,
   );
+  assert.match(globalCss, /--fd-layout-width:\s*100vw/);
+  assert.match(
+    globalCss,
+    /grid-template-columns:\s*0\s+var\(--fd-sidebar-col\)\s+minmax\(0,\s*1fr\)\s+var\(--fd-toc-width\)\s+0/,
+  );
+  assert.match(globalCss, /#nd-docs-layout article\s*\{[\s\S]*max-width:\s*none/);
   assert.match(docsLayout, /nav=\{\{[\s\S]*url:\s*'\/'/);
   assert.doesNotMatch(docsLayout, /nav=\{\{[\s\S]*url:\s*getDocsUrl\(locale\)/);
 });

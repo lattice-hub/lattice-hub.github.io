@@ -148,6 +148,16 @@ html.dark .site-shell img:not([src*="lattice-hub-logo"]) {
    --fd-docs-row-1 (= banner height) for sidebar / toc positioning. */
 #nd-docs-layout {
   padding-top: var(--fd-banner-height, 0px);
+  /* Collapse the outer gutters so the left nav and right TOC sit on the viewport edges,
+     and the main column consumes all remaining width. */
+  --fd-layout-width: 100vw;
+  grid-template-columns: 0 var(--fd-sidebar-col) minmax(0, 1fr) var(--fd-toc-width) 0 !important;
+}
+
+/* Fumadocs caps the article at 900px / 1168px (full); drop that so content fills the main column. */
+#nd-docs-layout article {
+  max-width: none;
+  width: 100%;
 }
 
 .site-shell .container {
