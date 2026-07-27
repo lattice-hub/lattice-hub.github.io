@@ -2,6 +2,10 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/page';
 import { mdxComponents } from '@/mdx-components';
+import {
+  getHttpOpenApiToc,
+  resolveHttpOpenApiSectionId,
+} from '@/lib/http-openapi-toc';
 import { source, type DocsLocale } from '@/lib/source';
 
 type DocsPageParams = Promise<{ slug?: string[] }>;
@@ -33,8 +37,25 @@ export async function DocsPageContent({
     throw new Error(`Missing bilingual document pair for: ${slug?.join('/') ?? 'index'}`);
   }
 
+  const openApiSectionId = resolveHttpOpenApiSectionId(slug);
+  const openApiToc = openApiSectionId
+    ? getHttpOpenApiToc(openApiSectionId, locale)
+    : [];
+  const toc = [...(page.data.toc ?? []), ...openApiToc];
+  const full = Boolean(page.data.full);
+
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage
+      full={full}
+      tableOfContent={
+        full && toc.length > 0
+          ? {
+              enabled: true,
+            }
+          : undefined
+      }
+      toc={toc}
+    >
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>

@@ -492,6 +492,8 @@ test('HTTP OpenAPI reference uses dual-column endpoint component', () => {
   const reference = readFileSync('src/components/docs/HttpOpenApiReference.tsx', 'utf8');
   const data = readFileSync('src/lib/http-openapi-reference.ts', 'utf8');
   const endpoint = readFileSync('src/components/docs/ApiEndpoint.tsx', 'utf8');
+  const toc = readFileSync('src/lib/http-openapi-toc.ts', 'utf8');
+  const page = readFileSync('src/app/docs/_components/DocsPageContent.tsx', 'utf8');
 
   assert.match(zhIndex, /场景目录/);
   assert.match(enIndex, /Scenario index/);
@@ -511,6 +513,12 @@ test('HTTP OpenAPI reference uses dual-column endpoint component', () => {
   assert.match(endpoint, /samples\.map/);
   assert.match(endpoint, /ParamTree|responseFields/);
   assert.match(endpoint, /paramChildren|responseFieldsLabel/);
+  assert.match(toc, /getHttpOpenApiToc/);
+  assert.match(toc, /resolveHttpOpenApiSectionId/);
+  assert.match(toc, /config\/files/);
+  assert.match(page, /getHttpOpenApiToc/);
+  assert.match(page, /tableOfContent/);
+  assert.match(page, /enabled:\s*true/);
 });
 
 test('docs layout uses fumadocs section switcher for docs api blog reports and developers', () => {
