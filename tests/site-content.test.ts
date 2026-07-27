@@ -395,12 +395,14 @@ test('docs expose complete and symmetric Chinese and English content', () => {
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
   assert.match(sourceConfig, /hideLocale: 'default-locale'/);
   assert.match(sourceConfig, /getDocsAlternateHrefs/);
+  assert.match(sourceConfig, /getSiteLanguageSwitch/);
   assert.match(docsPage, /generateDocsStaticParams\('zh-CN'\)/);
   assert.match(englishDocsPage, /generateDocsStaticParams\('en'\)/);
   assert.match(languageSwitch, />\s*中\s*</);
   assert.match(languageSwitch, />\s*EN\s*</);
   assert.match(siteHeader, /DocsLanguageSwitch/);
-  assert.match(siteHeader, /getDocsAlternateHrefs/);
+  assert.match(siteHeader, /getSiteLanguageSwitch/);
+  assert.doesNotMatch(siteHeader, /docsLanguage \?/);
   assert.doesNotMatch(docsPageContent, /DocsLanguageSwitch/);
   assert.match(documentLanguage, /document\.documentElement\.lang = locale/);
 });

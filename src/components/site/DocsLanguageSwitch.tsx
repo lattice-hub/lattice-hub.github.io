@@ -12,7 +12,7 @@ export function DocsLanguageSwitch({
   enHref: string;
 }) {
   return (
-    <nav aria-label={locale === 'en' ? 'Document language' : '文档语言'} className={styles.switch}>
+    <nav aria-label={locale === 'en' ? 'Site language' : '站点语言'} className={styles.switch}>
       <Link aria-current={locale === 'zh-CN' ? 'page' : undefined} href={zhHref}>
         中
       </Link>

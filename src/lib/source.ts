@@ -57,3 +57,20 @@ export function getDocsAlternateHrefs(pathname: string): {
     enHref: getDocsUrl('en', slugs),
   };
 }
+
+/** Language control for every SiteHeader surface (marketing + docs). */
+export function getSiteLanguageSwitch(pathname: string): {
+  locale: DocsLocale;
+  zhHref: string;
+  enHref: string;
+} {
+  const docs = getDocsAlternateHrefs(pathname);
+  if (docs) return docs;
+
+  const path = pathname.replace(/\/+$/, '') || '/';
+  return {
+    locale: 'zh-CN',
+    zhHref: path,
+    enHref: getDocsUrl('en'),
+  };
+}

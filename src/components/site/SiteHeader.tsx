@@ -12,7 +12,7 @@ import {
   isSiteNavActive,
   siteNav,
 } from '@/lib/site-content';
-import { getDocsAlternateHrefs } from '@/lib/source';
+import { getSiteLanguageSwitch } from '@/lib/source';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -34,7 +34,7 @@ export function SiteHeader() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [experienceOpen, setExperienceOpen] = useState(false);
   const pathname = usePathname();
-  const docsLanguage = getDocsAlternateHrefs(pathname);
+  const siteLanguage = getSiteLanguageSwitch(pathname);
   const experienceTriggerRef = useRef<HTMLButtonElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -125,13 +125,11 @@ export function SiteHeader() {
 
         <div className="nav-actions">
           <ThemeSwitch />
-          {docsLanguage ? (
-            <DocsLanguageSwitch
-              enHref={docsLanguage.enHref}
-              locale={docsLanguage.locale}
-              zhHref={docsLanguage.zhHref}
-            />
-          ) : null}
+          <DocsLanguageSwitch
+            enHref={siteLanguage.enHref}
+            locale={siteLanguage.locale}
+            zhHref={siteLanguage.zhHref}
+          />
           <a
             aria-label="访问 Lattice Hub GitHub 组织（在新窗口打开）"
             className="github-link"
@@ -186,15 +184,13 @@ export function SiteHeader() {
         <div className="drawer-theme">
           <ThemeSwitch />
         </div>
-        {docsLanguage ? (
-          <div className="drawer-lang">
-            <DocsLanguageSwitch
-              enHref={docsLanguage.enHref}
-              locale={docsLanguage.locale}
-              zhHref={docsLanguage.zhHref}
-            />
-          </div>
-        ) : null}
+        <div className="drawer-lang">
+          <DocsLanguageSwitch
+            enHref={siteLanguage.enHref}
+            locale={siteLanguage.locale}
+            zhHref={siteLanguage.zhHref}
+          />
+        </div>
         <a
           className="drawer-github"
           href={GITHUB_ORGANIZATION_URL}
