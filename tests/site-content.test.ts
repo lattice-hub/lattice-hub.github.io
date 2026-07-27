@@ -389,7 +389,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 79);
+  assert.equal(chinese.length, 85);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
@@ -497,8 +497,8 @@ test('global styles do not override fumadocs document theming', () => {
 test('HTTP OpenAPI reference uses dual-column endpoint component', () => {
   const zhIndex = readFileSync('content/docs/zh-CN/api/http-openapi/index.mdx', 'utf8');
   const enIndex = readFileSync('content/docs/en/api/http-openapi/index.mdx', 'utf8');
-  const zhAuth = readFileSync('content/docs/zh-CN/api/http-openapi/auth.mdx', 'utf8');
-  const enAuth = readFileSync('content/docs/en/api/http-openapi/auth.mdx', 'utf8');
+  const zhAuth = readFileSync('content/docs/zh-CN/api/http-openapi/auth/index.mdx', 'utf8');
+  const enAuth = readFileSync('content/docs/en/api/http-openapi/auth/index.mdx', 'utf8');
   const mdx = readFileSync('src/mdx-components.tsx', 'utf8');
   const reference = readFileSync('src/components/docs/HttpOpenApiReference.tsx', 'utf8');
   const data = readFileSync('src/lib/http-openapi-reference.ts', 'utf8');
@@ -520,13 +520,16 @@ test('HTTP OpenAPI reference uses dual-column endpoint component', () => {
   assert.match(data, /"children"/);
   assert.match(data, /"responseFields"/);
   assert.match(data, /LimitTrigger/);
+  assert.match(data, /auth-users/);
+  assert.match(data, /\"admin\"/);
+  assert.match(data, /config-templates/);
   assert.match(endpoint, /styles\.grid/);
   assert.match(endpoint, /samples\.map/);
   assert.match(endpoint, /ParamTree|responseFields/);
   assert.match(endpoint, /paramChildren|responseFieldsLabel/);
-  assert.match(toc, /getHttpOpenApiToc/);
-  assert.match(toc, /resolveHttpOpenApiSectionId/);
-  assert.match(toc, /config\/files/);
+  assert.match(toc, /auth\/users/);
+  assert.match(toc, /config\/templates/);
+  assert.match(toc, /admin/);
   assert.match(page, /getHttpOpenApiToc/);
   assert.match(page, /tableOfContent/);
   assert.match(page, /enabled:\s*true/);
@@ -666,7 +669,18 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
             name: 'HTTP OpenAPI',
             index: { type: 'page', name: 'HTTP OpenAPI', url: '/docs/api/http-openapi' },
             children: [
-              { type: 'page', name: '鉴权', url: '/docs/api/http-openapi/auth' },
+              {
+                type: 'folder',
+                name: '鉴权',
+                index: { type: 'page', name: '登录与状态', url: '/docs/api/http-openapi/auth' },
+                children: [
+                  { type: 'page', name: '用户', url: '/docs/api/http-openapi/auth/users' },
+                  { type: 'page', name: '用户组', url: '/docs/api/http-openapi/auth/groups' },
+                  { type: 'page', name: '角色', url: '/docs/api/http-openapi/auth/roles' },
+                  { type: 'page', name: '策略', url: '/docs/api/http-openapi/auth/policies' },
+                ],
+              },
+              { type: 'page', name: '管理面 Admin', url: '/docs/api/http-openapi/admin' },
               { type: 'page', name: '命名空间', url: '/docs/api/http-openapi/namespaces' },
               {
                 type: 'folder',
@@ -712,6 +726,11 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
                     type: 'page',
                     name: '配置灰度',
                     url: '/docs/api/http-openapi/config/gray',
+                  },
+                  {
+                    type: 'page',
+                    name: '配置模板',
+                    url: '/docs/api/http-openapi/config/templates',
                   },
                 ],
               },

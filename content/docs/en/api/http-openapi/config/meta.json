@@ -1,4 +1,4 @@
 {
   "title": "Config",
-  "pages": ["groups", "files", "gray"]
+  "pages": ["groups", "files", "gray", "templates"]
 }

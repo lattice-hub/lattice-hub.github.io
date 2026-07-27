@@ -1,0 +1,4 @@
+{
+  "title": "Authentication",
+  "pages": ["index", "users", "groups", "roles", "policies"]
+}

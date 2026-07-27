@@ -10,7 +10,13 @@ HTTP API 由 `api-http` 插件提供，默认监听 **8090**。按场景选择�
 
 | 场景 | 说明 |
 | --- | --- |
-| [鉴权](/docs/api/http-openapi/auth) | 登录与鉴权状态 |
+| **鉴权** | |
+| [登录与状态](/docs/api/http-openapi/auth) | 登录 / system |
+| [用户](/docs/api/http-openapi/auth/users) | 用户 CRUD 与 Token |
+| [用户组](/docs/api/http-openapi/auth/groups) | 用户组 CRUD |
+| [角色](/docs/api/http-openapi/auth/roles) | 角色 CRUD |
+| [策略](/docs/api/http-openapi/auth/policies) | 策略与资源授权 |
+| [管理面 Admin](/docs/api/http-openapi/admin) | 运维管理接口 |
 | [命名空间](/docs/api/http-openapi/namespaces) | 环境 Namespace |
 | **服务** | |
 | [服务 · 基本信息](/docs/api/http-openapi/services) | 服务 CRUD |
@@ -21,6 +27,7 @@ HTTP API 由 `api-http` 插件提供，默认监听 **8090**。按场景选择�
 | [配置分组](/docs/api/http-openapi/config/groups) | Config group |
 | [配置文件](/docs/api/http-openapi/config/files) | 文件读写 |
 | [配置灰度](/docs/api/http-openapi/config/gray) | normal / gray 发布 |
+| [配置模板](/docs/api/http-openapi/config/templates) | Config templates |
 | **治理** | |
 | [路由](/docs/api/http-openapi/governance/routing) | 路由规则 |
 | [限流](/docs/api/http-openapi/governance/rate-limit) | 限流规则 |

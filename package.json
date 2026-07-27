@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "node --test --import tsx tests/*.test.ts",
-    "gen:http-openapi": "node scripts/generate-http-openapi-reference.mjs"
+    "gen:http-openapi": "node scripts/generate-http-openapi-reference.mjs",
+    "merge:http-openapi": "node scripts/merge-http-openapi-missing.mjs"
   },
   "dependencies": {
     "@types/mdx": "^2.0.13",
