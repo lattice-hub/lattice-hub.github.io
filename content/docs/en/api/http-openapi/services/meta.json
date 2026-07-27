@@ -1,4 +1,4 @@
 {
   "title": "Services",
-  "pages": ["index", "contracts", "topology"]
+  "pages": ["index", "contracts", "topology", "instances"]
 }

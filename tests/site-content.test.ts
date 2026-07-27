@@ -663,9 +663,13 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
                     name: '调用拓扑',
                     url: '/docs/api/http-openapi/services/topology',
                   },
+                  {
+                    type: 'page',
+                    name: '实例',
+                    url: '/docs/api/http-openapi/services/instances',
+                  },
                 ],
               },
-              { type: 'page', name: '实例', url: '/docs/api/http-openapi/instances' },
               {
                 type: 'folder',
                 name: '配置',

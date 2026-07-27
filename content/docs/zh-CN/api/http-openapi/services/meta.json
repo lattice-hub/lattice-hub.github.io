@@ -1,4 +1,4 @@
 {
   "title": "服务",
-  "pages": ["index", "contracts", "topology"]
+  "pages": ["index", "contracts", "topology", "instances"]
 }
