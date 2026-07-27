@@ -133,6 +133,10 @@ test('docs brand navigation returns to the website homepage', () => {
   assert.match(docsLayout, /site-shell--chrome/);
   assert.match(docsLayout, /--fd-banner-height/);
   assert.match(globalCss, /\.site-shell--chrome\s*\{[\s\S]*position:\s*fixed/);
+  assert.match(
+    globalCss,
+    /#nd-docs-layout\s*\{[\s\S]*padding-top:\s*var\(--fd-banner-height/,
+  );
   assert.match(docsLayout, /nav=\{\{[\s\S]*url:\s*'\/'/);
   assert.doesNotMatch(docsLayout, /nav=\{\{[\s\S]*url:\s*getDocsUrl\(locale\)/);
 });

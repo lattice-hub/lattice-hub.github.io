@@ -143,6 +143,13 @@ html.dark .site-shell img:not([src*="lattice-hub-logo"]) {
   color: inherit;
 }
 
+/* Fixed site chrome overlays the docs grid; reserve the same offset as --fd-banner-height
+   so article / breadcrumb content is not clipped under the topnav. Sticky rows already use
+   --fd-docs-row-1 (= banner height) for sidebar / toc positioning. */
+#nd-docs-layout {
+  padding-top: var(--fd-banner-height, 0px);
+}
+
 .site-shell .container {
   width: min(var(--container), calc(100% - var(--gutter) * 2));
   margin-inline: auto;

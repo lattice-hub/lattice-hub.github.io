@@ -5,7 +5,8 @@ import { getDocsLayoutTabs, getDocsSectionTree } from '@/lib/docs-navigation';
 import { source, type DocsLocale } from '@/lib/source';
 import { DocsDocumentLanguage } from './DocsDocumentLanguage';
 
-const docsBannerHeight = '64px';
+/** Matches `.topnav-inner` min-height (64px) + `.topnav` border-bottom (1px). */
+const docsBannerHeight = '65px';
 
 export function DocsLayoutContent({
   children,
