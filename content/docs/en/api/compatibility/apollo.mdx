@@ -1,0 +1,76 @@
+---
+title: Apollo compatibility
+description: service-apollo (default 8890) adapted Apollo-style config pull / notification APIs and call examples.
+---
+
+Plugin: `service-apollo`. Default port: **8890** (follow `deploy/conf/pole-apiserver.yaml`). Routes mount at `/` with no extra path prefix.
+
+**Read-only client surface**: config pull and long-poll notifications—**no** Apollo Portal / OpenAPI publish admin. Publish via [HTTP OpenAPI config](/en/docs/api/http-openapi/config/files) or config gRPC.
+
+## Model mapping
+
+| Apollo | Pole |
+| --- | --- |
+| Cluster or DataCenter | Namespace |
+| AppId | Config group |
+| Namespace (file name) | Config file name |
+
+Lookup order: custom cluster → dataCenter → `default`. A missing suffix may try `.properties`.
+
+## API list
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `GET` | `/configs/{appId}/{cluster}/{namespace}` | Standard client pull (JSON with `configurations` / `releaseKey`) |
+| `GET` | `/configfiles/{appId}/{cluster}/{namespace}` | Properties text |
+| `GET` | `/configfiles/json/{appId}/{cluster}/{namespace}` | Configurations JSON only; optional `releaseKey`; **304** when unchanged |
+| `GET` | `/notifications/v2` | Long-poll notifications |
+| `GET` | `/services/config` | Meta / Config Service address list |
+
+Common optional query: `dataCenter`, `ip`. `/notifications/v2` also needs `appId`, `cluster`, `notifications` (JSON array string).
+
+Auth: optional `Authorization` (control-plane token).
+
+## Call examples
+
+```bash
+BASE=http://127.0.0.1:8890
+
+# Standard pull
+curl -s "$BASE/configs/myapp/default/application"
+
+# Properties / JSON
+curl -s "$BASE/configfiles/myapp/default/application"
+curl -i "$BASE/configfiles/json/myapp/default/application?releaseKey=default-myapp-application-1"
+
+# Long-poll notifications
+curl -s --get "$BASE/notifications/v2" \
+  --data-urlencode 'appId=myapp' \
+  --data-urlencode 'cluster=default' \
+  --data-urlencode 'notifications=[{"namespaceName":"application","notificationId":0}]'
+
+# Meta
+curl -s "$BASE/services/config?appId=myapp&ip=10.0.0.1"
+```
+
+Successful `/configs/...` shape:
+
+```json
+{
+  "appId": "myapp",
+  "cluster": "default",
+  "namespaceName": "application",
+  "configurations": { "a": "1" },
+  "releaseKey": "ns-group-file-version"
+}
+```
+
+`.properties` becomes a KV map; other formats often wrap as `{"content":"<raw>"}`. Missing resources are typically **404**.
+
+## Boundaries
+
+- Does **not** implement full Portal semantics such as public-namespace inheritance.
+- Environment is not modeled as a separate client path; differences map via Cluster / DataCenter → Pole Namespace.
+- Long-poll timeouts follow runtime behavior—do not assume native Apollo second counts.
+
+Back to [Compatibility overview](/en/docs/api/compatibility).

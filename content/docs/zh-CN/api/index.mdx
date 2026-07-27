@@ -14,7 +14,7 @@ description: Control Plane 多协议入口地图：HTTP OpenAPI、gRPC、xDS 与
 | Discovery gRPC | 8091 | SDK / 客户端发现与注册 | [gRPC](/docs/api/grpc) |
 | Config gRPC | 8093 | SDK / 客户端配置 | [gRPC](/docs/api/grpc) |
 | xDS v3 | 15010 | Envoy / 数据面 | [xDS](/docs/api/xds) |
-| Eureka / Nacos / Apollo | 8761 / 8848 / 8890 | 存量客户端兼容 | [兼容协议](/docs/api/compatibility) |
+| Eureka / Nacos / Apollo | 8761 / 8848（+9848 gRPC）/ 8890 | 存量客户端兼容 | [兼容协议](/docs/api/compatibility) |
 
 完整端口矩阵见 [协议端口](/docs/api/ports)。配置权威源：`pole-control-plane/deploy/conf/pole-apiserver.yaml`。
 

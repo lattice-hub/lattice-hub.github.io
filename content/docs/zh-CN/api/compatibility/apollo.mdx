@@ -1,0 +1,76 @@
+---
+title: Apollo 兼容
+description: service-apollo（默认 8890）适配的 Apollo 风格配置拉取 / 通知接口与调用示例。
+---
+
+插件：`service-apollo`。默认端口：**8890**（以 `deploy/conf/pole-apiserver.yaml` 为准）。路由挂在 `/`，无额外 path 前缀。
+
+**只读客户端面**：提供配置拉取与长轮询通知；**没有** Apollo Portal / OpenAPI 发布管理。发布请用 [HTTP OpenAPI 配置](/docs/api/http-openapi/config/files) 或配置 gRPC。
+
+## 模型映射
+
+| Apollo | Pole |
+| --- | --- |
+| Cluster 或 DataCenter | Namespace |
+| AppId | Config group |
+| Namespace（配置名） | Config file 名 |
+
+查找顺序：自定义 cluster → dataCenter → `default`。无后缀时可能尝试追加 `.properties`。
+
+## 接口列表
+
+| Method | Path | 说明 |
+| --- | --- | --- |
+| `GET` | `/configs/{appId}/{cluster}/{namespace}` | 标准客户端拉取（JSON，含 `configurations` / `releaseKey`） |
+| `GET` | `/configfiles/{appId}/{cluster}/{namespace}` | properties 文本 |
+| `GET` | `/configfiles/json/{appId}/{cluster}/{namespace}` | 仅 configurations JSON；可带 `releaseKey`，无变更时 **304** |
+| `GET` | `/notifications/v2` | 长轮询通知 |
+| `GET` | `/services/config` | Meta / Config Service 地址列表 |
+
+通用可选 query：`dataCenter`、`ip`。`/notifications/v2` 另需 `appId`、`cluster`、`notifications`（JSON 数组字符串）。
+
+鉴权：可带 `Authorization`（控制面 token）。
+
+## 调用示例
+
+```bash
+BASE=http://127.0.0.1:8890
+
+# 标准拉取
+curl -s "$BASE/configs/myapp/default/application"
+
+# properties / JSON
+curl -s "$BASE/configfiles/myapp/default/application"
+curl -i "$BASE/configfiles/json/myapp/default/application?releaseKey=default-myapp-application-1"
+
+# 长轮询通知
+curl -s --get "$BASE/notifications/v2" \
+  --data-urlencode 'appId=myapp' \
+  --data-urlencode 'cluster=default' \
+  --data-urlencode 'notifications=[{"namespaceName":"application","notificationId":0}]'
+
+# Meta
+curl -s "$BASE/services/config?appId=myapp&ip=10.0.0.1"
+```
+
+`/configs/...` 成功示例形态：
+
+```json
+{
+  "appId": "myapp",
+  "cluster": "default",
+  "namespaceName": "application",
+  "configurations": { "a": "1" },
+  "releaseKey": "ns-group-file-version"
+}
+```
+
+`.properties` 解析为 KV；其他格式常包在 `{"content":"<raw>"}`。找不到资源时多为 **404**。
+
+## 边界
+
+- **不支持** Apollo 公共 Namespace 继承等完整 Portal 语义。
+- Environment 不在这组 client path 里单独建模；环境差异靠 Cluster / DataCenter → Pole Namespace。
+- 长轮询超时以运行时行为为准，勿假定与原生 Apollo 秒数完全一致。
+
+返回 [兼容协议总览](/docs/api/compatibility)。

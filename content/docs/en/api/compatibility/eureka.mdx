@@ -1,0 +1,80 @@
+---
+title: Eureka compatibility
+description: service-eureka (default 8761) adapted Eureka-style discovery APIs and call examples.
+---
+
+Plugin: `service-eureka`. Default port: **8761**. Prefixes `/eureka`, `/eureka/v1`, and `/eureka/v2` mount the **same** routes (pick one; examples use `/eureka`).
+
+Accept / Content-Type support JSON and XML. Path `{appId}` is normalized to uppercase. Optional header `x-namespace` overrides the plugin default namespace (often `default`).
+
+## API list
+
+Each path exists under `/eureka`, `/eureka/v1`, and `/eureka/v2`.
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `POST` | `/eureka/apps/{appId}` | Register instance |
+| `DELETE` | `/eureka/apps/{appId}/{instId}` | Deregister |
+| `PUT` | `/eureka/apps/{appId}/{instId}` | Heartbeat |
+| `GET` | `/eureka/apps` | Full application list |
+| `GET` | `/eureka/apps/delta` | Delta application list |
+| `GET` | `/eureka/apps/{appId}` | Get one application |
+| `GET` | `/eureka/apps/{appId}/{instId}` | Get instance under app |
+| `PUT` | `/eureka/apps/{appId}/{instId}/status?value=` | Update status (`UP` / `DOWN` / `OUT_OF_SERVICE`, …) |
+| `DELETE` | `/eureka/apps/{appId}/{instId}/status` | Clear override → `UP` |
+| `GET` | `/eureka/instances/{instId}` | Lookup by instance id |
+| `PUT` | `/eureka/apps/{appId}/{instId}/metadata` | Update metadata (query KV) |
+| `GET` | `/eureka/vips/{vipAddress}` | VIP lookup |
+| `GET` | `/eureka/svips/{svipAddress}` | Secure VIP lookup |
+| `POST` | `/eureka/peerreplication/batch` | Peer batch replication |
+
+## Auth
+
+Write paths such as register may send Basic: `Authorization: Basic base64(user:token)`. The segment **after** `:` is the control-plane token. Reads usually do not require auth.
+
+## Call examples
+
+```bash
+BASE=http://127.0.0.1:8761
+TOKEN='<login-token>'
+AUTH=$(printf 'user:%s' "$TOKEN" | base64)
+
+# Register (often 204)
+curl -i -X POST "$BASE/eureka/apps/ORDER" \
+  -H 'Content-Type: application/json' \
+  -H 'x-namespace: default' \
+  -H "Authorization: Basic $AUTH" \
+  -d '{
+    "instance": {
+      "instanceId": "i-1",
+      "app": "ORDER",
+      "ipAddr": "10.0.0.1",
+      "hostName": "10.0.0.1",
+      "status": "UP",
+      "port": { "$": 8080, "@enabled": "true" },
+      "dataCenterInfo": {
+        "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+        "name": "MyOwn"
+      }
+    }
+  }'
+
+# Heartbeat
+curl -i -X PUT "$BASE/eureka/apps/ORDER/i-1" -H 'x-namespace: default'
+
+# Full / delta discovery
+curl -s "$BASE/eureka/apps" -H 'Accept: application/json'
+curl -s "$BASE/eureka/apps/delta" -H 'Accept: application/json'
+
+# Status / deregister
+curl -i -X PUT "$BASE/eureka/apps/ORDER/i-1/status?value=OUT_OF_SERVICE"
+curl -i -X DELETE "$BASE/eureka/apps/ORDER/i-1"
+```
+
+## Boundaries
+
+- Covers common Eureka **client discovery** paths—not a full Netflix Eureka Server.
+- Instances map into the Pole service/instance model; Eureka-specific fields often land in internal metadata.
+- Self-preservation and peer replication are not fully equivalent to native Eureka.
+
+Back to [Compatibility overview](/en/docs/api/compatibility).

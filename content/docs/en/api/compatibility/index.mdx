@@ -1,0 +1,31 @@
+---
+title: Compatibility protocols
+description: Eureka, Nacos, and Apollo compatibility ports, boundaries, and per-protocol API indexes.
+---
+
+The control plane exposes **compatibility entry points** for Eureka, Nacos, and Apollo so legacy clients can migrate onto a unified control plane. Traffic lands in the same service / config / auth model—**not** a full third-party server reimplementation.
+
+Prefer [gRPC](/en/docs/api/grpc) or [HTTP OpenAPI](/en/docs/api/http-openapi) for new work. This section lists **adapted APIs and how to call them**.
+
+## Ports and plugins
+
+| Plugin | Default port | Surface | Docs |
+| --- | ---: | --- | --- |
+| `service-eureka` | 8761 | Discovery (HTTP) | [Eureka](/en/docs/api/compatibility/eureka) |
+| `service-nacos` | 8848 (HTTP); gRPC defaults to 9848 | Discovery + config (HTTP v1 subset; 2.x clients often use gRPC) | [Nacos](/en/docs/api/compatibility/nacos) |
+| `service-apollo` | 8890 | Config pull / notifications (read-only) | [Apollo](/en/docs/api/compatibility/apollo) |
+
+Authoritative config: `deploy/conf/pole-apiserver.yaml`. Keep the matching `- name: service-*` block to listen.
+
+## Product boundaries
+
+1. **Unified control plane**, not a parallel store.
+2. **Common client paths only**—do not assume every admin/console API exists.
+3. **Coexist with native entries** for migration windows; switch to native protocols when you can change clients.
+4. **Authorization**: adapters extract identity, then share the auth chain. See [Authorization and resources](/en/docs/principles/auth-protocols).
+
+## Related reading
+
+- [Protocol ports](/en/docs/api/ports)
+- [Integration options](/en/docs/what-is/access)
+- [HTTP OpenAPI](/en/docs/api/http-openapi)

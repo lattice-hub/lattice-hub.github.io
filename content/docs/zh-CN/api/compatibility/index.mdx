@@ -1,0 +1,31 @@
+---
+title: 兼容协议
+description: Eureka、Nacos、Apollo 兼容入口的端口、产品边界与分协议接口索引。
+---
+
+控制面通过独立 apiserver 插件提供与 Eureka、Nacos、Apollo 的**兼容入口**，便于存量客户端迁入统一控制面。数据最终进入同一套服务 / 配置 / 鉴权模型；**不是**完整第三方 Server 复刻。
+
+新业务优先 [gRPC](/docs/api/grpc) 或 [HTTP OpenAPI](/docs/api/http-openapi)。本分区给出各兼容口的**适配接口列表与调用方式**。
+
+## 端口与插件
+
+| 插件 | 默认端口 | 能力面 | 文档 |
+| --- | ---: | --- | --- |
+| `service-eureka` | 8761 | 注册发现（HTTP） | [Eureka](/docs/api/compatibility/eureka) |
+| `service-nacos` | 8848（HTTP）；gRPC 默认 9848 | 注册发现 + 配置（HTTP v1 子集；2.x 客户端常走 gRPC） | [Nacos](/docs/api/compatibility/nacos) |
+| `service-apollo` | 8890 | 配置拉取 / 通知（只读） | [Apollo](/docs/api/compatibility/apollo) |
+
+权威配置：`deploy/conf/pole-apiserver.yaml`。YAML 中保留对应 `- name: service-*` 段才会监听。
+
+## 产品边界
+
+1. **汇入统一控制面**，不是旁路独立存储。
+2. **只覆盖常用客户端路径**；不要假定每个管理 API / Console 特性都已实现。
+3. **与原生入口并存**：迁移窗口用兼容口；可改客户端请切原生协议。
+4. **鉴权**：各协议提取身份后进入统一 auth 链，见 [鉴权链与资源映射](/docs/principles/auth-protocols)。
+
+## 相关阅读
+
+- [协议端口](/docs/api/ports)
+- [接入方式](/docs/what-is/access)
+- [HTTP OpenAPI](/docs/api/http-openapi)

@@ -1,0 +1,90 @@
+---
+title: Nacos 兼容
+description: service-nacos（默认 8848 / gRPC 9848）适配的 Nacos HTTP v1 接口与调用示例。
+---
+
+插件：`service-nacos`。默认 **HTTP 8848**；未单独配置时 gRPC 监听 **HTTP 端口 + 1000**（默认 **9848**），供 Nacos 2.x 客户端使用。本页列出已挂载的 **HTTP v1** 适配面。
+
+## 映射约定
+
+| Nacos | Pole |
+| --- | --- |
+| `public` / 空 `namespaceId`（或配置 `tenant`） | 默认命名空间（常见 `default`，可由 `defaultNamespace` 覆盖） |
+| `GROUP@@serviceName` | 服务名中 `@@` 映射为 `__`；`DEFAULT_GROUP` 前缀可省略 |
+
+HTTP 参数以 **URL Query** 为主（实现读 QueryParameter），示例请放在 query，不要假设 form body 一定生效。
+
+## 接口列表
+
+### Naming — `/nacos/v1/ns`
+
+| Method | Path | 说明 |
+| --- | --- | --- |
+| `POST` | `/nacos/v1/ns/instance` | 注册实例 |
+| `PUT` | `/nacos/v1/ns/instance` | 更新实例 |
+| `DELETE` | `/nacos/v1/ns/instance` | 反注册 |
+| `PUT` | `/nacos/v1/ns/instance/beat` | 心跳 |
+| `GET` | `/nacos/v1/ns/instance/list` | 实例列表 / 发现 |
+| `GET` | `/nacos/v1/ns/service/list` | 服务分页列表 |
+| `GET` | `/nacos/v1/ns/operator/metrics` | 健康探活（`{"status":"UP"}`） |
+
+注册必填：`serviceName`、`ip`、`port`。可选：`namespaceId`、`clusterName`/`cluster`、`weight`、`healthy`、`enabled`、`metadata` 等。实现上 **ephemeral 固定为 true**。
+
+### Config — `/nacos/v1/cs/configs`
+
+| Method | Path | 说明 |
+| --- | --- | --- |
+| `POST` | `/nacos/v1/cs/configs` | 发布配置（query；`import=true` 时为 Zip 导入） |
+| `GET` | `/nacos/v1/cs/configs` | 获取配置正文（成功时常为纯文本 content） |
+| `DELETE` | `/nacos/v1/cs/configs` | 删除配置 |
+| `POST` | `/nacos/v1/cs/configs/listener` | 配置长轮询监听 |
+
+发布/获取/删除需 `dataId`、`group`；可选 `tenant`（namespace）、`content`（发布）、`appName` 等。监听可用 header `Long-Pulling-Timeout`（毫秒）。
+
+### Auth
+
+| Method | Path | 说明 |
+| --- | --- | --- |
+| `POST` | `/nacos/v1/auth/login` | 登录（兼容形态） |
+| `POST` | `/nacos/v1/auth/users/login` | 同上 |
+
+可用 query `accessToken` 或 `Authorization` 携带控制面 token。兼容登录返回形态与原生 Nacos JWT 不完全相同，**以控制面统一鉴权为准**。
+
+### Debug（运维）
+
+| Method | Path |
+| --- | --- |
+| `GET` | `/nacos/v1/debug/2.x/connections` |
+| `GET` | `/nacos/v1/debug/2.x/connections/detail?conn_id=` |
+
+## 调用示例
+
+```bash
+BASE=http://127.0.0.1:8848
+SVC='DEFAULT_GROUP@@demo'
+
+# 注册
+curl -i -X POST "$BASE/nacos/v1/ns/instance?serviceName=$SVC&ip=10.0.0.2&port=8080&namespaceId=public&weight=1&healthy=true&enabled=true"
+
+# 心跳
+curl -s -X PUT "$BASE/nacos/v1/ns/instance/beat?serviceName=$SVC&ip=10.0.0.2&port=8080&namespaceId=public"
+
+# 发现
+curl -s "$BASE/nacos/v1/ns/instance/list?serviceName=$SVC&namespaceId=public"
+
+# 发布 / 获取配置
+curl -s -X POST "$BASE/nacos/v1/cs/configs?dataId=app.properties&group=DEFAULT_GROUP&tenant=&content=a%3D1"
+curl -s "$BASE/nacos/v1/cs/configs?dataId=app.properties&group=DEFAULT_GROUP&tenant="
+
+# 健康
+curl -s "$BASE/nacos/v1/ns/operator/metrics"
+```
+
+## 边界
+
+- 只覆盖 Nacos OpenAPI **常用子集**，不是完整 Nacos Server / Console。
+- **Nacos 2.x SDK** 多数走 **gRPC（9848）**，不要只用 8848 HTTP 验证 2.x 客户端。
+- 无完整服务管理 CRUD、无完整权限/集群语义；`/nacos/serverlist` 等未挂载路径不要当作可用 API。
+- 配置发布也可用原生 [HTTP OpenAPI 配置](/docs/api/http-openapi/config/files) / gRPC。
+
+返回 [兼容协议总览](/docs/api/compatibility)。

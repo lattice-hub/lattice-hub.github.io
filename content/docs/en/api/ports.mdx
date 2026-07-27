@@ -15,7 +15,7 @@ Ports follow `pole-control-plane/deploy/conf/pole-apiserver.yaml` and Console co
 | `config-grpc` | 8093 | gRPC | Configuration read/write and discovery |
 | `xds-v3` | 15010 | gRPC (xDS) | Envoy xDS v3 control plane |
 | `service-eureka` | 8761 | HTTP | Eureka-compatible discovery |
-| `service-nacos` | 8848 | HTTP | Nacos-compatible discovery/config |
+| `service-nacos` | 8848 (HTTP); gRPC defaults to **9848** | HTTP / gRPC | Nacos-compatible discovery/config |
 | `service-apollo` | 8890 | HTTP | Apollo-compatible config |
 
 Post-install checks: [Server installation](/en/docs/guides/server-install). Integration choices: [Integration options](/en/docs/what-is/access).

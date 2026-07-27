@@ -378,7 +378,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 76);
+  assert.equal(chinese.length, 79);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
@@ -720,7 +720,16 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
           },
           { type: 'page', name: 'gRPC 接口', url: '/docs/api/grpc' },
           { type: 'page', name: 'xDS v3', url: '/docs/api/xds' },
-          { type: 'page', name: '兼容协议', url: '/docs/api/compatibility' },
+          {
+            type: 'folder',
+            name: '兼容协议',
+            index: { type: 'page', name: '兼容协议', url: '/docs/api/compatibility' },
+            children: [
+              { type: 'page', name: 'Eureka', url: '/docs/api/compatibility/eureka' },
+              { type: 'page', name: 'Nacos', url: '/docs/api/compatibility/nacos' },
+              { type: 'page', name: 'Apollo', url: '/docs/api/compatibility/apollo' },
+            ],
+          },
         ],
       },
       {

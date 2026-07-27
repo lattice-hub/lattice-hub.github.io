@@ -15,7 +15,7 @@ description: Control Plane 默认监听端口矩阵；兼容协议仅在对应�
 | `config-grpc` | 8093 | gRPC | 配置读写与发现 |
 | `xds-v3` | 15010 | gRPC (xDS) | Envoy xDS v3 控制面 |
 | `service-eureka` | 8761 | HTTP | Eureka 兼容注册发现 |
-| `service-nacos` | 8848 | HTTP | Nacos 兼容注册/配置入口 |
+| `service-nacos` | 8848（HTTP）；默认另开 gRPC **9848** | HTTP / gRPC | Nacos 兼容注册/配置入口 |
 | `service-apollo` | 8890 | HTTP | Apollo 兼容配置入口 |
 
 安装后的联通检查见 [服务端安装](/docs/guides/server-install)。接入场景选型见 [接入方式](/docs/what-is/access)。

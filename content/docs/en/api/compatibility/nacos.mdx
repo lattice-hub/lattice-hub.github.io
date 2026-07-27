@@ -1,0 +1,90 @@
+---
+title: Nacos compatibility
+description: service-nacos (default 8848 / gRPC 9848) adapted Nacos HTTP v1 APIs and call examples.
+---
+
+Plugin: `service-nacos`. Default **HTTP 8848**; if unset, gRPC listens on **HTTP port + 1000** (default **9848**) for Nacos 2.x clients. This page lists the mounted **HTTP v1** surface.
+
+## Mapping
+
+| Nacos | Pole |
+| --- | --- |
+| `public` / empty `namespaceId` (or config `tenant`) | Default namespace (often `default`, overridable via `defaultNamespace`) |
+| `GROUP@@serviceName` | `@@` maps to `__` in the Pole service name; `DEFAULT_GROUP` prefix may be omitted |
+
+HTTP parameters are primarily **URL query** (`QueryParameter`). Put values in the query string; do not assume form bodies always work.
+
+## API list
+
+### Naming — `/nacos/v1/ns`
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `POST` | `/nacos/v1/ns/instance` | Register |
+| `PUT` | `/nacos/v1/ns/instance` | Update |
+| `DELETE` | `/nacos/v1/ns/instance` | Deregister |
+| `PUT` | `/nacos/v1/ns/instance/beat` | Heartbeat |
+| `GET` | `/nacos/v1/ns/instance/list` | Instance list / discover |
+| `GET` | `/nacos/v1/ns/service/list` | Paginated services |
+| `GET` | `/nacos/v1/ns/operator/metrics` | Health (`{"status":"UP"}`) |
+
+Register requires `serviceName`, `ip`, `port`. Optional: `namespaceId`, `clusterName`/`cluster`, `weight`, `healthy`, `enabled`, `metadata`, …. Implementation keeps **ephemeral=true**.
+
+### Config — `/nacos/v1/cs/configs`
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `POST` | `/nacos/v1/cs/configs` | Publish (query; `import=true` for zip import) |
+| `GET` | `/nacos/v1/cs/configs` | Get config body (often plain-text content) |
+| `DELETE` | `/nacos/v1/cs/configs` | Delete |
+| `POST` | `/nacos/v1/cs/configs/listener` | Long-poll watch |
+
+Publish/get/delete need `dataId`, `group`; optional `tenant`, `content` (publish), `appName`, …. Listener may use header `Long-Pulling-Timeout` (ms).
+
+### Auth
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `POST` | `/nacos/v1/auth/login` | Login (compatibility shape) |
+| `POST` | `/nacos/v1/auth/users/login` | Same |
+
+Pass the control-plane token via query `accessToken` or `Authorization`. The compatibility login response is **not** a full Nacos JWT—follow unified control-plane auth.
+
+### Debug (ops)
+
+| Method | Path |
+| --- | --- |
+| `GET` | `/nacos/v1/debug/2.x/connections` |
+| `GET` | `/nacos/v1/debug/2.x/connections/detail?conn_id=` |
+
+## Call examples
+
+```bash
+BASE=http://127.0.0.1:8848
+SVC='DEFAULT_GROUP@@demo'
+
+# Register
+curl -i -X POST "$BASE/nacos/v1/ns/instance?serviceName=$SVC&ip=10.0.0.2&port=8080&namespaceId=public&weight=1&healthy=true&enabled=true"
+
+# Heartbeat
+curl -s -X PUT "$BASE/nacos/v1/ns/instance/beat?serviceName=$SVC&ip=10.0.0.2&port=8080&namespaceId=public"
+
+# Discover
+curl -s "$BASE/nacos/v1/ns/instance/list?serviceName=$SVC&namespaceId=public"
+
+# Publish / get config
+curl -s -X POST "$BASE/nacos/v1/cs/configs?dataId=app.properties&group=DEFAULT_GROUP&tenant=&content=a%3D1"
+curl -s "$BASE/nacos/v1/cs/configs?dataId=app.properties&group=DEFAULT_GROUP&tenant="
+
+# Health
+curl -s "$BASE/nacos/v1/ns/operator/metrics"
+```
+
+## Boundaries
+
+- Common Nacos OpenAPI **subset** only—not a full Nacos Server/Console.
+- **Nacos 2.x SDKs** usually speak **gRPC (9848)**; do not validate 2.x clients with HTTP 8848 alone.
+- No full naming admin CRUD or native cluster/auth semantics; unmounted paths such as `/nacos/serverlist` are not available APIs.
+- Prefer native [HTTP OpenAPI config](/en/docs/api/http-openapi/config/files) / gRPC for new publishers.
+
+Back to [Compatibility overview](/en/docs/api/compatibility).
