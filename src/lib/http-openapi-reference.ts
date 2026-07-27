@@ -44,26 +44,15 @@ const authHeaders: ApiParam[] = [
     location: 'header',
     description: { 'zh-CN': '登录返回的 token。', en: 'Token from login.' },
   },
-  {
-    name: 'X-Pole-User',
-    type: 'string',
-    required: true,
-    location: 'header',
-    description: { 'zh-CN': '登录返回的 user_id。', en: 'user_id from login.' },
-  },
 ];
 
 function curlGet(path: string, auth = true): string {
-  const headers = auth
-    ? ` \\\n  -H "Authorization: $TOKEN" \\\n  -H "X-Pole-User: $USER_ID"`
-    : '';
+  const headers = auth ? ` \\\n  -H "Authorization: $TOKEN"` : '';
   return `curl -sS '${base}${path}'${headers}`;
 }
 
 function curlPost(path: string, body: string, auth = true): string {
-  const headers = auth
-    ? ` \\\n  -H "Authorization: $TOKEN" \\\n  -H "X-Pole-User: $USER_ID"`
-    : '';
+  const headers = auth ? ` \\\n  -H "Authorization: $TOKEN"` : '';
   return `curl -sS -X POST '${base}${path}'${headers} \\\n  -H 'Content-Type: application/json' \\\n  -d '${body}'`;
 }
 
@@ -74,21 +63,21 @@ function samplesGet(path: string, auth = true): ApiCodeSample[] {
       lang: 'javascript',
       label: 'JavaScript',
       code: auth
-        ? `const res = await fetch('${base}${path}', {\n  headers: { Authorization: token, 'X-Pole-User': userId },\n});\nconst data = await res.json();`
+        ? `const res = await fetch('${base}${path}', {\n  headers: { Authorization: token },\n});\nconst data = await res.json();`
         : `const data = await fetch('${base}${path}').then((r) => r.json());`,
     },
     {
       lang: 'go',
       label: 'Go',
       code: auth
-        ? `req, _ := http.NewRequest(http.MethodGet, "${base}${path}", nil)\nreq.Header.Set("Authorization", token)\nreq.Header.Set("X-Pole-User", userID)\nresp, err := http.DefaultClient.Do(req)`
+        ? `req, _ := http.NewRequest(http.MethodGet, "${base}${path}", nil)\nreq.Header.Set("Authorization", token)\nresp, err := http.DefaultClient.Do(req)`
         : `resp, err := http.Get("${base}${path}")`,
     },
     {
       lang: 'python',
       label: 'Python',
       code: auth
-        ? `import requests\ndata = requests.get("${base}${path}", headers={"Authorization": token, "X-Pole-User": user_id}).json()`
+        ? `import requests\ndata = requests.get("${base}${path}", headers={"Authorization": token}).json()`
         : `import requests\ndata = requests.get("${base}${path}").json()`,
     },
   ];
@@ -101,21 +90,21 @@ function samplesPost(path: string, body: string, auth = true): ApiCodeSample[] {
       lang: 'javascript',
       label: 'JavaScript',
       code: auth
-        ? `await fetch('${base}${path}', {\n  method: 'POST',\n  headers: {\n    Authorization: token,\n    'X-Pole-User': userId,\n    'Content-Type': 'application/json',\n  },\n  body: JSON.stringify(${body}),\n});`
+        ? `await fetch('${base}${path}', {\n  method: 'POST',\n  headers: {\n    Authorization: token,\n    'Content-Type': 'application/json',\n  },\n  body: JSON.stringify(${body}),\n});`
         : `await fetch('${base}${path}', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify(${body}),\n});`,
     },
     {
       lang: 'go',
       label: 'Go',
       code: auth
-        ? `body := strings.NewReader(\`${body}\`)\nreq, _ := http.NewRequest(http.MethodPost, "${base}${path}", body)\nreq.Header.Set("Authorization", token)\nreq.Header.Set("X-Pole-User", userID)\nreq.Header.Set("Content-Type", "application/json")\nresp, err := http.DefaultClient.Do(req)`
+        ? `body := strings.NewReader(\`${body}\`)\nreq, _ := http.NewRequest(http.MethodPost, "${base}${path}", body)\nreq.Header.Set("Authorization", token)\nreq.Header.Set("Content-Type", "application/json")\nresp, err := http.DefaultClient.Do(req)`
         : `body := strings.NewReader(\`${body}\`)\nreq, _ := http.NewRequest(http.MethodPost, "${base}${path}", body)\nreq.Header.Set("Content-Type", "application/json")\nresp, err := http.DefaultClient.Do(req)`,
     },
     {
       lang: 'python',
       label: 'Python',
       code: auth
-        ? `import requests\nrequests.post("${base}${path}", json=${body}, headers={"Authorization": token, "X-Pole-User": user_id})`
+        ? `import requests\nrequests.post("${base}${path}", json=${body}, headers={"Authorization": token})`
         : `import requests\nrequests.post("${base}${path}", json=${body})`,
     },
   ];
@@ -244,8 +233,8 @@ export const httpOpenApiSections: Record<string, ApiSectionDef> = {
         path: '/auth/v1/user/login',
         title: { 'zh-CN': '用户登录', en: 'User login' },
         description: {
-          'zh-CN': '换取管理面 token；后续请求携带 Authorization 与 X-Pole-User。',
-          en: 'Exchange credentials for a management token; later calls send Authorization and X-Pole-User.',
+          'zh-CN': '换取管理面 token；后续请求在 Authorization 中携带该 token。',
+          en: 'Exchange credentials for a management token; later calls send it in Authorization.',
         },
         params: [
           {

@@ -96,11 +96,11 @@ POLE_BASE_URL=http://127.0.0.1:8080 node console/web/scripts/smoke-agent-workben
 
 ```bash
 curl -sS -X POST "$BASE/ai/mcp/v1/servers" -H 'Content-Type: application/json' \
-  -H "Authorization: $TOKEN" -H "X-Pole-User: $USER_ID" \
+  -H "Authorization: $TOKEN" \
   -d @mcp-server.json | jq '{code,info}'
 
 curl -sS "$BASE/ai/mcp/v1/servers?namespace=default&offset=0&limit=20" \
-  -H "Authorization: $TOKEN" -H "X-Pole-User: $USER_ID" \
+  -H "Authorization: $TOKEN" \
   | jq '.data[]? | {name,namespace,protocol}'
 ```
 
