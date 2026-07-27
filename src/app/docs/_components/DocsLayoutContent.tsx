@@ -38,7 +38,7 @@ export function DocsLayoutContent({
           url: '/',
         }}
         themeSwitch={{
-          mode: 'light-dark-system',
+          enabled: false,
         }}
       >
         {children}

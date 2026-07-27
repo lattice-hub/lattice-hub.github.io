@@ -480,7 +480,7 @@ test('global styles do not override fumadocs document theming', () => {
   assert.match(themeSwitch, /aria-haspopup="menu"/);
   assert.match(themeSwitch, /setTheme\(value\)/);
   assert.match(themeSwitch, /'system'/);
-  assert.match(docsLayout, /mode:\s*'light-dark-system'/);
+  assert.match(docsLayout, /enabled:\s*false/, 'docs sidebar must not duplicate the header theme switch');
 });
 
 test('HTTP OpenAPI reference uses dual-column endpoint component', () => {
