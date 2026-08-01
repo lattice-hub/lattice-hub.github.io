@@ -1,0 +1,70 @@
+---
+title: Service governance and Mesh comparison
+description: Compare Lattice Hub, PolarisMesh, Istio, and Kmesh across integration modes, routing, progressive delivery, rate limiting, circuit breaking, security, and observability.
+full: true
+---
+
+This matrix separates who manages a rule from who executes it on traffic. Lattice Hub and PolarisMesh primarily provide governance control planes; Istio is a complete Service Mesh; Kmesh is an eBPF data plane whose current documented control-plane path uses Istio.
+
+## Status legend
+
+- **Control plane**: manages and releases the rule; enforcement depends on the corresponding SDK, Sidecar, Proxy, or Gateway.
+- **Native**: directly provided by the current product and its official runtime.
+- **Path-dependent**: available only in a named data-plane mode or extension component.
+- **Validate**: official evidence does not establish equivalence with the other products in this row; run versioned E2E tests.
+- **Not equivalent**: a nearby term exists, but its security or execution semantics differ.
+
+## Integration and data plane
+
+| Capability | Lattice Hub / Pole | PolarisMesh | Istio | Kmesh |
+| --- | --- | --- | --- | --- |
+| Product role | Service, configuration, and governance control plane | Service-governance control plane | Complete Mesh: Istiod plus data plane | eBPF Mesh data plane; currently uses Istio as control plane |
+| Proxyless integration | **Native**: Rust SDK consumes discovery, configuration, and governance views; validate other languages by client capability | **Native**: multi-language SDK and framework integration | **Not applicable**: applications generally need no governance SDK; the Mesh data plane enforces policy | **Not applicable**: transparent traffic capture, not an application-SDK model |
+| Proxy / Gateway integration | **Path-dependent**: Envoy xDS, Pole Sidecar, Proxy Mesh / Gateway; validate each rule E2E | **Native**: Envoy, Sidecar, and gateway paths | **Native**: Envoy sidecars and gateways; ambient uses ztunnel / Waypoint | **Native**: node eBPF; advanced L7 uses Waypoint |
+| Kubernetes onboarding | **Component-dependent**: Controller synchronizes Services and supports Sidecar injection | **Component-dependent**: Polaris Controller | **Native**: sidecar or ambient mode | **Native**: Kmesh CNI and Namespace labels |
+| Sidecarless data path | **Validate**: cannot be inferred from xDS or Sidecar support | **Validate**: depends on the selected data plane | **Native**: ambient mode | **Native**: node eBPF; advanced L7 may still use Waypoint |
+| eBPF kernel data plane | Not provided | Not a core data plane | Not provided | **Native**: kernel-native / dual-engine |
+
+## Traffic governance
+
+| Capability | Lattice Hub / Pole | PolarisMesh | Istio | Kmesh |
+| --- | --- | --- | --- | --- |
+| Dynamic routing | **Control plane**: routing rules enter an active release and are executed by runtime consumers | **Native**: SDK / Proxy dynamic routing | **Native**: VirtualService and Gateway API routing | **Path-dependent**: simple L7 can run in the kernel; advanced L7 uses Waypoint |
+| Blue-green, canary, and lane-based delivery | **Control plane**: routing, lanes, and versioned releases compose the policy; runtimes must propagate and enforce governance context | **Native**: blue-green, canary, full-link gray, and test-environment routing | **Native**: percentage- and header-based A/B and canary routing | **Path-dependent**: Istio configuration plus Waypoint / data-plane enforcement; validate by mode |
+| Locality and load balancing | **Control plane / client**: discovery metadata and runtime selection work together | **Native**: locality routing and multiple load-balancing policies | **Native**: DestinationRule, locality, and failover | **Native / path-dependent**: L4 load balancing; L7 locality uses Istio / Waypoint paths |
+| Rate limiting | **Control plane**: rate-limit rules and Limiter; SDK, Sidecar, or Gateway must implement the selected semantics | **Native**: local and distributed rate limiting | **Extension-dependent**: the official task configures Envoy local/global rate limiting | **Path-dependent**: official local/global rate-limit tasks; L7 requires Waypoint |
+| Circuit breaking | **Control plane**: circuit-breaker releases and runtime consumption | **Native**: fault circuit breaking | **Native**: DestinationRule / Envoy circuit breaking | **Path-dependent**: the official circuit-breaker task uses the Istio / Waypoint path |
+| Active fault detection | **Control plane**: a distinct FaultDetect rule | **Native**: active probing and health checking | **Not equivalent**: health checking, circuit breaking, and fault injection are separate models | **Validate**: circuit breaking alone does not establish Pole-style active detection |
+| Traffic mirroring | **Control plane**: TrafficMirror rule; requires data-plane consumer support | **Validate**: confirm by SDK / Proxy and version | **Native**: VirtualService mirroring | **Validate**: the current official application-layer catalog does not establish full equivalence with Istio mirroring |
+| Traffic mock | **Control plane**: TrafficMock rule; requires data-plane consumer support | **Validate** | **Not equivalent**: fault injection is not a general mock-response system | **Validate** |
+
+## Security and observability
+
+| Capability | Lattice Hub / Pole | PolarisMesh | Istio | Kmesh |
+| --- | --- | --- | --- | --- |
+| Call authorization | **Control plane**: TrafficSecurity / call-authorization rules | **Native**: service-access authorization enforced by the selected SDK / Proxy | **Native**: AuthorizationPolicy, JWT, and external authorization | **Path-dependent**: policy enforcement in eBPF and Waypoint |
+| Mesh mTLS | **Not equivalent**: call authorization is not workload mTLS; no complete Mesh identity claim today | **Validate**: do not infer a complete Istio-style mTLS system from service authorization | **Native**: workload identity, mTLS, and PeerAuthentication | **Native / Istio-dependent**: uses the Istio control plane and certificate system |
+| Observability | Control-plane metrics, events, and runtime exposure; not a standalone full-stack observability platform | SDK / Proxy metrics and governance visibility | Metrics, logs, traces, and Telemetry API | L4 metrics and access logs; validate advanced L7 visibility on the Waypoint path |
+| Component that handles business traffic | SDK, Sidecar, Proxy, or Gateway—not Pole Control Plane | Polaris SDK / Proxy / Mesh proxy | Envoy sidecar, ztunnel, Waypoint, and Gateway | eBPF data plane and optional Waypoint |
+
+## Pole xDS enforcement boundary
+
+Pole exposes Envoy xDS v3 resources, but xDS availability is not a blanket Istio or Kmesh compatibility statement. The currently mapped subset includes HTTP route conditions, weighted/random traffic distribution, basic QPS token buckets, instance-level circuit breaking, and fault detection. OR conditions, dynamic request parameters, queueing, custom rate-limit responses, concurrency/system-resource limits, lanes, lossless release, call authorization, traffic mirroring, and mock are not all equivalent in the current Envoy conversion path.
+
+Treat those entries as control-plane intent until the selected SDK, Sidecar, Proxy, or Gateway has an explicit mapping and an E2E test.
+
+## Selection guidance
+
+- For one resource and release model across services, configuration, and governance, compare Lattice Hub with PolarisMesh at the control-plane layer.
+- For a complete Kubernetes Mesh, security, and proxy ecosystem, Istio is the relevant reference; Lattice Hub does not claim to replace Istiod.
+- To reduce sidecar data-path overhead, Kmesh is a data-plane candidate. It currently depends on Istio as its control plane, and there is no direct Lattice Hub–Kmesh integration claim today.
+- “Control plane” is not a weaker status. It makes the enforcement boundary explicit: a stored rule is not proof that every runtime executes it.
+
+## Official sources
+
+- [PolarisMesh Service Mesh comparison](https://polarismesh.cn/docs/%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3/%E7%9B%B8%E5%85%B3%E4%BA%A7%E5%93%81%E5%AF%B9%E6%AF%94/%E6%9C%8D%E5%8A%A1%E7%BD%91%E6%A0%BC%E5%AF%B9%E6%AF%94/) · [PolarisMesh traffic management](https://polarismesh.cn/docs/%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88/%E5%8A%9F%E8%83%BD%E7%89%B9%E6%80%A7/%E6%B5%81%E9%87%8F%E7%AE%A1%E7%90%86/)
+- [Istio architecture](https://istio.io/latest/docs/ops/deployment/architecture/) · [Traffic Management](https://istio.io/latest/docs/concepts/traffic-management/) · [Rate Limit](https://istio.io/latest/docs/tasks/policy-enforcement/rate-limit/) · [Mirroring](https://istio.io/latest/docs/tasks/traffic-management/mirroring/)
+- [Kmesh Architecture](https://kmesh.net/docs/architecture/) · [Application Layer](https://kmesh.net/docs/category/application-layer/) · [Quick Start](https://kmesh.net/docs/setup/quick-start/)
+- Lattice Hub: [Features](/en/docs/what-is/features) · [Governance releases](/en/docs/principles/governance-release) · [Pole Sidecar](/en/docs/components/pingora-sidecar)
+
+External product material was checked on 2026-08-01; validate data-plane behavior against the exact deployed version and E2E results.

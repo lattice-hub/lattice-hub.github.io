@@ -113,8 +113,24 @@ test('product comparison separates compatibility, peers, mesh, and data planes',
   const comparePage = readFileSync('src/app/compare/page.tsx', 'utf8');
   const homepage = readFileSync('src/app/page.tsx', 'utf8');
   const productPage = readFileSync('src/app/product/page.tsx', 'utf8');
-  const zhComparison = readFileSync('content/docs/zh-CN/what-is/comparison.mdx', 'utf8');
-  const enComparison = readFileSync('content/docs/en/what-is/comparison.mdx', 'utf8');
+  const zhComparison = readFileSync('content/docs/zh-CN/what-is/comparison/index.mdx', 'utf8');
+  const enComparison = readFileSync('content/docs/en/what-is/comparison/index.mdx', 'utf8');
+  const zhRegistryMatrix = readFileSync(
+    'content/docs/zh-CN/what-is/comparison/registry-config.mdx',
+    'utf8',
+  );
+  const enRegistryMatrix = readFileSync(
+    'content/docs/en/what-is/comparison/registry-config.mdx',
+    'utf8',
+  );
+  const zhMeshMatrix = readFileSync(
+    'content/docs/zh-CN/what-is/comparison/service-mesh.mdx',
+    'utf8',
+  );
+  const enMeshMatrix = readFileSync(
+    'content/docs/en/what-is/comparison/service-mesh.mdx',
+    'utf8',
+  );
   const zhMeta = JSON.parse(readFileSync('content/docs/zh-CN/what-is/meta.json', 'utf8')) as { pages: string[] };
   const enMeta = JSON.parse(readFileSync('content/docs/en/what-is/meta.json', 'utf8')) as { pages: string[] };
 
@@ -134,6 +150,25 @@ test('product comparison separates compatibility, peers, mesh, and data planes',
   assert.match(productPage, /topic\.action/);
   assert.ok(zhMeta.pages.includes('comparison'));
   assert.ok(enMeta.pages.includes('comparison'));
+  assert.match(zhComparison, /注册与配置中心对比/);
+  assert.match(zhComparison, /服务治理与 Mesh 对比/);
+  assert.match(enComparison, /Registry and configuration comparison/);
+  assert.match(enComparison, /Service governance and Mesh comparison/);
+
+  for (const matrix of [zhRegistryMatrix, enRegistryMatrix]) {
+    assert.match(matrix, /Nacos/);
+    assert.match(matrix, /Apollo/);
+    assert.match(matrix, /PolarisMesh/);
+    assert.match(matrix, /TPS/);
+  }
+
+  for (const matrix of [zhMeshMatrix, enMeshMatrix]) {
+    assert.match(matrix, /Proxyless/);
+    assert.match(matrix, /Istio/);
+    assert.match(matrix, /Kmesh/);
+    assert.match(matrix, /xDS/);
+    assert.match(matrix, /Waypoint/);
+  }
 });
 
 test('component matrix covers the Lattice Hub ecosystem', () => {
@@ -420,7 +455,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 86);
+  assert.equal(chinese.length, 88);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
@@ -589,7 +624,23 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
         name: 'Lattice Hub 是什么',
         children: [
           { type: 'page', name: '功能特性', url: '/docs/what-is/features' },
-          { type: 'page', name: '产品对比', url: '/docs/what-is/comparison' },
+          {
+            type: 'folder',
+            name: '产品对比',
+            index: { type: 'page', name: '产品对比', url: '/docs/what-is/comparison' },
+            children: [
+              {
+                type: 'page',
+                name: '注册与配置中心对比',
+                url: '/docs/what-is/comparison/registry-config',
+              },
+              {
+                type: 'page',
+                name: '服务治理与 Mesh 对比',
+                url: '/docs/what-is/comparison/service-mesh',
+              },
+            ],
+          },
           { type: 'page', name: '接入方式', url: '/docs/what-is/access' },
         ],
       },
@@ -890,8 +941,26 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
     [
       { name: '简介', url: '/docs' },
       { name: '功能特性', url: '/docs/what-is/features' },
-      { name: '产品对比', url: '/docs/what-is/comparison' },
+      { name: '产品对比' },
       { name: '接入方式', url: '/docs/what-is/access' },
+    ],
+  );
+  const comparisonFolder = overview.children[2];
+  assert.equal(comparisonFolder.type, 'folder');
+  assert.equal(comparisonFolder.index?.url, '/docs/what-is/comparison');
+  assert.deepEqual(
+    comparisonFolder.children.map((node) =>
+      node.type === 'page' ? { name: node.name, url: node.url } : { name: node.name },
+    ),
+    [
+      {
+        name: '注册与配置中心对比',
+        url: '/docs/what-is/comparison/registry-config',
+      },
+      {
+        name: '服务治理与 Mesh 对比',
+        url: '/docs/what-is/comparison/service-mesh',
+      },
     ],
   );
 
@@ -905,8 +974,26 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
     [
       { name: 'Introduction', url: '/en/docs' },
       { name: 'Features', url: '/en/docs/what-is/features' },
-      { name: 'Product comparison', url: '/en/docs/what-is/comparison' },
+      { name: 'Product comparison' },
       { name: 'Integration options', url: '/en/docs/what-is/access' },
+    ],
+  );
+  const enComparisonFolder = enOverview.children[2];
+  assert.equal(enComparisonFolder.type, 'folder');
+  assert.equal(enComparisonFolder.index?.url, '/en/docs/what-is/comparison');
+  assert.deepEqual(
+    enComparisonFolder.children.map((node) =>
+      node.type === 'page' ? { name: node.name, url: node.url } : { name: node.name },
+    ),
+    [
+      {
+        name: 'Registry and configuration comparison',
+        url: '/en/docs/what-is/comparison/registry-config',
+      },
+      {
+        name: 'Service governance and Mesh comparison',
+        url: '/en/docs/what-is/comparison/service-mesh',
+      },
     ],
   );
 });

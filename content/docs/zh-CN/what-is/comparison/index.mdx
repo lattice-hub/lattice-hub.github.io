@@ -19,6 +19,15 @@ Lattice Hub 是统一的服务与 Agent 治理控制面。它通过已有协议�
 
 这里的“兼容”指已提供的协议入口，不等同于完整复刻对方的 SDK、Console、运行时或整个生态。“组合”也不等同于已经开箱即用集成。
 
+## 选型能力矩阵
+
+| 对比域 | 覆盖产品 | 重点维度 |
+| --- | --- | --- |
+| [注册与配置中心对比](/docs/what-is/comparison/registry-config) | Pole、Nacos、Apollo、PolarisMesh | 注册发现、健康检查、Kubernetes 同步、动态配置、版本回滚、配置灰度、权限与迁移入口 |
+| [服务治理与 Mesh 对比](/docs/what-is/comparison/service-mesh) | Pole、PolarisMesh、Istio、Kmesh | Proxy / Proxyless、数据面模式、路由与灰度、限流、熔断、镜像、Mock、mTLS 与可观测性 |
+
+矩阵明确区分原生能力、协议兼容、依赖运行时、需核验和不适用。没有统一版本、硬件、拓扑与压测方法的 TPS 数字不会进入横向排名。
+
 ## 与 Nacos、Apollo 的关系：承接存量接入
 
 ### Nacos

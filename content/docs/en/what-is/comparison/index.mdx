@@ -19,6 +19,15 @@ Start with product layers: Nacos, Apollo, PolarisMesh, and Lattice Hub all inclu
 
 Here, “compatible” means a provided protocol entry point, not a complete recreation of another product’s SDK, Console, runtime, or ecosystem. “Composable” does not mean an out-of-the-box integration.
 
+## Capability matrices for selection
+
+| Comparison domain | Products | Key dimensions |
+| --- | --- | --- |
+| [Registry and configuration comparison](/en/docs/what-is/comparison/registry-config) | Pole, Nacos, Apollo, PolarisMesh | Discovery, health checks, Kubernetes synchronization, dynamic configuration, versions and rollback, gray configuration, authorization, and migration entry points |
+| [Service governance and Mesh comparison](/en/docs/what-is/comparison/service-mesh) | Pole, PolarisMesh, Istio, Kmesh | Proxy / Proxyless, data-plane modes, routing and progressive delivery, rate limiting, circuit breaking, mirroring, mock, mTLS, and observability |
+
+The matrices distinguish native capability, protocol compatibility, runtime dependency, validation required, and not applicable. TPS rankings are excluded without a shared version, hardware, topology, and reproducible benchmark method.
+
 ## Nacos and Apollo: accommodate established integrations
 
 ### Nacos

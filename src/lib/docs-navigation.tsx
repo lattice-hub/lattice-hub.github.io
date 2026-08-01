@@ -28,6 +28,8 @@ const navigationCopy = {
       intro: '简介',
       features: '功能特性',
       comparison: '产品对比',
+      registryConfigComparison: '注册与配置中心对比',
+      serviceMeshComparison: '服务治理与 Mesh 对比',
       access: '接入方式',
       install: '服务端安装',
       console: '控制台使用',
@@ -85,6 +87,8 @@ const navigationCopy = {
       intro: 'Introduction',
       features: 'Features',
       comparison: 'Product comparison',
+      registryConfigComparison: 'Registry and configuration comparison',
+      serviceMeshComparison: 'Service governance and Mesh comparison',
       access: 'Integration options',
       install: 'Server installation',
       console: 'Using the Console',
@@ -235,12 +239,17 @@ function pageAlias(tree: PageTree.Root, alias: DocsPageAlias, locale: DocsLocale
   };
 }
 
-function folder(name: string, children: PageTree.Node[]): PageTree.Folder {
+function folder(
+  name: string,
+  children: PageTree.Node[],
+  index?: PageTree.Item,
+): PageTree.Folder {
   return {
     type: 'folder',
     name,
     defaultOpen: true,
     collapsible: true,
+    index,
     children,
   };
 }
@@ -266,7 +275,22 @@ function getProductDocsTree(tree: PageTree.Root, locale: DocsLocale): PageTree.R
       folder(copy.folders.overview, [
         alias(copy.pages.intro, []),
         alias(copy.pages.features, ['what-is', 'features']),
-        alias(copy.pages.comparison, ['what-is', 'comparison']),
+        folder(
+          copy.pages.comparison,
+          [
+            alias(copy.pages.registryConfigComparison, [
+              'what-is',
+              'comparison',
+              'registry-config',
+            ]),
+            alias(copy.pages.serviceMeshComparison, [
+              'what-is',
+              'comparison',
+              'service-mesh',
+            ]),
+          ],
+          alias(copy.pages.comparison, ['what-is', 'comparison']),
+        ),
         alias(copy.pages.access, ['what-is', 'access']),
       ]),
       folder(copy.folders.guides, [

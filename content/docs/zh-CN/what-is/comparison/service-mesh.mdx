@@ -1,0 +1,70 @@
+---
+title: 服务治理与 Mesh 对比
+description: 按接入模式、路由、灰度、限流、熔断、安全和可观测性，对比 Lattice Hub、PolarisMesh、Istio 与 Kmesh。
+full: true
+---
+
+这张矩阵把“规则由谁管理”和“流量由谁执行”分开。Lattice Hub 与 PolarisMesh 主要提供治理控制面；Istio 是完整 Service Mesh；Kmesh 是当前以 Istio 为控制面的 eBPF 数据面。
+
+## 状态说明
+
+- **控制面**：可管理和发布规则，是否生效取决于对应 SDK、Sidecar、Proxy 或 Gateway。
+- **原生**：当前产品及其官方运行时直接提供该能力。
+- **依赖路径**：只在特定数据面模式或扩展组件中成立。
+- **需核验**：官方资料不足以证明与本表其它产品等价，必须做版本化 E2E 验证。
+- **不等价**：名称接近，但安全或执行语义不同。
+
+## 接入与数据面
+
+| 能力 | Lattice Hub / Pole | PolarisMesh | Istio | Kmesh |
+| --- | --- | --- | --- | --- |
+| 产品角色 | 服务、配置与治理控制面 | 服务治理控制面 | 完整 Mesh：Istiod + 数据面 | eBPF Mesh 数据面；当前使用 Istio 控制面 |
+| Proxyless 接入 | **原生**：Rust SDK 消费发现、配置与治理视图；其它语言按客户端能力核验 | **原生**：多语言 SDK 与框架接入 | **不适用**：应用通常无需治理 SDK，策略由 Mesh 数据面执行 | **不适用**：透明接管流量，不是应用 SDK 模式 |
+| Proxy / Gateway 接入 | **依赖路径**：Envoy xDS、Pole Sidecar、Proxy Mesh / Gateway；逐规则核验 E2E | **原生**：Envoy、Sidecar、网关等路径 | **原生**：Sidecar Envoy、Gateway；ambient 使用 ztunnel / Waypoint | **原生**：节点 eBPF；高级 L7 依赖 Waypoint |
+| Kubernetes 自动接入 | **依赖组件**：Controller 同步 Service 并支持 Sidecar 注入 | **依赖组件**：Polaris Controller | **原生**：Sidecar 或 ambient 模式 | **原生**：Kmesh CNI 与 Namespace 标签 |
+| 无 Sidecar 数据路径 | **需核验**：不能从 xDS 或 Sidecar 能力推出 | **需核验**：按选用的数据面判断 | **原生**：ambient 模式 | **原生**：节点 eBPF；高级 L7 仍可使用 Waypoint |
+| eBPF 内核数据面 | 不提供 | 不作为核心数据面 | 不提供 | **原生**：kernel-native / dual-engine |
+
+## 流量治理能力
+
+| 能力 | Lattice Hub / Pole | PolarisMesh | Istio | Kmesh |
+| --- | --- | --- | --- | --- |
+| 动态路由 | **控制面**：路由规则进入 active release，运行时消费者执行 | **原生**：SDK / Proxy 动态路由 | **原生**：VirtualService 与 Gateway API 路由 | **依赖路径**：简单 L7 可在内核侧；高级 L7 使用 Waypoint |
+| 蓝绿、金丝雀、全链路灰度 | **控制面**：路由、泳道和版本化发布组合；需运行时传递并执行治理上下文 | **原生**：蓝绿、金丝雀、全链路灰度与测试环境路由 | **原生**：按流量比例、Header 等条件做 A/B 与金丝雀 | **依赖路径**：通过 Istio 配置与 Waypoint / 数据面执行，逐模式核验 |
+| 就近与负载均衡 | **控制面 / 客户端**：发现元数据和运行时选择共同决定 | **原生**：就近路由与多种负载均衡 | **原生**：DestinationRule、本地性和故障转移 | **原生 / 依赖路径**：L4 负载均衡；L7 本地性能力走 Istio / Waypoint |
+| 限流 | **控制面**：限流规则与 Limiter；SDK、Sidecar 或 Gateway 必须支持对应执行语义 | **原生**：单机与分布式限流 | **依赖扩展**：官方任务通过 Envoy local/global rate limit 配置 | **依赖路径**：官方提供本地与全局限流任务，L7 前提是 Waypoint |
+| 熔断 | **控制面**：熔断 release 与运行时消费链 | **原生**：故障熔断 | **原生**：DestinationRule / Envoy circuit breaking | **依赖路径**：官方 Circuit Breaker 任务使用 Istio / Waypoint 路径 |
+| 主动故障探测 | **控制面**：独立 FaultDetect 规则 | **原生**：主动探测与健康检查 | **不等价**：健康检查、熔断和故障注入分别建模 | **需核验**：不能从熔断直接推出 Pole 式主动探测 |
+| 流量镜像 | **控制面**：TrafficMirror 规则；需数据面消费者支持 | **需核验**：按 SDK / Proxy 与规则版本确认 | **原生**：VirtualService mirroring | **需核验**：当前官方应用层目录未证明与 Istio 镜像完全等价 |
+| 流量 Mock | **控制面**：TrafficMock 规则；需数据面消费者支持 | **需核验** | **不等价**：故障注入不是通用 Mock 响应系统 | **需核验** |
+
+## 安全与可观测性
+
+| 能力 | Lattice Hub / Pole | PolarisMesh | Istio | Kmesh |
+| --- | --- | --- | --- | --- |
+| 调用授权 | **控制面**：TrafficSecurity / 调用鉴权规则 | **原生**：服务访问鉴权能力按 SDK / Proxy 生效 | **原生**：AuthorizationPolicy、JWT 与外部授权 | **依赖路径**：eBPF 与 Waypoint 执行策略 |
+| Mesh mTLS | **不等价**：调用鉴权不等于工作负载 mTLS；当前不宣称完整 Mesh 身份体系 | **需核验**：不能从服务鉴权直接推导完整 Istio 式 mTLS | **原生**：工作负载身份、mTLS 与 PeerAuthentication | **原生 / 依赖 Istio**：使用 Istio 控制面与证书体系 |
+| 可观测性 | 控制面指标、事件与运行时暴露能力；不是独立全链路观测平台 | SDK / Proxy 指标与治理观测 | Metrics、logs、traces 与 Telemetry API | L4 指标与 access log；高级 L7 观测按 Waypoint 路径核验 |
+| 谁真正处理业务流量 | SDK、Sidecar、Proxy 或 Gateway，不是 Pole Control Plane | Polaris SDK / Proxy / 网格代理 | Envoy sidecar、ztunnel、Waypoint 与 Gateway | eBPF 数据面与可选 Waypoint |
+
+## Pole xDS 执行边界
+
+Pole 提供 Envoy xDS v3 资源，但 xDS 可用不等于完整兼容 Istio 或 Kmesh。当前明确映射的子集包括 HTTP 路由条件、权重 / 随机比例、基础 QPS token bucket、实例级熔断与故障探测。OR 条件、动态请求参数、排队、自定义限流响应、并发 / 系统资源限流、泳道、无损、调用鉴权、流量镜像和 Mock，并非都能在当前 Envoy 转换路径中等价表达。
+
+在所选 SDK、Sidecar、Proxy 或 Gateway 存在显式映射和 E2E 测试之前，这些表项都应理解为控制面治理意图，而不是所有数据面的统一能力承诺。
+
+## 选型结论
+
+- 如果目标是统一服务、配置、治理规则和发布语义，比较重点应放在 Lattice Hub 与 PolarisMesh 的控制面能力。
+- 如果目标是完整 Kubernetes Mesh、安全与流量代理生态，Istio 是同类参照；Lattice Hub 不宣称替代 Istiod。
+- 如果目标是降低 Sidecar 数据路径开销，Kmesh 是数据面候选；它当前依赖 Istio 控制面，Lattice Hub 与 Kmesh 尚未直接集成。
+- 表中的“控制面”不是弱化能力，而是提醒：规则存在不等于每个运行时已经执行。上线前必须验证所选 SDK、Sidecar、Proxy 或 Gateway 的具体版本。
+
+## 官方资料
+
+- [PolarisMesh 服务网格对比](https://polarismesh.cn/docs/%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3/%E7%9B%B8%E5%85%B3%E4%BA%A7%E5%93%81%E5%AF%B9%E6%AF%94/%E6%9C%8D%E5%8A%A1%E7%BD%91%E6%A0%BC%E5%AF%B9%E6%AF%94/) · [PolarisMesh 流量管理](https://polarismesh.cn/docs/%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88/%E5%8A%9F%E8%83%BD%E7%89%B9%E6%80%A7/%E6%B5%81%E9%87%8F%E7%AE%A1%E7%90%86/)
+- [Istio 架构](https://istio.io/latest/docs/ops/deployment/architecture/) · [Traffic Management](https://istio.io/latest/docs/concepts/traffic-management/) · [Rate Limit](https://istio.io/latest/docs/tasks/policy-enforcement/rate-limit/) · [Mirroring](https://istio.io/latest/docs/tasks/traffic-management/mirroring/)
+- [Kmesh Architecture](https://kmesh.net/docs/architecture/) · [Application Layer](https://kmesh.net/docs/category/application-layer/) · [Quick Start](https://kmesh.net/docs/setup/quick-start/)
+- Lattice Hub：[功能特性](/docs/what-is/features) · [治理规则与灰度发布](/docs/principles/governance-release) · [Pole Sidecar](/docs/components/pingora-sidecar)
+
+外部产品资料核验于 2026-08-01；数据面能力仍应以实际采用版本和 E2E 结果为准。
