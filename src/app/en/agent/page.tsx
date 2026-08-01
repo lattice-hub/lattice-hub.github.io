@@ -3,10 +3,10 @@ import { AgentPageView } from '@/components/site/pages/AgentPageView';
 import { getAgentCopy } from '@/lib/site-copy';
 
 export function generateMetadata(): Metadata {
-  const { metadata } = getAgentCopy('zh-CN');
+  const { metadata } = getAgentCopy('en');
   return metadata;
 }
 
 export default function Page() {
-  return <AgentPageView locale="zh-CN" />;
+  return <AgentPageView locale="en" />;
 }

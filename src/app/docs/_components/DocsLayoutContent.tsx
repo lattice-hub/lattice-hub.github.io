@@ -35,7 +35,7 @@ export function DocsLayoutContent({
         tabMode="auto"
         nav={{
           title: locale === 'en' ? 'Lattice Hub Docs' : 'Lattice Hub 文档',
-          url: '/',
+          url: locale === 'en' ? '/en' : '/',
         }}
         themeSwitch={{
           enabled: false,

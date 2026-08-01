@@ -3,10 +3,10 @@ import { GovernancePageView } from '@/components/site/pages/GovernancePageView';
 import { getGovernanceCopy } from '@/lib/site-copy';
 
 export function generateMetadata(): Metadata {
-  const { metadata } = getGovernanceCopy('zh-CN');
+  const { metadata } = getGovernanceCopy('en');
   return metadata;
 }
 
 export default function Page() {
-  return <GovernancePageView locale="zh-CN" />;
+  return <GovernancePageView locale="en" />;
 }

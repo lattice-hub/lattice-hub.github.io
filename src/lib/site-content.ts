@@ -8,6 +8,7 @@ import {
   ServerCog,
   Workflow,
 } from 'lucide-react';
+import type { SiteLocale } from '@/lib/site-locale';
 
 export type SiteNavItem = {
   label: string;
@@ -28,11 +29,29 @@ export type ContentEntry = {
   summary: string;
 };
 
+export type GovernanceDomainGroup = '流量路径' | '稳定性' | '安全与测试';
+
 export type GovernanceDomain = {
   id: string;
   name: string;
   summary: string;
-  group: '流量路径' | '稳定性' | '安全与测试';
+  group: GovernanceDomainGroup;
+};
+
+export type LocalizedGovernanceDomain = GovernanceDomain;
+
+export type LocalizedProductTopic = SiteNavItem & {
+  labelEn: string;
+  summary: string;
+  action: string;
+};
+
+export type LocalizedComponentGroup = ComponentGroup;
+
+export type LocalizedComponentPageAction = {
+  title: string;
+  href: string;
+  icon: typeof FileText;
 };
 
 export type CapabilityPillar = {
@@ -82,10 +101,9 @@ export const productTopics: Array<SiteNavItem & { action: string; labelEn: strin
 ];
 
 export function isSiteNavActive(pathname: string, href: string): boolean {
-  const normalizedPath =
-    pathname === '/en/docs' || pathname.startsWith('/en/docs/')
-      ? pathname.replace(/^\/en/, '')
-      : pathname;
+  const normalizedPath = pathname
+    .replace(/\/+$/, '')
+    .replace(/^\/en(?=\/|$)/, '') || '/';
   const productAliases = ['/architecture', '/governance', '/agent', '/compare'];
   const isProductTopic = productAliases.some(
     (topic) => normalizedPath === topic || normalizedPath.startsWith(`${topic}/`),
@@ -286,3 +304,128 @@ export const componentPageActions = [
     icon: GitFork,
   },
 ];
+
+const governanceDomainsEn: LocalizedGovernanceDomain[] = [
+  { id: 'route', name: 'Routing', summary: 'Select target versions by labels, weights, and request conditions.', group: '流量路径' },
+  { id: 'lane', name: 'Lane', summary: 'Keep a set of related services closed on one environment identifier.', group: '流量路径' },
+  { id: 'mirror', name: 'Traffic mirroring', summary: 'Copy requests to shadow services without changing the primary path result.', group: '流量路径' },
+  { id: 'rate-limit', name: 'Rate limiting', summary: 'Constrain traffic entry by request dimensions and quotas.', group: '稳定性' },
+  { id: 'circuit-breaker', name: 'Circuit breaking', summary: 'Isolate unhealthy calls after anomaly thresholds trigger.', group: '稳定性' },
+  { id: 'fault-detect', name: 'Fault detection', summary: 'Identify unhealthy instances with active and passive signals.', group: '稳定性' },
+  { id: 'lossless', name: 'Lossless up/down', summary: 'Protect in-flight requests during instance lifecycle changes.', group: '稳定性' },
+  { id: 'auth', name: 'Call authorization', summary: 'Enforce access policy by service identity and request conditions.', group: '安全与测试' },
+  { id: 'mock', name: 'Traffic Mock', summary: 'Return controlled responses by rule for integration and drills.', group: '安全与测试' },
+];
+
+const governanceDomainGroupsEn: Record<GovernanceDomainGroup, string> = {
+  流量路径: 'Traffic path',
+  稳定性: 'Stability',
+  安全与测试: 'Security and testing',
+};
+
+const productTopicsEn: LocalizedProductTopic[] = [
+  {
+    label: 'Service governance',
+    labelEn: 'SERVICE GOVERNANCE',
+    href: '/governance',
+    summary: 'Nine governance rule types form deterministic runtime policy through scope, versioning, canary release, and rollback.',
+    action: 'Explore service governance',
+  },
+  {
+    label: 'Pole Agent',
+    labelEn: 'HUMAN-GATED CHANGE',
+    href: '/agent',
+    summary: 'Within signed-in user permissions, read context, generate update proposals for existing configuration, and save edit-state drafts only after human confirmation.',
+    action: 'Learn about Pole Agent',
+  },
+  {
+    label: 'Product comparison',
+    labelEn: 'WHY POLE',
+    href: '/compare',
+    summary: 'Separate protocol compatibility, peer control planes, full Mesh, and data planes to choose the right replacement or composition path.',
+    action: 'Compare product relationships',
+  },
+];
+
+const componentGroupsEn: LocalizedComponentGroup[] = componentGroups.map((group, index) => {
+  const english = [
+    {
+      summary: 'Unified discovery, configuration, governance, identity, Registry, and multi-protocol access; embedded Console management UI.',
+      details: ['Management API, multi-protocol entry, and embedded Console', 'Provides a unified view to connected components'],
+    },
+    {
+      summary: 'Lightweight Proxyless Service Governance access for Rust applications.',
+      details: ['crate: pole_rust = "0.2.0"', 'Rust >= 1.63.0'],
+    },
+    {
+      summary: 'Connects Kubernetes to the control plane; syncs Service, Endpoints, Namespace, and ConfigMap.',
+      details: ['Full / on-demand and bidirectional configuration sync', 'Pole Sidecar, Java Agent, and Envoy injection'],
+    },
+    {
+      summary: 'Pingora-based lightweight data-plane skeleton supporting HTTP, HTTP/2, and gRPC-h2c forwarding.',
+      details: ['Prefix routing and round-robin load balancing', 'Dynamic governance access still evolving on the roadmap'],
+    },
+    {
+      summary: 'Dedicated distributed rate-limit runtime that caches and allocates global tokens for client quota fetch and reporting.',
+      details: ['Global token allocation', 'Self-registration with the registry'],
+    },
+    {
+      summary: 'Open service governance and protobuf protocol definitions covering governance, security, and MCP.',
+      details: ['Java / Go / Rust generation entry points', 'Shared protocol contracts across components'],
+    },
+  ][index];
+
+  return { ...group, ...english };
+});
+
+const componentPageActionsEn: LocalizedComponentPageAction[] = [
+  {
+    title: 'Read component docs',
+    href: '/docs/components/control-plane',
+    icon: FileText,
+  },
+  {
+    title: 'View GitHub organization',
+    href: 'https://github.com/lattice-hub',
+    icon: GitFork,
+  },
+];
+
+const siteNavEn: SiteNavItem[] = [
+  { label: 'Product', href: '/product' },
+  { label: 'Components', href: '/components' },
+  { label: 'Docs', href: '/docs' },
+];
+
+const siteFooterNavEn: SiteNavItem[] = [...siteNavEn, { label: 'GitHub', href: GITHUB_ORGANIZATION_URL }];
+
+export function getGovernanceDomains(locale: SiteLocale): LocalizedGovernanceDomain[] {
+  return locale === 'en' ? governanceDomainsEn : governanceDomains;
+}
+
+export function getGovernanceDomainGroupLabel(
+  group: GovernanceDomainGroup,
+  locale: SiteLocale,
+): string {
+  return locale === 'en' ? governanceDomainGroupsEn[group] : group;
+}
+
+export function getProductTopics(locale: SiteLocale): LocalizedProductTopic[] {
+  return locale === 'en' ? productTopicsEn : productTopics;
+}
+
+export function getComponentGroups(locale: SiteLocale): LocalizedComponentGroup[] {
+  return locale === 'en' ? componentGroupsEn : componentGroups;
+}
+
+export function getComponentPageActions(locale: SiteLocale): LocalizedComponentPageAction[] {
+  return locale === 'en' ? componentPageActionsEn : componentPageActions;
+}
+
+export function getSiteNav(locale: SiteLocale): SiteNavItem[] {
+  return locale === 'en' ? siteNavEn : siteNav;
+}
+
+export function getSiteFooterNav(locale: SiteLocale): SiteNavItem[] {
+  return locale === 'en' ? siteFooterNavEn : siteFooterNav;
+}

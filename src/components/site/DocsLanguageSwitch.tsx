@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { DocsLocale } from '@/lib/source';
+import type { SiteLocale } from '@/lib/site-locale';
 import styles from './DocsLanguageSwitch.module.css';
 
 export function DocsLanguageSwitch({
@@ -7,7 +7,7 @@ export function DocsLanguageSwitch({
   zhHref,
   enHref,
 }: {
-  locale: DocsLocale;
+  locale: SiteLocale;
   zhHref: string;
   enHref: string;
 }) {

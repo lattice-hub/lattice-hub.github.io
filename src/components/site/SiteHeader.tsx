@@ -7,12 +7,9 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { DocsLanguageSwitch } from '@/components/site/DocsLanguageSwitch';
 import { ThemeSwitch } from '@/components/site/ThemeSwitch';
-import {
-  GITHUB_ORGANIZATION_URL,
-  isSiteNavActive,
-  siteNav,
-} from '@/lib/site-content';
-import { getSiteLanguageSwitch } from '@/lib/source';
+import { GITHUB_ORGANIZATION_URL, isSiteNavActive } from '@/lib/site-content';
+import { getSiteLanguageSwitch, localizeHref } from '@/lib/site-locale';
+import { getSiteUi } from '@/lib/site-ui';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -35,6 +32,8 @@ export function SiteHeader() {
   const [experienceOpen, setExperienceOpen] = useState(false);
   const pathname = usePathname();
   const siteLanguage = getSiteLanguageSwitch(pathname);
+  const ui = getSiteUi(siteLanguage.locale);
+  const homeHref = localizeHref('/', siteLanguage.locale);
   const experienceTriggerRef = useRef<HTMLButtonElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -94,24 +93,32 @@ export function SiteHeader() {
   return (
     <header className="topnav">
       <div className="container topnav-inner">
-        <Link aria-label="返回 Lattice Hub 首页" className="brand" href="/" onClick={() => closeDrawer()}>
+        <Link
+          aria-label={ui.brandHome}
+          className="brand"
+          href={homeHref}
+          onClick={() => closeDrawer()}
+        >
           <span className="glyph">
             <Image alt="" aria-hidden="true" height={32} priority src={`${basePath}/lattice-hub-logo.png`} width={32} />
           </span>
           <span className="brand-name">Lattice.Hub</span>
         </Link>
 
-        <nav className="nav-links" aria-label="主导航">
-          {siteNav.map((item) => (
-            <Link
-              aria-current={isSiteNavActive(pathname, item.href) ? 'page' : undefined}
-              className={isSiteNavActive(pathname, item.href) ? 'active' : undefined}
-              href={item.href}
-              key={item.href}
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav className="nav-links" aria-label={ui.primaryNav}>
+          {ui.nav.map((item) => {
+            const href = localizeHref(item.href, siteLanguage.locale);
+            return (
+              <Link
+                aria-current={isSiteNavActive(pathname, item.href) ? 'page' : undefined}
+                className={isSiteNavActive(pathname, item.href) ? 'active' : undefined}
+                href={href}
+                key={item.href}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
           <button
             aria-controls="experience-notice"
             aria-expanded={experienceOpen}
@@ -119,7 +126,7 @@ export function SiteHeader() {
             onClick={(event) => toggleExperienceNotice(event.currentTarget)}
             type="button"
           >
-            体验
+            {ui.experience}
           </button>
         </nav>
 
@@ -131,19 +138,19 @@ export function SiteHeader() {
             zhHref={siteLanguage.zhHref}
           />
           <a
-            aria-label="访问 Lattice Hub GitHub 组织（在新窗口打开）"
+            aria-label={ui.githubAria}
             className="github-link"
             href={GITHUB_ORGANIZATION_URL}
             rel="noreferrer"
             target="_blank"
           >
             <GitHubIcon />
-            <span>GitHub</span>
+            <span>{ui.githubLabel}</span>
           </a>
           <button
             aria-controls="site-mobile-drawer"
             aria-expanded={drawerOpen}
-            aria-label={drawerOpen ? '关闭导航菜单' : '打开导航菜单'}
+            aria-label={drawerOpen ? ui.closeMenu : ui.openMenu}
             className="menu-btn"
             onClick={() => (
               drawerOpen ? closeDrawer(true) : setDrawerOpen(true)
@@ -157,21 +164,24 @@ export function SiteHeader() {
       </div>
 
       <nav
-        aria-label="移动主导航"
+        aria-label={ui.mobileNav}
         className={drawerOpen ? 'drawer open' : 'drawer'}
         id="site-mobile-drawer"
       >
-        {siteNav.map((item) => (
-          <Link
-            aria-current={isSiteNavActive(pathname, item.href) ? 'page' : undefined}
-            className={isSiteNavActive(pathname, item.href) ? 'active' : undefined}
-            href={item.href}
-            key={item.href}
-            onClick={() => closeDrawer()}
-          >
-            {item.label}
-          </Link>
-        ))}
+        {ui.nav.map((item) => {
+          const href = localizeHref(item.href, siteLanguage.locale);
+          return (
+            <Link
+              aria-current={isSiteNavActive(pathname, item.href) ? 'page' : undefined}
+              className={isSiteNavActive(pathname, item.href) ? 'active' : undefined}
+              href={href}
+              key={item.href}
+              onClick={() => closeDrawer()}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
         <button
           aria-controls="experience-notice"
           aria-expanded={experienceOpen}
@@ -179,7 +189,7 @@ export function SiteHeader() {
           onClick={(event) => toggleExperienceNotice(event.currentTarget)}
           type="button"
         >
-          体验
+          {ui.experience}
         </button>
         <div className="drawer-theme">
           <ThemeSwitch />
@@ -192,6 +202,7 @@ export function SiteHeader() {
           />
         </div>
         <a
+          aria-label={ui.githubAria}
           className="drawer-github"
           href={GITHUB_ORGANIZATION_URL}
           onClick={() => closeDrawer()}
@@ -199,24 +210,24 @@ export function SiteHeader() {
           target="_blank"
         >
           <GitHubIcon />
-          <span>GitHub</span>
+          <span>{ui.githubLabel}</span>
         </a>
       </nav>
 
       <section
-        aria-label="产品体验状态"
+        aria-label={ui.experienceRegion}
         className="experience-notice"
         hidden={!experienceOpen}
         id="experience-notice"
         role="region"
       >
         <div>
-          <span>PRODUCT EXPERIENCE</span>
-          <strong>产品体验，马上到来。</strong>
-          <p>Lattice.Hub Console 公开体验环境正在准备中。</p>
+          <span>{ui.experienceEyebrow}</span>
+          <strong>{ui.experienceTitle}</strong>
+          <p>{ui.experienceBody}</p>
         </div>
         <button
-          aria-label="关闭产品体验提示"
+          aria-label={ui.experienceClose}
           className="experience-notice-close"
           onClick={() => closeExperience(true)}
           type="button"
@@ -225,7 +236,7 @@ export function SiteHeader() {
         </button>
       </section>
       <p aria-live="polite" className="experience-live" role="status">
-        {experienceOpen ? '产品体验，马上到来。' : ''}
+        {experienceOpen ? ui.experienceTitle : ''}
       </p>
     </header>
   );

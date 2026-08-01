@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import type { SiteLocale } from '@/lib/site-locale';
+import { localizeHref } from '@/lib/site-locale';
 import {
   ComponentCollaborationDiagram,
   GovernanceExecutionDiagram,
@@ -14,9 +16,13 @@ const slideOrder = [
   { id: 'collaboration', index: '02' },
 ] as const;
 
-export function ArchitectureFlow() {
+type ArchitectureFlowProps = {
+  locale: SiteLocale;
+};
+
+export function ArchitectureFlow({ locale }: ArchitectureFlowProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const copy = getArchitectureCopy('zh-CN');
+  const copy = getArchitectureCopy(locale);
   const activeSlideDefinition = slideOrder[activeIndex];
   const activeSlide = copy.flow.slides[activeSlideDefinition.id];
 
@@ -25,7 +31,7 @@ export function ArchitectureFlow() {
       aria-describedby="architecture-flow-description"
       aria-labelledby="architecture-flow-title"
       className={styles.architectureFlow}
-      lang="zh-CN"
+      lang={locale}
     >
       <div className={styles.topbar}>
         <div className={styles.header}>
@@ -65,9 +71,9 @@ export function ArchitectureFlow() {
         role="group"
       >
         {activeSlideDefinition.id === 'collaboration' ? (
-          <ComponentCollaborationDiagram locale="zh-CN" />
+          <ComponentCollaborationDiagram locale={locale} />
         ) : (
-          <GovernanceExecutionDiagram locale="zh-CN" />
+          <GovernanceExecutionDiagram locale={locale} />
         )}
       </div>
 
@@ -77,7 +83,7 @@ export function ArchitectureFlow() {
           <strong>{activeSlide.title}</strong>
           <p>{activeSlide.detail}</p>
         </div>
-        <Link href="/architecture">
+        <Link href={localizeHref('/architecture', locale)}>
           {copy.flow.viewArchitecture}
           <span aria-hidden="true">→</span>
         </Link>

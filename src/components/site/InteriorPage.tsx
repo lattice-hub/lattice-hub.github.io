@@ -1,7 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { siteFooterNav } from '@/lib/site-content';
+import type { SiteLocale } from '@/lib/site-locale';
+import { localizeHref } from '@/lib/site-locale';
+import { getSiteFooterNav } from '@/lib/site-content';
+import { getSiteUi } from '@/lib/site-ui';
 import styles from './InteriorPage.module.css';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
@@ -26,6 +29,7 @@ type InteriorHeroProps = {
     label: string;
   };
   items: InteriorHeroItem[];
+  locale?: SiteLocale;
 };
 
 export function InteriorHero({
@@ -36,8 +40,11 @@ export function InteriorHero({
   primary,
   secondary,
   items,
+  locale = 'zh-CN',
 }: InteriorHeroProps) {
   const secondaryIsExternal = secondary?.href.startsWith('http') ?? false;
+  const indexAriaLabel =
+    locale === 'en' ? `${eyebrow} page index` : `${eyebrow} 页面索引`;
 
   return (
     <section className={styles.hero}>
@@ -62,7 +69,7 @@ export function InteriorHero({
         </div>
       </div>
 
-      <aside className={styles.heroIndex} aria-label={`${eyebrow} 页面索引`}>
+      <aside className={styles.heroIndex} aria-label={indexAriaLabel}>
         <ol>
           {items.map((item) => (
             <li key={item.index}>
@@ -79,12 +86,19 @@ export function InteriorHero({
   );
 }
 
-export function InteriorFooter() {
+type InteriorFooterProps = {
+  locale?: SiteLocale;
+};
+
+export function InteriorFooter({ locale = 'zh-CN' }: InteriorFooterProps) {
+  const ui = getSiteUi(locale);
+  const footerNav = getSiteFooterNav(locale);
+
   return (
     <footer className={styles.footer}>
       <div className={styles.footerInner}>
         <div className={styles.footerTop}>
-          <Link className={styles.footerBrand} href="/">
+          <Link className={styles.footerBrand} href={localizeHref('/', locale)}>
             <Image
               alt=""
               aria-hidden="true"
@@ -95,9 +109,9 @@ export function InteriorFooter() {
             />
             <span>Lattice.Hub</span>
           </Link>
-          <nav className={styles.footerLinks} aria-label="页脚导航">
-            {siteFooterNav.map((item) => (
-              <Link href={item.href} key={item.href}>
+          <nav className={styles.footerLinks} aria-label={ui.footerNav}>
+            {footerNav.map((item) => (
+              <Link href={localizeHref(item.href, locale)} key={item.href}>
                 {item.label}
               </Link>
             ))}

@@ -17,6 +17,13 @@ import {
 import { docsLayoutTabs, getDocsSectionTree } from '../src/lib/docs-navigation';
 import { resolveImageSrc } from '../src/lib/mdx-image';
 import { getArchitectureCopy } from '../src/components/site/architectureLocale';
+import {
+  getSiteLanguageSwitch,
+  localizeHref,
+} from '../src/lib/site-locale';
+import { getSiteUi } from '../src/lib/site-ui';
+import { getHomeCopy } from '../src/lib/site-copy';
+import { getHomeCopy } from '../src/lib/site-copy/home';
 
 function collectMdxRelativePaths(root: string, current = ''): string[] {
   const directory = current ? `${root}/${current}` : root;
@@ -34,6 +41,59 @@ function collectMdxRelativePaths(root: string, current = ''): string[] {
     })
     .sort();
 }
+
+test('site language switch mirrors marketing pages and docs deep links', () => {
+  assert.deepEqual(getSiteLanguageSwitch('/'), {
+    locale: 'zh-CN',
+    zhHref: '/',
+    enHref: '/en',
+  });
+  assert.deepEqual(getSiteLanguageSwitch('/en'), {
+    locale: 'en',
+    zhHref: '/',
+    enHref: '/en',
+  });
+  assert.deepEqual(getSiteLanguageSwitch('/product'), {
+    locale: 'zh-CN',
+    zhHref: '/product',
+    enHref: '/en/product',
+  });
+  assert.deepEqual(getSiteLanguageSwitch('/en/architecture'), {
+    locale: 'en',
+    zhHref: '/architecture',
+    enHref: '/en/architecture',
+  });
+  assert.deepEqual(getSiteLanguageSwitch('/docs/what-is/features'), {
+    locale: 'zh-CN',
+    zhHref: '/docs/what-is/features',
+    enHref: '/en/docs/what-is/features',
+  });
+  assert.equal(localizeHref('/docs', 'en'), '/en/docs');
+  assert.equal(localizeHref('/components', 'en'), '/en/components');
+  assert.equal(localizeHref('/en/product', 'zh-CN'), '/product');
+
+  const zhUi = getSiteUi('zh-CN');
+  const enUi = getSiteUi('en');
+  assert.equal(zhUi.themeOptions.dark, '暗色');
+  assert.equal(enUi.themeOptions.dark, 'Dark');
+  assert.equal(zhUi.githubAria.includes('GitHub'), true);
+  assert.equal(enUi.githubAria.includes('GitHub'), true);
+  assert.doesNotMatch(enUi.githubAria, /\p{Script=Han}/u);
+  assert.doesNotMatch(getHomeCopy('en').hero.title, /\p{Script=Han}/u);
+  assert.match(getHomeCopy('zh-CN').hero.title, /把服务变化/);
+
+  for (const path of [
+    'src/app/en/page.tsx',
+    'src/app/en/product/page.tsx',
+    'src/app/en/components/page.tsx',
+    'src/app/en/governance/page.tsx',
+    'src/app/en/architecture/page.tsx',
+    'src/app/en/agent/page.tsx',
+    'src/app/en/compare/page.tsx',
+  ]) {
+    assert.ok(existsSync(path), `missing English marketing route: ${path}`);
+  }
+});
 
 test('site navigation exposes real site-level destinations', () => {
   assert.deepEqual(
@@ -66,21 +126,22 @@ test('site navigation exposes real site-level destinations', () => {
 
 test('product topics stay available without occupying primary navigation', () => {
   const header = readFileSync('src/components/site/SiteHeader.tsx', 'utf8');
-  const homepage = readFileSync('src/app/page.tsx', 'utf8');
-  const productPage = readFileSync('src/app/product/page.tsx', 'utf8');
+  const siteUi = readFileSync('src/lib/site-ui.ts', 'utf8');
+  const homepage = readFileSync('src/components/site/pages/HomePageView.tsx', 'utf8');
+  const productPage = readFileSync('src/components/site/pages/ProductPageView.tsx', 'utf8');
   const interiorFooter = readFileSync('src/components/site/InteriorPage.tsx', 'utf8');
   const pages = [
-    ['src/app/product/page.tsx', /一个控制面，/, /console-platform-metrics\.webp/],
-    ['src/app/governance/page.tsx', /九类规则，/, /governanceDomains\.map/],
-    ['src/app/agent/page.tsx', /让 Agent 理解变更，/, /只保存编辑态草稿/],
-    ['src/app/compare/page.tsx', /比较产品之前，/, /comparisons\.map/],
+    ['src/components/site/pages/ProductPageView.tsx', 'src/lib/site-copy/product.ts', /一个控制面，/, /console-platform-metrics\.webp/],
+    ['src/components/site/pages/GovernancePageView.tsx', 'src/lib/site-copy/governance.ts', /九类规则，/, /getGovernanceDomains/],
+    ['src/components/site/pages/AgentPageView.tsx', 'src/lib/site-copy/agent.ts', /让 Agent 理解变更，/, /console-agent-readiness\.webp/],
+    ['src/components/site/pages/ComparePageView.tsx', 'src/lib/site-copy/compare.ts', /比较产品之前，/, /copy\.comparisons\.items\.map/],
   ] as const;
 
   assert.doesNotMatch(JSON.stringify(siteNav), /\/#(?:capabilities|governance|agent)/);
   assert.match(header, /usePathname/);
-  assert.match(header, /移动主导航/);
+  assert.match(siteUi, /移动主导航/);
   assert.match(header, /aria-current/);
-  assert.match(header, /产品体验，马上到来/);
+  assert.match(siteUi, /产品体验，马上到来/);
   assert.match(header, /GITHUB_ORGANIZATION_URL/);
   assert.match(header, /className="github-link"/);
   assert.match(header, /className="drawer-github"/);
@@ -89,30 +150,33 @@ test('product topics stay available without occupying primary navigation', () =>
   assert.doesNotMatch(header, /href="\/experience"/);
   assert.doesNotMatch(JSON.stringify(siteNav), /governance|agent|GitHub/);
 
-  for (const [file, heading, evidence] of pages) {
+  for (const [file, copyFile, heading, evidence] of pages) {
     assert.ok(existsSync(file), `missing dedicated primary navigation page: ${file}`);
     const source = readFileSync(file, 'utf8');
-    assert.match(source, heading);
+    const copySource = readFileSync(copyFile, 'utf8');
+    assert.match(copySource, heading);
     assert.match(source, evidence);
     assert.match(source, /<SiteHeader \/>/);
-    assert.match(source, /<InteriorFooter \/>/);
+    assert.match(source, /<InteriorFooter/);
   }
 
-  assert.match(homepage, /href="\/product"/);
-  assert.match(homepage, /href="\/governance"/);
-  assert.match(homepage, /href="\/agent"/);
-  assert.match(homepage, /href="\/compare"/);
+  assert.match(homepage, /localizeHref\(copy\.evidence\.action\.href, locale\)/);
+  assert.match(homepage, /localizeHref\(copy\.governance\.action\.href, locale\)/);
+  assert.match(homepage, /localizeHref\(copy\.agent\.action\.href, locale\)/);
+  assert.match(homepage, /localizeHref\(copy\.comparison\.action\.href, locale\)/);
   assert.match(productPage, /productTopics\.map/);
-  assert.match(productPage, /href=\{topic\.href\}/);
-  assert.match(homepage, /siteFooterNav\.map/);
-  assert.match(interiorFooter, /siteFooterNav\.map/);
+  assert.match(productPage, /localizeHref\(topic\.href, locale\)/);
+  assert.match(homepage, /getSiteFooterNav\(locale\)/);
+  assert.match(interiorFooter, /getSiteFooterNav\(locale\)/);
   assert.doesNotMatch(`${homepage}\n${interiorFooter}`, /href="\/#(?:capabilities|governance|agent)"/);
 });
 
 test('product comparison separates compatibility, peers, mesh, and data planes', () => {
-  const comparePage = readFileSync('src/app/compare/page.tsx', 'utf8');
-  const homepage = readFileSync('src/app/page.tsx', 'utf8');
-  const productPage = readFileSync('src/app/product/page.tsx', 'utf8');
+  const comparePage = readFileSync('src/components/site/pages/ComparePageView.tsx', 'utf8');
+  const compareCopy = readFileSync('src/lib/site-copy/compare.ts', 'utf8');
+  const homepage = readFileSync('src/components/site/pages/HomePageView.tsx', 'utf8');
+  const homeCopy = readFileSync('src/lib/site-copy/home.ts', 'utf8');
+  const productPage = readFileSync('src/components/site/pages/ProductPageView.tsx', 'utf8');
   const zhComparison = readFileSync('content/docs/zh-CN/what-is/comparison/index.mdx', 'utf8');
   const enComparison = readFileSync('content/docs/en/what-is/comparison/index.mdx', 'utf8');
   const zhRegistryMatrix = readFileSync(
@@ -135,18 +199,18 @@ test('product comparison separates compatibility, peers, mesh, and data planes',
   const enMeta = JSON.parse(readFileSync('content/docs/en/what-is/meta.json', 'utf8')) as { pages: string[] };
 
   for (const product of ['Nacos', 'Apollo', 'Consul', 'PolarisMesh', 'Istio', 'Kmesh']) {
-    assert.match(comparePage, new RegExp(product), `comparison page must include ${product}`);
+    assert.match(compareCopy, new RegExp(product), `comparison page must include ${product}`);
     assert.match(zhComparison, new RegExp(product), `Chinese comparison docs must include ${product}`);
     assert.match(enComparison, new RegExp(product), `English comparison docs must include ${product}`);
   }
 
-  assert.match(comparePage, /当前协议兼容/);
-  assert.match(comparePage, /同层对比/);
-  assert.match(comparePage, /能力重叠 \/ 可分域组合/);
-  assert.match(comparePage, /可组合方向 \/ 尚未直连/);
-  assert.match(comparePage, /双方支持 xDS 不能直接推出已经开箱即用/);
-  assert.match(homepage, /兼容接入，渐进收敛/);
-  assert.match(homepage, /Istio · Kmesh/);
+  assert.match(compareCopy, /当前协议兼容/);
+  assert.match(compareCopy, /同层对比/);
+  assert.match(compareCopy, /能力重叠 \/ 可分域组合/);
+  assert.match(compareCopy, /可组合方向 \/ 尚未直连/);
+  assert.match(compareCopy, /双方支持 xDS 不能直接推出已经开箱即用/);
+  assert.match(homeCopy, /兼容接入，渐进收敛/);
+  assert.match(homeCopy, /Istio · Kmesh/);
   assert.match(productPage, /topic\.action/);
   assert.ok(zhMeta.pages.includes('comparison'));
   assert.ok(enMeta.pages.includes('comparison'));
@@ -215,12 +279,13 @@ test('docs brand navigation returns to the website homepage', () => {
     /grid-template-columns:\s*0\s+var\(--fd-sidebar-col\)\s+minmax\(0,\s*1fr\)\s+var\(--fd-toc-width\)\s+0/,
   );
   assert.match(globalCss, /#nd-docs-layout article\s*\{[\s\S]*max-width:\s*none/);
-  assert.match(docsLayout, /nav=\{\{[\s\S]*url:\s*'\/'/);
+  assert.match(docsLayout, /nav=\{\{[\s\S]*url:\s*locale === 'en' \? '\/en' : '\/'/);
   assert.doesNotMatch(docsLayout, /nav=\{\{[\s\S]*url:\s*getDocsUrl\(locale\)/);
 });
 
 test('homepage uses the selected B+A direction and real product evidence', () => {
-  const homepage = readFileSync('src/app/page.tsx', 'utf8');
+  const homepage = readFileSync('src/components/site/pages/HomePageView.tsx', 'utf8');
+  const homeCopy = getHomeCopy('zh-CN');
   const hero = readFileSync('src/components/site/HomeHero.tsx', 'utf8');
   const architectureFlow = readFileSync('src/components/site/ArchitectureFlow.tsx', 'utf8');
   const architectureDiagrams = readFileSync('src/components/site/ArchitectureDiagrams.tsx', 'utf8');
@@ -233,18 +298,19 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   const homeCss = readFileSync('src/components/site/HomePage.module.css', 'utf8');
   const globalCss = readFileSync('src/app/global.css', 'utf8');
 
-  assert.match(hero, /把服务变化/);
-  assert.match(hero, /收进一个控制面/);
-  assert.match(hero, /<ArchitectureFlow \/>/);
+  assert.equal(homeCopy.hero.title, '把服务变化，');
+  assert.equal(homeCopy.hero.titleAccent, '收进一个控制面。');
+  assert.match(hero, /getHomeCopy\(locale\)/);
+  assert.match(hero, /<ArchitectureFlow locale=\{locale\} \/>/);
   assert.doesNotMatch(hero, /console-platform-metrics\.webp/);
   assert.match(homepage, /console-platform-metrics\.webp/);
   assert.match(homepage, /console-governance-scope\.webp/);
-  assert.match(homepage, /变更不是保存/);
-  assert.match(homepage, /Agent 准备变更/);
-  assert.match(homepage, /只保存编辑态草稿/);
-  assert.match(homepage, /Rust SDK、Pole Sidecar 与 Proxy Mesh \/ Gateway/);
+  assert.match(homeCopy.release.title, /变更不是保存/);
+  assert.match(homeCopy.agent.title, /Agent 准备变更/);
+  assert.match(homeCopy.agent.copy, /只保存编辑态草稿/);
+  assert.match(homeCopy.systemStrip.items[2].label, /Rust SDK、Pole Sidecar 与 Proxy Mesh \/ Gateway/);
   assert.doesNotMatch(homepage, /Thin SDK/);
-  assert.match(homepage, /governanceDomains\.map/);
+  assert.match(homepage, /getGovernanceDomains\(locale\)/);
   assert.doesNotMatch(`${hero}\n${homepage}`, /console-preview|agent-workflow|fact-rail|get_config_file/);
   assert.doesNotMatch(`${hero}\n${homepage}`, />24<|>186<|22 正常|3 隔离|canary 20%/);
   assert.doesNotMatch(homepage, /负载均衡、超时、重试、节点熔断、故障转移/);
@@ -355,22 +421,23 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
 });
 
 test('architecture page explains organization components without control-plane internals', () => {
-  const architecturePage = readFileSync('src/app/architecture/page.tsx', 'utf8');
+  const architecturePage = readFileSync('src/components/site/pages/ArchitecturePageView.tsx', 'utf8');
+  const architectureCopy = readFileSync('src/lib/site-copy/architecture.ts', 'utf8');
   const architectureCss = readFileSync(
     'src/app/architecture/ArchitecturePage.module.css',
     'utf8',
   );
 
-  assert.match(architecturePage, /ORGANIZATION ARCHITECTURE/);
-  assert.match(architecturePage, /多个组件/);
-  assert.match(architecturePage, /治理能力如何生效/);
+  assert.match(architectureCopy, /ORGANIZATION ARCHITECTURE/);
+  assert.match(architectureCopy, /多个组件/);
+  assert.match(architectureCopy, /治理能力如何生效/);
   assert.match(architecturePage, /ComponentCollaborationDiagram/);
   assert.match(architecturePage, /GovernanceExecutionDiagram/);
-  assert.match(architecturePage, /Limiter Server/);
-  assert.match(architecturePage, /当前是支持 HTTP、HTTP\/2、gRPC-h2c/);
-  assert.match(architecturePage, /不进入每一次业务请求的同步热路径/);
-  assert.match(architecturePage, /自身当前支持的能力/);
-  assert.doesNotMatch(architecturePage, /MySQL|CacheManager|EventHub|内部存储层|增量缓存/);
+  assert.match(architectureCopy, /Limiter Server/);
+  assert.match(architectureCopy, /当前是支持 HTTP、HTTP\/2、gRPC-h2c/);
+  assert.match(architectureCopy, /不进入每一次业务请求的同步热路径/);
+  assert.match(architectureCopy, /自身当前支持的能力/);
+  assert.doesNotMatch(`${architecturePage}\n${architectureCopy}`, /MySQL|CacheManager|EventHub|内部存储层|增量缓存/);
   assert.match(architectureCss, /prefers-reduced-motion: reduce/);
   assert.match(architecturePage, /diagramStage/);
   assert.doesNotMatch(architectureCss, /\.diagramStage\s*{[^}]*border-radius/s);
@@ -488,11 +555,16 @@ test('architecture diagram locale copy is symmetric and brand-safe', () => {
     'utf8',
   );
   const visibleCopy = [
-    'src/app/page.tsx',
-    'src/app/product/page.tsx',
-    'src/app/components/page.tsx',
-    'src/app/governance/page.tsx',
-    'src/app/architecture/page.tsx',
+    'src/components/site/pages/HomePageView.tsx',
+    'src/components/site/pages/ProductPageView.tsx',
+    'src/components/site/pages/ComponentsPageView.tsx',
+    'src/components/site/pages/GovernancePageView.tsx',
+    'src/components/site/pages/ArchitecturePageView.tsx',
+    'src/lib/site-copy/home.ts',
+    'src/lib/site-copy/product.ts',
+    'src/lib/site-copy/components.ts',
+    'src/lib/site-copy/governance.ts',
+    'src/lib/site-copy/architecture.ts',
     'src/components/site/architectureLocale.ts',
     'src/lib/site-content.ts',
     ...collectMdxRelativePaths('content/docs/zh-CN').map(

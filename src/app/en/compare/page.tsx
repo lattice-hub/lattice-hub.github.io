@@ -3,10 +3,10 @@ import { ComparePageView } from '@/components/site/pages/ComparePageView';
 import { getCompareCopy } from '@/lib/site-copy';
 
 export function generateMetadata(): Metadata {
-  const { metadata } = getCompareCopy('zh-CN');
+  const { metadata } = getCompareCopy('en');
   return metadata;
 }
 
 export default function Page() {
-  return <ComparePageView locale="zh-CN" />;
+  return <ComparePageView locale="en" />;
 }
