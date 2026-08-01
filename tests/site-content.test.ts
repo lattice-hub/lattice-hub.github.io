@@ -134,7 +134,7 @@ test('product comparison separates compatibility, peers, mesh, and data planes',
   const zhMeta = JSON.parse(readFileSync('content/docs/zh-CN/what-is/meta.json', 'utf8')) as { pages: string[] };
   const enMeta = JSON.parse(readFileSync('content/docs/en/what-is/meta.json', 'utf8')) as { pages: string[] };
 
-  for (const product of ['Nacos', 'Apollo', 'PolarisMesh', 'Istio', 'Kmesh']) {
+  for (const product of ['Nacos', 'Apollo', 'Consul', 'PolarisMesh', 'Istio', 'Kmesh']) {
     assert.match(comparePage, new RegExp(product), `comparison page must include ${product}`);
     assert.match(zhComparison, new RegExp(product), `Chinese comparison docs must include ${product}`);
     assert.match(enComparison, new RegExp(product), `English comparison docs must include ${product}`);
@@ -158,9 +158,15 @@ test('product comparison separates compatibility, peers, mesh, and data planes',
   for (const matrix of [zhRegistryMatrix, enRegistryMatrix]) {
     assert.match(matrix, /Nacos/);
     assert.match(matrix, /Apollo/);
+    assert.match(matrix, /Consul/);
     assert.match(matrix, /PolarisMesh/);
     assert.match(matrix, /TPS/);
   }
+
+  assert.match(zhRegistryMatrix, /\| 能力 \| Lattice Hub \/ Pole \| Nacos \| PolarisMesh \| Consul \| Istio \|/);
+  assert.match(zhRegistryMatrix, /\| 能力 \| Lattice Hub \/ Pole \| Nacos \| Apollo \| Consul \| PolarisMesh \|/);
+  assert.match(enRegistryMatrix, /\| Capability \| Lattice Hub \/ Pole \| Nacos \| PolarisMesh \| Consul \| Istio \|/);
+  assert.match(enRegistryMatrix, /\| Capability \| Lattice Hub \/ Pole \| Nacos \| Apollo \| Consul \| PolarisMesh \|/);
 
   for (const matrix of [zhMeshMatrix, enMeshMatrix]) {
     assert.match(matrix, /Proxyless/);

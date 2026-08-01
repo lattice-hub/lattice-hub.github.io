@@ -1,11 +1,11 @@
 ---
 title: 产品对比与边界
-description: 了解 Lattice Hub 与 Nacos、Apollo、PolarisMesh、Istio、Kmesh 的层级关系、兼容边界和组合方式。
+description: 了解 Lattice Hub 与 Nacos、Apollo、Consul、PolarisMesh、Istio、Kmesh 的层级关系、兼容边界和组合方式。
 ---
 
 Lattice Hub 是统一的服务与 Agent 治理控制面。它通过已有协议入口承接存量接入，但不把所有相关产品描述为可以无差别替换的同类产品。
 
-先按层级理解关系：Nacos、Apollo、PolarisMesh 与 Lattice Hub 都涉及控制面；Istio 是包含控制面和数据面的完整 Service Mesh；Kmesh 是面向 eBPF 的 Service Mesh 数据面。
+先按层级理解关系：Nacos、Apollo、Consul、PolarisMesh 与 Lattice Hub 都涉及控制面；Istio 是包含控制面和数据面的完整 Service Mesh；Kmesh 是面向 eBPF 的 Service Mesh 数据面。
 
 ## 关系总览
 
@@ -13,6 +13,7 @@ Lattice Hub 是统一的服务与 Agent 治理控制面。它通过已有协议�
 | --- | --- | --- | --- |
 | Nacos | 注册发现与配置控制面 | 兼容协议接入，支持渐进迁移 | 客户端、管理面和生态扩展的实际兼容范围 |
 | Apollo | 配置控制面 | 兼容配置客户端接入，支持配置迁移 | 非官方 SDK、运维模型和扩展能力 |
+| Consul | 服务发现、基础 KV 与服务网络 | 注册发现和配置选型参照；当前没有 Consul 兼容入口 | DNS/HTTP API、Catalog、健康检查、KV 与 Mesh 的实际使用范围 |
 | PolarisMesh | 服务治理控制面 | 最直接的同层参照；提供 Polaris 协议入口 | SDK、Proxy、Controller、Mesh 运行时的逐项能力 |
 | Istio | 完整 Service Mesh | 可组合的 Mesh 生态，不是同层替代 | Istio API、Istiod、ambient、Waypoint 的互操作 |
 | Kmesh | Service Mesh 数据面 | 潜在数据面组合方向，当前尚未直接集成 | 已验证的 xDS/Istio 互操作与端到端行为 |
@@ -23,12 +24,12 @@ Lattice Hub 是统一的服务与 Agent 治理控制面。它通过已有协议�
 
 | 对比域 | 覆盖产品 | 重点维度 |
 | --- | --- | --- |
-| [注册与配置中心对比](/docs/what-is/comparison/registry-config) | Pole、Nacos、Apollo、PolarisMesh | 注册发现、健康检查、Kubernetes 同步、动态配置、版本回滚、配置灰度、权限与迁移入口 |
+| [注册与配置中心对比](/docs/what-is/comparison/registry-config) | 注册发现：Pole、Nacos、PolarisMesh、Consul、Istio；配置中心：Pole、Nacos、Apollo、Consul、PolarisMesh | 注册发现、健康检查、Kubernetes 接入、动态配置、版本回滚、配置灰度、权限与迁移入口 |
 | [服务治理与 Mesh 对比](/docs/what-is/comparison/service-mesh) | Pole、PolarisMesh、Istio、Kmesh | Proxy / Proxyless、数据面模式、路由与灰度、限流、熔断、镜像、Mock、mTLS 与可观测性 |
 
 矩阵明确区分原生能力、协议兼容、依赖运行时、需核验和不适用。没有统一版本、硬件、拓扑与压测方法的 TPS 数字不会进入横向排名。
 
-## 与 Nacos、Apollo 的关系：承接存量接入
+## 与 Nacos、Apollo、Consul 的关系：存量接入与选型参照
 
 ### Nacos
 
@@ -41,6 +42,12 @@ Lattice Hub 提供 Nacos v1/v2 兼容入口，可让已有客户端把注册发�
 [Apollo](https://github.com/apolloconfig/apollo) 是面向微服务场景的配置管理系统，支持多环境、多集群、配置 namespace、发布、灰度、权限和审计；它不以服务注册中心或流量数据面为产品定位。
 
 Lattice Hub 提供 Apollo 兼容入口，可把存量配置客户端接入统一的服务、配置与治理资源模型。实际迁移前应确认所用客户端、Open Platform、扩展和发布流程；兼容入口不承诺逐项等价 Apollo 的全部管理与生态行为。
+
+### Consul
+
+[Consul](https://developer.hashicorp.com/consul/docs) 原生覆盖服务 Catalog、健康检查、DNS/HTTP 服务发现、基础 KV 与 Service Mesh。它的 KV 可保存配置和元数据，但不等价于内置版本、审批、灰度与回滚流程的应用配置中心。
+
+Lattice Hub 当前没有 Consul 协议兼容入口，因此 Consul 是注册发现和配置能力的选型参照，不应写成无改造迁移路径。接入或迁移必须分别核验 DNS/HTTP API、健康检查、Catalog、KV blocking query、ACL 和 Mesh 使用范围。
 
 ## 与 PolarisMesh 的关系：同层治理控制面参照
 
@@ -65,13 +72,14 @@ Kmesh 的价值在流量执行路径，Lattice Hub 的价值在控制面资源�
 ## 选择与迁移原则
 
 - 已使用 Nacos 或 Apollo：先评估兼容入口与所用客户端，逐步把注册、配置和发布收敛到统一控制面。
+- 已使用 Consul：先区分 DNS/HTTP 注册发现、基础 KV 与 Consul Mesh 的实际职责；Pole 当前不承诺 Consul 协议直连。
 - 需要多语言、多运行时的服务治理控制面：将 PolarisMesh 作为最接近的同层比较对象，按具体执行组件核验迁移范围。
 - 已采用 Istio 或考虑 Kmesh：把它们视为 Mesh/数据面生态，明确控制面责任与已验证的集成边界后再组合。
 - 需要治理规则真正生效：同时确认控制面资源、发布状态与 SDK、Proxy、Gateway 等数据面消费者均支持对应能力。
 
 ## 不作的承诺
 
-- 不以“完全替代”描述 Nacos、Apollo 或 PolarisMesh。
+- 不以“完全替代”描述 Nacos、Apollo、Consul 或 PolarisMesh。
 - 不以 Envoy xDS 支持推导出 Istiod、Istio API、ambient、Waypoint 或 Kmesh 的完整兼容。
 - 不把控制 API、注册与配置同步描述成业务流量由控制面转发。
 - 不把 Kmesh 描述为独立控制面或已经与 Lattice Hub 开箱即用集成。

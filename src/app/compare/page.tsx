@@ -11,17 +11,17 @@ import styles from './ComparePage.module.css';
 
 export const metadata: Metadata = {
   title: {
-    absolute: '产品对比｜Pole 与 Nacos、Apollo、PolarisMesh、Istio、Kmesh',
+    absolute: '产品对比｜Pole 与 Nacos、Apollo、Consul、PolarisMesh、Istio、Kmesh',
   },
   description:
-    '理解 Pole 与 Nacos、Apollo、PolarisMesh、Istio、Kmesh 分别处在哪一层，以及兼容、竞争、组合与尚未直接集成的真实边界。',
+    '理解 Pole 与 Nacos、Apollo、Consul、PolarisMesh、Istio、Kmesh 分别处在哪一层，以及兼容、竞争、组合与尚未直接集成的真实边界。',
 };
 
 const layers = [
   {
     index: '01',
     name: '注册、配置与治理控制面',
-    products: 'Nacos · Apollo · PolarisMesh · Pole',
+    products: 'Nacos · Apollo · Consul · PolarisMesh · Pole',
     detail: '决定管理哪些资源、如何授权，以及变化何时进入运行态。',
   },
   {
@@ -63,6 +63,17 @@ const comparisons = [
   },
   {
     index: '03',
+    product: 'Consul',
+    category: '注册发现 / 基础 KV / Mesh',
+    relation: '能力对比 / 暂无协议直连',
+    tone: 'peer',
+    title: '注册发现参照，配置能力需分层看待。',
+    detail: 'Consul 原生覆盖 Catalog、健康检查、DNS/HTTP 发现与基础 KV；Pole 强调版本化配置和统一治理发布。',
+    boundary: 'Pole 当前没有 Consul 兼容入口；基础 KV 也不等价于完整配置发布中心。',
+    source: 'https://developer.hashicorp.com/consul/docs',
+  },
+  {
+    index: '04',
     product: 'PolarisMesh',
     category: '综合治理控制面',
     relation: '同层对比',
@@ -73,7 +84,7 @@ const comparisons = [
     source: 'https://polarismesh.cn/',
   },
   {
-    index: '04',
+    index: '05',
     product: 'Istio',
     category: '完整 Service Mesh',
     relation: '能力重叠 / 可分域组合',
@@ -84,7 +95,7 @@ const comparisons = [
     source: 'https://istio.io/latest/docs/ops/deployment/architecture/',
   },
   {
-    index: '05',
+    index: '06',
     product: 'Kmesh',
     category: 'eBPF Mesh 数据面',
     relation: '可组合方向 / 尚未直连',
@@ -99,6 +110,7 @@ const comparisons = [
 const decisions = [
   ['正在使用 Nacos', '优先保留客户端协议，先验证注册、配置与灰度语义，再渐进迁移管理面。'],
   ['正在使用 Apollo', '把配置接入作为第一步，再决定是否把服务发现与治理一并收敛到 Pole。'],
+  ['正在使用 Consul', '先区分 DNS/HTTP 发现、基础 KV 与 Consul Mesh；Pole 当前没有 Consul 协议直连。'],
   ['正在使用 PolarisMesh', '按 SDK、规则、Controller 与数据面逐项核验；这是控制面级迁移，不是改一个地址。'],
   ['正在使用 Istio', '先确定谁拥有路由与安全策略权威；避免 Pole 与 Istiod 同时控制同一数据面。'],
   ['正在评估 Kmesh', '把它视为数据面技术选择；Pole 与 Kmesh 的直连能力目前仍是待验证方向。'],
@@ -117,7 +129,7 @@ export default function ComparePage() {
           { index: '03', title: 'COMPOSE', detail: 'Istio 与 Kmesh 位于 Mesh 运行层' },
         ]}
         lede="不是所有带有“服务治理”标签的项目都在解决同一个问题。Pole 负责统一资源、权限与发布；其它系统可能是协议入口、同层控制面、完整 Mesh，或真正执行流量的数据面。"
-        primary={{ href: '#products', label: '查看五项关系' }}
+        primary={{ href: '#products', label: '查看六项关系' }}
         secondary={{ href: '/docs/what-is/comparison', label: '阅读技术对比' }}
         title="比较产品之前，"
       />
@@ -155,7 +167,7 @@ export default function ComparePage() {
       </section>
 
       <section className={interior.section} id="products">
-        <SectionHeading index="02 / FIVE RELATIONSHIPS" title="不是谁取代谁，而是谁负责什么。">
+        <SectionHeading index="02 / SIX RELATIONSHIPS" title="不是谁取代谁，而是谁负责什么。">
           <p>
             每一项都同时写明当前关系和不能越过的边界。协议兼容只证明接入路径存在，不自动继承对方的全部产品行为。
           </p>

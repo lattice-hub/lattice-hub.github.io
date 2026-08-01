@@ -1,10 +1,10 @@
 ---
 title: 注册与配置中心对比
-description: 按注册发现、健康检查、配置发布、灰度、权限和迁移入口，对比 Lattice Hub、Nacos、Apollo 与 PolarisMesh。
+description: 注册发现对比 Nacos、PolarisMesh、Consul、Istio；配置中心对比 Nacos、Apollo、Consul、PolarisMesh。
 full: true
 ---
 
-这张矩阵用于回答两个选型问题：现有注册或配置客户端能否保留，以及服务、配置和治理是否需要收敛到同一个控制面。Apollo 不承担服务注册发现，因此不把“不适用”写成产品缺陷。
+这两张矩阵分别回答注册发现与配置中心的选型问题。两个领域使用不同的参照产品：Apollo 不进入注册发现矩阵，Istio 不进入配置中心矩阵；“不适用”表示职责边界，不是产品缺陷。
 
 ## 状态说明
 
@@ -16,25 +16,25 @@ full: true
 
 ## 注册发现能力
 
-| 能力 | Lattice Hub / Pole | Nacos | Apollo | PolarisMesh |
-| --- | --- | --- | --- | --- |
-| 产品职责 | **原生**：服务、配置、治理与 AI Registry 控制面 | **原生**：服务发现、配置与 AI Registry | **原生**：配置中心 | **原生**：注册、配置与服务治理控制面 |
-| 服务注册与发现 | **原生**：管理 Namespace、Service、Instance 与订阅视图 | **原生**：注册、发现、订阅服务实例 | **不适用** | **原生**：注册中心与多语言发现能力 |
-| 实例健康状态 | **原生**：实例健康、隔离、权重与服务端健康检查链路 | **原生**：服务端主动探测和客户端心跳 | **不适用** | **原生**：主动探测与客户端心跳 |
-| Kubernetes Service 同步 | **依赖组件**：Pole Kubernetes Controller | **依赖生态**：按所选 Kubernetes 集成核验 | **不适用** | **依赖组件**：Polaris Controller |
-| 存量协议入口 | **兼容**：Polaris gRPC/REST、Nacos v1/v2、Apollo、Eureka | **原生**：Nacos 客户端与 OpenAPI | **原生**：Apollo 客户端与 OpenAPI | **原生**：Polaris SDK、HTTP/gRPC 及框架接入 |
-| 业务流量执行 | **不在控制面**：由 SDK、Sidecar、Proxy 或 Gateway 消费发现结果 | **不在注册中心**：客户端选择实例 | **不适用** | **依赖运行时**：SDK、Proxy 或网格代理执行 |
+| 能力 | Lattice Hub / Pole | Nacos | PolarisMesh | Consul | Istio |
+| --- | --- | --- | --- | --- | --- |
+| 产品职责 | **原生**：服务、配置、治理与 AI Registry 控制面 | **原生**：服务发现、配置与 AI Registry | **原生**：注册、配置与服务治理控制面 | **原生**：服务发现、服务网络与 Mesh | **Mesh 内部注册表**：聚合平台发现结果并配置数据面 |
+| 服务注册与发现 | **原生**：管理 Namespace、Service、Instance 与订阅视图 | **原生**：注册、发现、订阅服务实例 | **原生**：注册中心与多语言发现能力 | **原生**：Catalog、DNS 与 HTTP API 注册和查询 | **依赖平台或资源**：自动发现 Kubernetes 服务，也可使用 ServiceEntry / WorkloadEntry 补充 |
+| 实例健康状态 | **原生**：实例健康、隔离、权重与服务端健康检查链路 | **原生**：服务端主动探测和客户端心跳 | **原生**：主动探测与客户端心跳 | **原生**：多类健康检查更新 Catalog，发现结果可只返回健康实例 | **依赖发现源**：Kubernetes 健康由平台管理；VM WorkloadEntry 可结合探针更新状态 |
+| Kubernetes Service 接入 | **依赖组件**：Pole Kubernetes Controller | **依赖生态**：按所选 Kubernetes 集成核验 | **依赖组件**：Polaris Controller | **原生部署集成**：支持 Kubernetes 服务发现，接入方式按部署核验 | **原生发现源**：Istiod 自动读取 Kubernetes Service 与 Endpoint |
+| 客户端与查询入口 | **兼容**：Polaris gRPC/REST、Nacos v1/v2、Eureka | **原生**：Nacos 客户端与 OpenAPI | **原生**：Polaris SDK、HTTP/gRPC 及框架接入 | **原生**：Consul DNS、HTTP API 与 Agent | **Mesh 接口**：Kubernetes/Istio CRD 与 xDS，不是通用注册 SDK 的等价入口 |
+| 业务流量执行 | **不在控制面**：由 SDK、Sidecar、Proxy 或 Gateway 消费发现结果 | **不在注册中心**：客户端选择实例 | **依赖运行时**：SDK、Proxy 或网格代理执行 | **按接入模式**：DNS/客户端或 Consul Mesh 代理执行 | **依赖数据面**：Envoy Sidecar、ztunnel、Waypoint 或 Gateway 执行 |
 
 ## 配置中心能力
 
-| 能力 | Lattice Hub / Pole | Nacos | Apollo | PolarisMesh |
-| --- | --- | --- | --- | --- |
-| 动态配置与监听 | **原生**：发布态配置、长轮询与 SSE 监听 | **原生**：发布、查询、监听与客户端通知 | **原生**：发布后实时通知客户端 | **原生**：配置发布与 SDK 监听 |
-| 版本与回滚 | **原生**：不可变发布快照、历史版本与回滚 | **原生**：历史记录；从历史内容重新发布或通过 Console 回滚 | **原生**：每次发布版本化并支持回滚 | **需核验**：按具体版本确认历史与回滚语义 |
-| 配置灰度 | **原生**：同一文件可有多条 active 灰度版本 | **原生**：同一配置可有多个灰度版本，支持 IP / Tag 规则 | **原生**：灰度发布到部分应用实例 | **原生**：配置灰度；规则与版本范围按部署版本核验 |
-| 环境与配置隔离 | **原生**：Namespace 是运行环境；Group + File 表达配置身份 | **原生**：Namespace、Group、Data ID | **原生**：Environment、Cluster、Namespace | **原生**：Namespace 与配置分组 |
-| 权限与变更控制 | **原生**：资源鉴权覆盖写入、发布、回滚和停止灰度 | **原生**：鉴权与管理 API 权限 | **原生**：授权、发布审批与操作审计 | **原生**：策略式权限控制 |
-| AI 能力目录 | **原生**：MCP Registry 与 A2A Agent Registry | **原生（3.x）**：Skills、Agents、MCP、Prompts 等 AI Registry | **不适用** | **需核验**：不从注册/配置能力推导 AI Registry 等价范围 |
+| 能力 | Lattice Hub / Pole | Nacos | Apollo | Consul | PolarisMesh |
+| --- | --- | --- | --- | --- | --- |
+| 动态配置与监听 | **原生**：发布态配置、长轮询与 SSE 监听 | **原生**：发布、查询、监听与客户端通知 | **原生**：发布后实时通知客户端 | **基础 KV**：HTTP API 支持读写与阻塞查询；应用接入通常依赖客户端或 Consul Template | **原生**：配置发布与 SDK 监听 |
+| 版本与回滚 | **原生**：不可变发布快照、历史版本与回滚 | **原生**：历史记录；从历史内容重新发布或通过 Console 回滚 | **原生**：每次发布版本化并支持回滚 | **不等价**：ModifyIndex 不是配置发布版本；无内置发布历史与回滚工作流 | **需核验**：按具体版本确认历史与回滚语义 |
+| 配置灰度 | **原生**：同一文件可有多条 active 灰度版本 | **原生**：同一配置可有多个灰度版本，支持 IP / Tag 规则 | **原生**：灰度发布到部分应用实例 | **非原生配置中心能力**：需要应用、Template 或外部发布流程自行实现 | **原生**：配置灰度；规则与版本范围按部署版本核验 |
+| 环境与配置隔离 | **原生**：Namespace 是运行环境；Group + File 表达配置身份 | **原生**：Namespace、Group、Data ID | **原生**：Environment、Cluster、Namespace | **基础 KV 模型**：按 Datacenter 与 Key 前缀组织，不等价于配置中心环境模型 | **原生**：Namespace 与配置分组 |
+| 权限与变更控制 | **原生**：资源鉴权覆盖写入、发布、回滚和停止灰度 | **原生**：鉴权与管理 API 权限 | **原生**：授权、发布审批与操作审计 | **部分**：ACL 可限制 Key 前缀读写；无内置配置发布审批语义 | **原生**：策略式权限控制 |
+| AI 能力目录 | **原生**：MCP Registry 与 A2A Agent Registry | **原生（3.x）**：Skills、Agents、MCP、Prompts 等 AI Registry | **不适用** | **不适用** | **需核验**：不从注册/配置能力推导 AI Registry 等价范围 |
 
 ## 收敛与迁移判断
 
@@ -42,7 +42,9 @@ full: true
 | --- | --- | --- |
 | Nacos | 使用中的 v1/v2 客户端、注册模型、健康检查、配置灰度与管理 API | 协议能接入就等于 Console、插件和所有 SDK 行为完全一致 |
 | Apollo | 客户端读取、Namespace 映射、灰度规则、发布与回滚流程 | 配置兼容会自动带来服务发现或流量治理能力 |
+| Consul | DNS/HTTP 发现路径、健康检查、Catalog、KV blocking query 与 ACL 使用范围 | 基础 KV 自动等价于具备版本、审批、灰度和回滚的配置中心 |
 | PolarisMesh | SDK、Proxy、Controller、规则模型和发布语义的逐项迁移 | Polaris 协议入口等于完整替代其所有数据面和生态组件 |
+| Istio | Kubernetes/VM 服务来源、ServiceEntry、xDS 数据面与策略权威边界 | Istio 内部服务注册表等于可被普通业务 SDK 直接注册查询的独立注册中心 |
 
 Lattice Hub 的差异不是“多一个注册协议”，而是让服务、配置、治理规则、权限和 AI 能力目录共享同一资源视图与确定性发布边界。实际迁移仍应以使用中的客户端版本和端到端测试为准。
 
@@ -50,7 +52,9 @@ Lattice Hub 的差异不是“多一个注册协议”，而是让服务、配�
 
 - [Nacos Overview](https://www.nacos.io/en/docs/latest/overview/) · [Service Discovery Overview](https://nacos.io/en/docs/latest/manual/user/naming/overview/) · [Configuration Gray Release](https://nacos.io/docs/latest/manual/user/config/gray-release/)
 - [Apollo 官方 README](https://github.com/apolloconfig/apollo)
+- [Consul 服务发现](https://developer.hashicorp.com/consul/docs/discover) · [Consul KV](https://developer.hashicorp.com/consul/docs/automate/kv) · [Consul KV HTTP API](https://developer.hashicorp.com/consul/api-docs/kv)
 - [PolarisMesh 注册中心对比](https://polarismesh.cn/docs/%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3/%E7%9B%B8%E5%85%B3%E4%BA%A7%E5%93%81%E5%AF%B9%E6%AF%94/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E5%AF%B9%E6%AF%94/) · [PolarisMesh 服务管理](https://polarismesh.cn/docs/%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88/%E5%8A%9F%E8%83%BD%E7%89%B9%E6%80%A7/%E6%9C%8D%E5%8A%A1%E7%AE%A1%E7%90%86/)
+- [Istio 流量管理与服务发现](https://istio.io/latest/docs/concepts/traffic-management/) · [ServiceEntry](https://istio.io/latest/docs/reference/config/networking/service-entry/)
 - Lattice Hub：[功能特性](/docs/what-is/features) · [控制面](/docs/components/control-plane) · [Kubernetes Controller](/docs/components/kubernetes-controller)
 
 这里不列 TPS 排名。只有硬件、数据规模、持久化、客户端模型、读写比例和压测方法一致时，性能数字才可以横向比较。

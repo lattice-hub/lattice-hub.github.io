@@ -1,10 +1,10 @@
 ---
 title: Registry and configuration comparison
-description: Compare Lattice Hub, Nacos, Apollo, and PolarisMesh across discovery, health checking, configuration releases, gray delivery, authorization, and migration entry points.
+description: Registry comparison covers Nacos, PolarisMesh, Consul, and Istio; configuration comparison covers Nacos, Apollo, Consul, and PolarisMesh.
 full: true
 ---
 
-This matrix answers two selection questions: whether existing registry or configuration clients can stay in place, and whether services, configuration, and governance should converge on one control plane. Apollo does not provide service discovery, so “not applicable” is a product-layer boundary rather than a negative score.
+These matrices answer separate registry/discovery and configuration-center selection questions. They intentionally use different peer sets: Apollo is not in the registry matrix, while Istio is not in the configuration matrix. “Not applicable” is a product-layer boundary rather than a negative score.
 
 ## Status legend
 
@@ -16,25 +16,25 @@ This matrix answers two selection questions: whether existing registry or config
 
 ## Service registry and discovery
 
-| Capability | Lattice Hub / Pole | Nacos | Apollo | PolarisMesh |
-| --- | --- | --- | --- | --- |
-| Product responsibility | **Native**: service, configuration, governance, and AI Registry control plane | **Native**: discovery, configuration, and AI Registry | **Native**: configuration center | **Native**: registry, configuration, and service-governance control plane |
-| Service registration and discovery | **Native**: Namespace, Service, Instance, and subscription views | **Native**: register, discover, and subscribe to service instances | **Not applicable** | **Native**: registry and multi-language discovery |
-| Instance health | **Native**: health, isolation, weight, and server-side health-check paths | **Native**: server probes and client heartbeats | **Not applicable** | **Native**: active probing and client heartbeats |
-| Kubernetes Service synchronization | **Component-dependent**: Pole Kubernetes Controller | **Ecosystem-dependent**: validate the selected Kubernetes integration | **Not applicable** | **Component-dependent**: Polaris Controller |
-| Established protocol entry points | **Compatible**: Polaris gRPC/REST, Nacos v1/v2, Apollo, and Eureka | **Native**: Nacos clients and OpenAPI | **Native**: Apollo clients and OpenAPI | **Native**: Polaris SDK, HTTP/gRPC, and framework integrations |
-| Business-traffic execution | **Outside the control plane**: SDK, Sidecar, Proxy, or Gateway consumes discovery results | **Outside the registry**: clients select instances | **Not applicable** | **Runtime-dependent**: SDK, Proxy, or Mesh proxy executes the result |
+| Capability | Lattice Hub / Pole | Nacos | PolarisMesh | Consul | Istio |
+| --- | --- | --- | --- | --- | --- |
+| Product responsibility | **Native**: service, configuration, governance, and AI Registry control plane | **Native**: discovery, configuration, and AI Registry | **Native**: registry, configuration, and service-governance control plane | **Native**: service discovery, service networking, and Mesh | **Mesh-internal registry**: aggregates platform discovery and configures the data plane |
+| Service registration and discovery | **Native**: Namespace, Service, Instance, and subscription views | **Native**: register, discover, and subscribe to service instances | **Native**: registry and multi-language discovery | **Native**: Catalog, DNS, and HTTP API registration and lookup | **Platform/resource-dependent**: automatically discovers Kubernetes services; ServiceEntry and WorkloadEntry add other services |
+| Instance health | **Native**: health, isolation, weight, and server-side health-check paths | **Native**: server probes and client heartbeats | **Native**: active probing and client heartbeats | **Native**: multiple health-check types update the Catalog; discovery can return only healthy instances | **Discovery-source-dependent**: Kubernetes owns platform health; VM WorkloadEntry health can use probes |
+| Kubernetes Service integration | **Component-dependent**: Pole Kubernetes Controller | **Ecosystem-dependent**: validate the selected Kubernetes integration | **Component-dependent**: Polaris Controller | **Native deployment integration**: Kubernetes service discovery is supported; validate the deployment path | **Native discovery source**: Istiod automatically reads Kubernetes Services and endpoints |
+| Client and query entry points | **Compatible**: Polaris gRPC/REST, Nacos v1/v2, and Eureka | **Native**: Nacos clients and OpenAPI | **Native**: Polaris SDK, HTTP/gRPC, and framework integrations | **Native**: Consul DNS, HTTP API, and Agent | **Mesh interfaces**: Kubernetes/Istio CRDs and xDS, not an equivalent general-purpose registry SDK |
+| Business-traffic execution | **Outside the control plane**: SDK, Sidecar, Proxy, or Gateway consumes discovery results | **Outside the registry**: clients select instances | **Runtime-dependent**: SDK, Proxy, or Mesh proxy executes the result | **Access-mode-dependent**: DNS/client or Consul Mesh proxies execute | **Data-plane-dependent**: Envoy sidecars, ztunnel, Waypoint, or gateways execute |
 
 ## Configuration center
 
-| Capability | Lattice Hub / Pole | Nacos | Apollo | PolarisMesh |
-| --- | --- | --- | --- | --- |
-| Dynamic configuration and watch | **Native**: released configuration, long polling, and SSE | **Native**: publish, query, listen, and client notifications | **Native**: real-time client notification after release | **Native**: configuration publishing and SDK watch |
-| Versions and rollback | **Native**: immutable release snapshots, history, and rollback | **Native**: history plus re-publish or Console rollback | **Native**: every release is versioned and rollback is supported | **Validate**: confirm history and rollback semantics for the deployed version |
-| Gray configuration | **Native**: multiple active gray releases for one file | **Native**: multiple gray versions with IP or Tag rules | **Native**: gray release to selected application instances | **Native**: gray configuration; validate rule and version scope |
-| Environment and identity | **Native**: Namespace as runtime environment; Group + File as configuration identity | **Native**: Namespace, Group, Data ID | **Native**: Environment, Cluster, Namespace | **Native**: Namespace and configuration group |
-| Authorization and change control | **Native**: authorization covers write, publish, rollback, and stop-gray operations | **Native**: authentication and Admin API authorization | **Native**: authorization, release approval, and operation audit | **Native**: policy-based access control |
-| AI capability registry | **Native**: MCP Registry and A2A Agent Registry | **Native in 3.x**: Skills, Agents, MCP, Prompts, and other AI resources | **Not applicable** | **Validate**: do not infer equivalent AI Registry scope from registry/configuration features |
+| Capability | Lattice Hub / Pole | Nacos | Apollo | Consul | PolarisMesh |
+| --- | --- | --- | --- | --- | --- |
+| Dynamic configuration and watch | **Native**: released configuration, long polling, and SSE | **Native**: publish, query, listen, and client notifications | **Native**: real-time client notification after release | **Basic KV**: HTTP API reads/writes and blocking queries; applications commonly integrate through a client or Consul Template | **Native**: configuration publishing and SDK watch |
+| Versions and rollback | **Native**: immutable release snapshots, history, and rollback | **Native**: history plus re-publish or Console rollback | **Native**: every release is versioned and rollback is supported | **Not equivalent**: ModifyIndex is not a configuration release version; no built-in release-history and rollback workflow | **Validate**: confirm history and rollback semantics for the deployed version |
+| Gray configuration | **Native**: multiple active gray releases for one file | **Native**: multiple gray versions with IP or Tag rules | **Native**: gray release to selected application instances | **Not a native config-center workflow**: requires application, Template, or external delivery logic | **Native**: gray configuration; validate rule and version scope |
+| Environment and identity | **Native**: Namespace as runtime environment; Group + File as configuration identity | **Native**: Namespace, Group, Data ID | **Native**: Environment, Cluster, Namespace | **Basic KV model**: Datacenter and key prefixes, not an equivalent config-center environment model | **Native**: Namespace and configuration group |
+| Authorization and change control | **Native**: authorization covers write, publish, rollback, and stop-gray operations | **Native**: authentication and Admin API authorization | **Native**: authorization, release approval, and operation audit | **Partial**: ACLs restrict key-prefix reads and writes; no built-in configuration release approval semantics | **Native**: policy-based access control |
+| AI capability registry | **Native**: MCP Registry and A2A Agent Registry | **Native in 3.x**: Skills, Agents, MCP, Prompts, and other AI resources | **Not applicable** | **Not applicable** | **Validate**: do not infer equivalent AI Registry scope from registry/configuration features |
 
 ## Convergence and migration
 
@@ -42,7 +42,9 @@ This matrix answers two selection questions: whether existing registry or config
 | --- | --- | --- |
 | Nacos | Client versions, registry model, health checks, gray configuration, and management APIs | A compatible protocol means Console, plugins, and every SDK edge behavior are identical |
 | Apollo | Client reads, Namespace mapping, gray rules, release, and rollback workflow | Configuration compatibility automatically provides service discovery or traffic governance |
+| Consul | DNS/HTTP discovery, health checks, Catalog, KV blocking queries, and ACL scope | A basic KV store is automatically equivalent to a configuration center with versions, approval, gray delivery, and rollback |
 | PolarisMesh | SDK, Proxy, Controller, rule model, and release semantics individually | A Polaris protocol entry point replaces every data-plane and ecosystem component |
+| Istio | Kubernetes/VM service sources, ServiceEntry, xDS data plane, and policy ownership | Istio's internal service registry is a standalone registry for ordinary business SDK registration and queries |
 
 Lattice Hub’s difference is not merely one more registry protocol. Services, configuration, governance rules, authorization, and AI capability registries share one resource view and a deterministic release boundary. Migration still depends on the client versions in use and end-to-end tests.
 
@@ -50,7 +52,9 @@ Lattice Hub’s difference is not merely one more registry protocol. Services, c
 
 - [Nacos Overview](https://www.nacos.io/en/docs/latest/overview/) · [Service Discovery Overview](https://nacos.io/en/docs/latest/manual/user/naming/overview/) · [Configuration Gray Release](https://www.nacos.io/en/docs/next/manual/user/config/gray-release/)
 - [Apollo official README](https://github.com/apolloconfig/apollo)
+- [Consul service discovery](https://developer.hashicorp.com/consul/docs/discover) · [Consul KV](https://developer.hashicorp.com/consul/docs/automate/kv) · [Consul KV HTTP API](https://developer.hashicorp.com/consul/api-docs/kv)
 - [PolarisMesh registry comparison](https://polarismesh.cn/docs/%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3/%E7%9B%B8%E5%85%B3%E4%BA%A7%E5%93%81%E5%AF%B9%E6%AF%94/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E5%AF%B9%E6%AF%94/) · [PolarisMesh service management](https://polarismesh.cn/docs/%E5%8C%97%E6%9E%81%E6%98%9F%E6%98%AF%E4%BB%80%E4%B9%88/%E5%8A%9F%E8%83%BD%E7%89%B9%E6%80%A7/%E6%9C%8D%E5%8A%A1%E7%AE%A1%E7%90%86/)
+- [Istio traffic management and discovery](https://istio.io/latest/docs/concepts/traffic-management/) · [ServiceEntry](https://istio.io/latest/docs/reference/config/networking/service-entry/)
 - Lattice Hub: [Features](/en/docs/what-is/features) · [Control Plane](/en/docs/components/control-plane) · [Kubernetes Controller](/en/docs/components/kubernetes-controller)
 
 TPS rankings are intentionally excluded. Performance numbers are comparable only when hardware, data scale, persistence, client model, read/write mix, and benchmark method are controlled and disclosed.
