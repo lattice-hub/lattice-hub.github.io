@@ -190,7 +190,7 @@ const productCopy = {
     hero: {
       eyebrow: 'POLE CONTROL PLANE',
       title: 'One control plane, ',
-      accent: 'one entry for service change.';
+      accent: 'one entry for service change.',
       lede:
         'Lattice.Hub brings runtime environments, service discovery, configuration, governance, identity, and AI capability catalogs into one control plane. Existing clients keep familiar protocols; configuration and governance changes that must ship enter an explainable, publishable, reversible version chain.',
       primary: { href: '/docs', label: 'Read product docs' },

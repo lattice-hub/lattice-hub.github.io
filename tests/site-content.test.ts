@@ -172,9 +172,7 @@ test('product topics stay available without occupying primary navigation', () =>
 });
 
 test('product comparison separates compatibility, peers, mesh, and data planes', () => {
-  const comparePage = readFileSync('src/components/site/pages/ComparePageView.tsx', 'utf8');
   const compareCopy = readFileSync('src/lib/site-copy/compare.ts', 'utf8');
-  const homepage = readFileSync('src/components/site/pages/HomePageView.tsx', 'utf8');
   const homeCopy = readFileSync('src/lib/site-copy/home.ts', 'utf8');
   const productPage = readFileSync('src/components/site/pages/ProductPageView.tsx', 'utf8');
   const zhComparison = readFileSync('content/docs/zh-CN/what-is/comparison/index.mdx', 'utf8');
