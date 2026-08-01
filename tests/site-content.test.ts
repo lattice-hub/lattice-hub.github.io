@@ -45,13 +45,15 @@ test('site navigation exposes real site-level destinations', () => {
     siteFooterNav.map((item) => item.href),
     ['/product', '/components', '/docs', 'https://github.com/lattice-hub'],
   );
-  assert.deepEqual(productTopics.map((item) => item.href), ['/governance', '/agent']);
+  assert.deepEqual(productTopics.map((item) => item.href), ['/governance', '/agent', '/compare']);
   assert.equal(isSiteNavActive('/product', '/product'), true);
   assert.equal(isSiteNavActive('/product/', '/product'), true);
   assert.equal(isSiteNavActive('/product/runtime', '/product'), true);
   assert.equal(isSiteNavActive('/governance', '/product'), true);
   assert.equal(isSiteNavActive('/governance/', '/product'), true);
   assert.equal(isSiteNavActive('/agent', '/product'), true);
+  assert.equal(isSiteNavActive('/compare', '/product'), true);
+  assert.equal(isSiteNavActive('/compare/', '/product'), true);
   assert.equal(isSiteNavActive('/architecture', '/product'), true);
   assert.equal(isSiteNavActive('/components', '/product'), false);
   assert.equal(isSiteNavActive('/product', 'https://github.com/lattice-hub/pole-control-plane'), false);
@@ -71,6 +73,7 @@ test('product topics stay available without occupying primary navigation', () =>
     ['src/app/product/page.tsx', /一个控制面，/, /console-platform-metrics\.webp/],
     ['src/app/governance/page.tsx', /九类规则，/, /governanceDomains\.map/],
     ['src/app/agent/page.tsx', /让 Agent 理解变更，/, /只保存编辑态草稿/],
+    ['src/app/compare/page.tsx', /比较产品之前，/, /comparisons\.map/],
   ] as const;
 
   assert.doesNotMatch(JSON.stringify(siteNav), /\/#(?:capabilities|governance|agent)/);
@@ -98,11 +101,39 @@ test('product topics stay available without occupying primary navigation', () =>
   assert.match(homepage, /href="\/product"/);
   assert.match(homepage, /href="\/governance"/);
   assert.match(homepage, /href="\/agent"/);
+  assert.match(homepage, /href="\/compare"/);
   assert.match(productPage, /productTopics\.map/);
   assert.match(productPage, /href=\{topic\.href\}/);
   assert.match(homepage, /siteFooterNav\.map/);
   assert.match(interiorFooter, /siteFooterNav\.map/);
   assert.doesNotMatch(`${homepage}\n${interiorFooter}`, /href="\/#(?:capabilities|governance|agent)"/);
+});
+
+test('product comparison separates compatibility, peers, mesh, and data planes', () => {
+  const comparePage = readFileSync('src/app/compare/page.tsx', 'utf8');
+  const homepage = readFileSync('src/app/page.tsx', 'utf8');
+  const productPage = readFileSync('src/app/product/page.tsx', 'utf8');
+  const zhComparison = readFileSync('content/docs/zh-CN/what-is/comparison.mdx', 'utf8');
+  const enComparison = readFileSync('content/docs/en/what-is/comparison.mdx', 'utf8');
+  const zhMeta = JSON.parse(readFileSync('content/docs/zh-CN/what-is/meta.json', 'utf8')) as { pages: string[] };
+  const enMeta = JSON.parse(readFileSync('content/docs/en/what-is/meta.json', 'utf8')) as { pages: string[] };
+
+  for (const product of ['Nacos', 'Apollo', 'PolarisMesh', 'Istio', 'Kmesh']) {
+    assert.match(comparePage, new RegExp(product), `comparison page must include ${product}`);
+    assert.match(zhComparison, new RegExp(product), `Chinese comparison docs must include ${product}`);
+    assert.match(enComparison, new RegExp(product), `English comparison docs must include ${product}`);
+  }
+
+  assert.match(comparePage, /当前协议兼容/);
+  assert.match(comparePage, /同层对比/);
+  assert.match(comparePage, /能力重叠 \/ 可分域组合/);
+  assert.match(comparePage, /可组合方向 \/ 尚未直连/);
+  assert.match(comparePage, /双方支持 xDS 不能直接推出已经开箱即用/);
+  assert.match(homepage, /兼容接入，渐进收敛/);
+  assert.match(homepage, /Istio · Kmesh/);
+  assert.match(productPage, /topic\.action/);
+  assert.ok(zhMeta.pages.includes('comparison'));
+  assert.ok(enMeta.pages.includes('comparison'));
 });
 
 test('component matrix covers the Lattice Hub ecosystem', () => {
@@ -389,7 +420,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 85);
+  assert.equal(chinese.length, 86);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);

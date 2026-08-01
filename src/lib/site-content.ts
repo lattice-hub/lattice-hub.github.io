@@ -57,18 +57,27 @@ export const siteFooterNav: SiteNavItem[] = [
   { label: 'GitHub', href: GITHUB_ORGANIZATION_URL },
 ];
 
-export const productTopics: Array<SiteNavItem & { labelEn: string; summary: string }> = [
+export const productTopics: Array<SiteNavItem & { action: string; labelEn: string; summary: string }> = [
   {
     label: '服务治理',
     labelEn: 'SERVICE GOVERNANCE',
     href: '/governance',
     summary: '九类治理规则通过作用域、版本、灰度发布与回滚形成确定的运行时策略。',
+    action: '深入服务治理',
   },
   {
     label: 'Pole Agent',
     labelEn: 'HUMAN-GATED CHANGE',
     href: '/agent',
     summary: '在登录用户权限内读取上下文、生成已有配置更新提案；人工确认后只保存编辑态草稿。',
+    action: '了解 Pole Agent',
+  },
+  {
+    label: '产品对比',
+    labelEn: 'WHY POLE',
+    href: '/compare',
+    summary: '分清协议兼容、同层控制面、完整 Mesh 与数据面，选择准确的替换或组合路径。',
+    action: '比较产品关系',
   },
 ];
 
@@ -77,7 +86,7 @@ export function isSiteNavActive(pathname: string, href: string): boolean {
     pathname === '/en/docs' || pathname.startsWith('/en/docs/')
       ? pathname.replace(/^\/en/, '')
       : pathname;
-  const productAliases = ['/architecture', '/governance', '/agent'];
+  const productAliases = ['/architecture', '/governance', '/agent', '/compare'];
   const isProductTopic = productAliases.some(
     (topic) => normalizedPath === topic || normalizedPath.startsWith(`${topic}/`),
   );

@@ -1,0 +1,70 @@
+---
+title: Product comparison and boundaries
+description: Understand how Lattice Hub relates to Nacos, Apollo, PolarisMesh, Istio, and Kmesh, including compatibility boundaries and composition options.
+---
+
+Lattice Hub is a unified service and Agent governance control plane. Its existing protocol entry points can accommodate established integrations, but that does not make every related product an interchangeable peer.
+
+Start with product layers: Nacos, Apollo, PolarisMesh, and Lattice Hub all include control-plane concerns; Istio is a complete Service Mesh with both control and data planes; Kmesh is an eBPF-oriented Service Mesh data plane.
+
+## Relationship overview
+
+| Product | Product layer | Relationship to Lattice Hub | Validate before use |
+| --- | --- | --- | --- |
+| Nacos | Discovery and configuration control plane | Compatible protocol entry point and a gradual migration path | Client behavior, management surface, and ecosystem extensions |
+| Apollo | Configuration control plane | Compatible configuration-client entry point and migration path | Non-official SDKs, operating model, and extensions |
+| PolarisMesh | Service governance control plane | Closest same-layer reference; Polaris protocol entry point is available | SDK, proxy, controller, and Mesh runtime capabilities individually |
+| Istio | Complete Service Mesh | A composable Mesh ecosystem, not a same-layer replacement | Interoperation with Istio APIs, Istiod, ambient, and Waypoint |
+| Kmesh | Service Mesh data plane | A potential data-plane composition direction; no direct integration today | Proven xDS/Istio interoperation and end-to-end behavior |
+
+Here, “compatible” means a provided protocol entry point, not a complete recreation of another product’s SDK, Console, runtime, or ecosystem. “Composable” does not mean an out-of-the-box integration.
+
+## Nacos and Apollo: accommodate established integrations
+
+### Nacos
+
+[Nacos](https://nacos.io/en-us/docs/what-is-nacos.html) describes itself as a dynamic naming and configuration service. Its central capabilities are service discovery, configuration management, and service management; it is not a business-request data-path proxy or a complete Service Mesh control plane.
+
+Lattice Hub provides Nacos v1/v2-compatible entry points, so existing clients can connect discovery and configuration publishing to a unified control plane. Before migration, validate the specific client behavior, management APIs, and ecosystem extensions in use. A protocol entry point is not a claim of complete Nacos replacement.
+
+### Apollo
+
+[Apollo](https://github.com/apolloconfig/apollo) is a configuration management system for microservices, with environments, clusters, configuration namespaces, releases, gray delivery, permissions, and audit. It is not positioned as a service registry or traffic data plane.
+
+Lattice Hub provides an Apollo-compatible entry point and can place existing configuration clients in a unified resource model for services, configuration, and governance. Confirm the client, Open Platform, extensions, and release workflow before migration; the entry point does not promise behavior-by-behavior equivalence with all Apollo management and ecosystem functions.
+
+## PolarisMesh: the same-layer governance control-plane reference
+
+[PolarisMesh](https://polarismesh.cn/) is a cloud-native service governance platform for multiple languages and frameworks. It covers a service registry, Service Mesh, and configuration center, making it Lattice Hub’s closest control-plane-layer reference.
+
+Lattice Hub provides Polaris-style HTTP/gRPC access and manages services, configuration, governance rules, permissions, and releases through one resource model. It can be a convergence path for existing Polaris integrations, but proxy, SDK, Kubernetes Controller, observability, and Mesh runtime replacement must be assessed separately for the actual component, version, and verified behavior.
+
+## Istio and Kmesh: compose rather than replace
+
+### Istio
+
+[Istio](https://istio.io/latest/docs/ops/deployment/architecture/) divides a Service Mesh into control and data planes: the control plane configures proxies, while the data plane handles service-to-service communication and telemetry. It supports data-plane modes including Sidecar and ambient, with security, traffic-management, and observability capabilities.
+
+Lattice Hub can unify service, configuration, and governance resources and connect to proxy runtimes through interfaces such as Envoy xDS v3. That does not mean Lattice Hub replaces Istiod or fully supports Istio APIs, CRDs, ambient, or Waypoint. The products can be composed only with clear resource boundaries and verified interoperation.
+
+### Kmesh
+
+[Kmesh](https://kmesh.net/docs/architecture/) is a high-performance Service Mesh data plane built with eBPF and a programmable kernel. Its node-level daemon manages eBPF lifecycle, xDS integration, and observability; advanced L7 governance uses components such as Waypoint. Its [current quick start](https://kmesh.net/docs/setup/quick-start/) uses Istio/Istiod as the control plane and requires Kubernetes and an eBPF-capable Linux kernel.
+
+Kmesh’s value is in the traffic execution path, while Lattice Hub’s value is in control-plane resources and release models; they are not products at the same layer. Lattice Hub does not currently claim to drive Kmesh directly. Any composition requires dedicated xDS/Istio interoperation design and end-to-end validation.
+
+## Selection and migration principles
+
+- Already using Nacos or Apollo: assess the compatible entry point and the clients in use, then progressively converge registration, configuration, and release into one control plane.
+- Need governance control across languages and runtimes: treat PolarisMesh as the closest same-layer comparison, and validate the migration scope for each execution component.
+- Already using Istio or evaluating Kmesh: treat them as Mesh/data-plane ecosystems, and compose only after defining control-plane ownership and verified integration boundaries.
+- Need governance rules to take effect: confirm that the control-plane resource, release state, and each SDK, proxy, or gateway consumer supports the capability.
+
+## What we do not claim
+
+- We do not describe Lattice Hub as a complete replacement for Nacos, Apollo, or PolarisMesh.
+- Envoy xDS support does not imply complete compatibility with Istiod, Istio APIs, ambient, Waypoint, or Kmesh.
+- Control APIs, registry, and configuration synchronization do not mean the control plane forwards business traffic.
+- Kmesh is not described as an independent control plane or as an out-of-the-box Lattice Hub integration.
+
+For Lattice Hub’s existing protocol entry points and runtime access, see [Integration options](/en/docs/what-is/access) and [API and protocols](/en/docs/api). Competitor information above was checked on 2026-08-01 against official documentation and official repositories.

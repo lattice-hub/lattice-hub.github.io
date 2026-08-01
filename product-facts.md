@@ -47,3 +47,11 @@
 3. 控制面统一承载 Namespace、Service、Config、Governance、MCP Registry 与 A2A Agent Registry 等资源视图。
 4. 只有配置与治理变化在首页图中进入“草稿 → 版本 → Active”发布链；服务与 Registry 不应被错误画成同一发布生命周期。
 5. 运行时消费者以 Thin SDK、Local Proxy / Sidecar、Proxy Mesh / Gateway 为主线；动态图只表达结构关系，不表达实时遥测状态。
+
+## 产品对比事实边界
+
+- Nacos 与 Apollo 当前属于协议兼容和渐进迁移关系；兼容入口不等于复刻其全部 Console、SDK、Open API 或生态扩展。
+- PolarisMesh 是最接近 Pole 的同层控制面对比对象；Polaris 协议兼容不等于已等价替代其全部 SDK、Sidecar 与 Controller。
+- Istio 是包含控制面、数据面、安全与遥测的完整 Service Mesh。Pole 的 Envoy xDS 能力不等于已替代 Istiod，或完整支持 Istio API 与 ambient 模式。
+- Kmesh 是 eBPF Service Mesh 数据面。Pole 与 Kmesh 可以研究控制面和数据面的组合，但当前不得表述为已经直连或开箱即用。
+- 产品对比必须先区分协议入口、同层控制面、完整 Mesh 与数据面，再讨论能力重叠和迁移路径；不得用同权功能勾选表暗示所有产品处于同一层。

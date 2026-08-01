@@ -56,6 +56,27 @@ const environmentScopes = [
   },
 ] as const;
 
+const productRelationships = [
+  {
+    index: '01 / KEEP THE ENTRY',
+    products: 'Nacos · Apollo',
+    title: '兼容接入，渐进收敛',
+    detail: '保留熟悉的客户端协议，把注册与配置逐步带入统一控制面。',
+  },
+  {
+    index: '02 / COMPARE THE PLANE',
+    products: 'PolarisMesh',
+    title: '同层控制面参照',
+    detail: '按服务、配置、治理、运行时与发布语义逐项比较，而不是只看功能名称。',
+  },
+  {
+    index: '03 / COMPOSE THE RUNTIME',
+    products: 'Istio · Kmesh',
+    title: 'Mesh 与数据面关系',
+    detail: '明确控制权边界；组合方向必须经过协议适配和真实流量验证。',
+  },
+] as const;
+
 export default function HomePage() {
   return (
     <main className="site-shell">
@@ -253,6 +274,30 @@ export default function HomePage() {
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+
+      <section className={styles.comparison}>
+        <div className={`${styles.sectionInner} ${styles.comparisonInner}`}>
+          <div className={styles.comparisonHeading}>
+            <p className={styles.sectionKicker}>06 / Why Pole</p>
+            <h2>不是所有服务治理产品，都在同一层。</h2>
+            <p>先判断是保留入口、迁移控制面，还是组合 Mesh 数据面，再决定 Pole 应该负责什么。</p>
+            <Link className={`${styles.button} ${styles.buttonSecondary}`} href="/compare">
+              查看完整产品对比
+              <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+          <div className={styles.relationshipList}>
+            {productRelationships.map((relationship) => (
+              <article key={relationship.index}>
+                <span>{relationship.index}</span>
+                <p>{relationship.products}</p>
+                <h3>{relationship.title}</h3>
+                <small>{relationship.detail}</small>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 

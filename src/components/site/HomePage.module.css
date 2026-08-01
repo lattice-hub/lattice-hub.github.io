@@ -547,6 +547,95 @@
   font-size: 20px;
 }
 
+.comparison {
+  background: var(--panel-dark);
+  color: var(--panel-dark-text);
+}
+
+.comparisonInner {
+  display: grid;
+  grid-template-columns: .72fr 1.28fr;
+  gap: 90px;
+  padding-block: 136px;
+}
+
+.comparisonHeading {
+  position: sticky;
+  top: 96px;
+  align-self: start;
+}
+
+.comparisonHeading .sectionKicker {
+  color: var(--panel-dark-muted);
+}
+
+.comparisonHeading h2 {
+  margin-top: 24px;
+  font-size: clamp(44px, 4.5vw, 66px);
+}
+
+.comparisonHeading > p:not(.sectionKicker) {
+  margin: 28px 0 0;
+  color: var(--panel-dark-soft);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.comparisonHeading .button {
+  margin-top: 34px;
+  border-color: var(--panel-dark-border-strong);
+  color: var(--panel-dark-heading);
+}
+
+.comparisonHeading .button:hover {
+  border-color: var(--brand-bright);
+  color: var(--brand-bright);
+}
+
+.relationshipList {
+  border-top: 1px solid var(--panel-dark-border);
+}
+
+.relationshipList article {
+  display: grid;
+  grid-template-columns: 52px minmax(130px, .54fr) minmax(180px, .72fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  min-height: 126px;
+  border-bottom: 1px solid var(--panel-dark-border);
+  transition: padding 160ms ease, background 160ms ease;
+}
+
+.relationshipList article:hover {
+  padding-inline: 16px;
+  background: rgba(255, 255, 255, .025);
+}
+
+.relationshipList article > span,
+.relationshipList article > p {
+  color: var(--panel-dark-muted);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 10px;
+  letter-spacing: .1em;
+}
+
+.relationshipList article > p {
+  margin: 0;
+}
+
+.relationshipList h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 520;
+  letter-spacing: -.025em;
+}
+
+.relationshipList small {
+  color: var(--panel-dark-soft);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
 .finalCta {
   padding-block: 154px;
   background: var(--brand);
@@ -711,7 +800,8 @@
 
   .governanceLayout,
   .agentGrid,
-  .scopeLayout {
+  .scopeLayout,
+  .comparisonInner {
     grid-template-columns: 1fr;
   }
 
@@ -720,7 +810,8 @@
     max-width: 760px;
   }
 
-  .scopeCopy {
+  .scopeCopy,
+  .comparisonHeading {
     position: static;
   }
 }
@@ -821,8 +912,33 @@
 
   .governanceLayout,
   .agentGrid,
-  .scopeLayout {
+  .scopeLayout,
+  .comparisonInner {
     gap: 56px;
+  }
+
+  .comparisonInner {
+    padding-block: 96px;
+  }
+
+  .comparisonHeading .button {
+    width: 100%;
+  }
+
+  .relationshipList article {
+    grid-template-columns: 38px 1fr;
+    gap: 14px 18px;
+    padding-block: 24px;
+  }
+
+  .relationshipList article:hover {
+    padding-inline: 0;
+  }
+
+  .relationshipList article > p,
+  .relationshipList h3,
+  .relationshipList small {
+    grid-column: 2;
   }
 
   .governanceVisual {
@@ -897,7 +1013,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .heroCopy,
-  .heroVisual {
+  .heroVisual,
+  .relationshipList article {
     animation: none;
+    transition: none;
   }
 }

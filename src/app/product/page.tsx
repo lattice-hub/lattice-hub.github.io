@@ -135,10 +135,10 @@ export default function ProductPage() {
       </section>
 
       <section className={styles.section}>
-        <SectionHeading index="04 / PRODUCT TOPICS" title="进入控制面的两个关键工作面。">
-          <p>产品页说明整体模型；专题页继续展开治理发布与智能变更的具体边界。</p>
+        <SectionHeading index="04 / PRODUCT TOPICS" title="进入控制面的三个关键工作面。">
+          <p>产品页说明整体模型；专题页继续展开治理发布、智能变更与产品关系的具体边界。</p>
         </SectionHeading>
-        <div className={styles.twoColumnCards}>
+        <div className={styles.cardGrid}>
           {productTopics.map((topic, index) => (
             <Link className={`${styles.viewCard} ${styles.topicCard}`} href={topic.href} key={topic.href}>
               <span>
@@ -147,7 +147,7 @@ export default function ProductPage() {
               <h3>{topic.label}</h3>
               <p>{topic.summary}</p>
               <strong>
-                {topic.label === '服务治理' ? '深入服务治理' : '了解 Pole Agent'}
+                {topic.action}
                 <span aria-hidden="true">→</span>
               </strong>
             </Link>

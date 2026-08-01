@@ -1,0 +1,70 @@
+---
+title: 产品对比与边界
+description: 了解 Lattice Hub 与 Nacos、Apollo、PolarisMesh、Istio、Kmesh 的层级关系、兼容边界和组合方式。
+---
+
+Lattice Hub 是统一的服务与 Agent 治理控制面。它通过已有协议入口承接存量接入，但不把所有相关产品描述为可以无差别替换的同类产品。
+
+先按层级理解关系：Nacos、Apollo、PolarisMesh 与 Lattice Hub 都涉及控制面；Istio 是包含控制面和数据面的完整 Service Mesh；Kmesh 是面向 eBPF 的 Service Mesh 数据面。
+
+## 关系总览
+
+| 产品 | 产品层级 | 与 Lattice Hub 的关系 | 使用时应核验 |
+| --- | --- | --- | --- |
+| Nacos | 注册发现与配置控制面 | 兼容协议接入，支持渐进迁移 | 客户端、管理面和生态扩展的实际兼容范围 |
+| Apollo | 配置控制面 | 兼容配置客户端接入，支持配置迁移 | 非官方 SDK、运维模型和扩展能力 |
+| PolarisMesh | 服务治理控制面 | 最直接的同层参照；提供 Polaris 协议入口 | SDK、Proxy、Controller、Mesh 运行时的逐项能力 |
+| Istio | 完整 Service Mesh | 可组合的 Mesh 生态，不是同层替代 | Istio API、Istiod、ambient、Waypoint 的互操作 |
+| Kmesh | Service Mesh 数据面 | 潜在数据面组合方向，当前尚未直接集成 | 已验证的 xDS/Istio 互操作与端到端行为 |
+
+这里的“兼容”指已提供的协议入口，不等同于完整复刻对方的 SDK、Console、运行时或整个生态。“组合”也不等同于已经开箱即用集成。
+
+## 与 Nacos、Apollo 的关系：承接存量接入
+
+### Nacos
+
+[Nacos](https://nacos.io/en-us/docs/what-is-nacos.html) 将自己定位为动态命名与配置服务，中心能力是服务发现、配置管理和服务管理；它不是业务请求的数据路径代理或完整 Service Mesh 控制面。
+
+Lattice Hub 提供 Nacos v1/v2 兼容入口，可让已有客户端把注册发现与配置发布接入统一控制面。迁移时仍应按版本验证具体客户端行为、管理接口和生态扩展，不能把协议可接入宣传为对 Nacos 的完全替代。
+
+### Apollo
+
+[Apollo](https://github.com/apolloconfig/apollo) 是面向微服务场景的配置管理系统，支持多环境、多集群、配置 namespace、发布、灰度、权限和审计；它不以服务注册中心或流量数据面为产品定位。
+
+Lattice Hub 提供 Apollo 兼容入口，可把存量配置客户端接入统一的服务、配置与治理资源模型。实际迁移前应确认所用客户端、Open Platform、扩展和发布流程；兼容入口不承诺逐项等价 Apollo 的全部管理与生态行为。
+
+## 与 PolarisMesh 的关系：同层治理控制面参照
+
+[PolarisMesh](https://polarismesh.cn/) 是多语言、多框架的云原生服务治理平台，覆盖注册中心、服务网格与配置中心，因此它是 Lattice Hub 最直接的控制面层参照。
+
+Lattice Hub 提供 Polaris 风格的 HTTP/gRPC 接入，并使用统一资源模型管理服务、配置、治理规则、权限和发布。它可作为现有 Polaris 接入收敛的路径；但 Proxy、SDK、Kubernetes Controller、可观测性和 Mesh 运行时是否可替换，必须按实际组件、版本和验证结果分别判断。
+
+## 与 Istio、Kmesh 的关系：组合而非替代
+
+### Istio
+
+[Istio](https://istio.io/latest/docs/ops/deployment/architecture/) 将 Service Mesh 划分为控制面与数据面：控制面配置代理，数据面处理服务间通信并上报遥测。它支持 Sidecar 与 ambient 等数据面模式，并提供安全、流量管理和可观测性能力。
+
+Lattice Hub 可统一服务、配置和治理资源，并通过 Envoy xDS v3 等接口衔接代理运行时；这不表示已替代 Istiod，也不表示完整支持 Istio API、CRD、ambient 或 Waypoint。两者适合按清晰的资源边界和经过验证的互操作方式组合。
+
+### Kmesh
+
+[Kmesh](https://kmesh.net/docs/architecture/) 是使用 eBPF 和可编程内核的高性能 Service Mesh 数据面。其节点级 daemon 管理 eBPF 生命周期、xDS 集成和观测；高级 L7 治理由 Waypoint 等组件处理。其[当前快速开始](https://kmesh.net/docs/setup/quick-start/)以 Istio/Istiod 作为控制面，并要求 Kubernetes、支持 eBPF 的 Linux 内核等运行条件。
+
+Kmesh 的价值在流量执行路径，Lattice Hub 的价值在控制面资源和发布模型，二者不属于同层产品。Lattice Hub 当前不宣称直接驱动 Kmesh；任何组合都需要专门的 xDS/Istio 互操作设计与端到端验证。
+
+## 选择与迁移原则
+
+- 已使用 Nacos 或 Apollo：先评估兼容入口与所用客户端，逐步把注册、配置和发布收敛到统一控制面。
+- 需要多语言、多运行时的服务治理控制面：将 PolarisMesh 作为最接近的同层比较对象，按具体执行组件核验迁移范围。
+- 已采用 Istio 或考虑 Kmesh：把它们视为 Mesh/数据面生态，明确控制面责任与已验证的集成边界后再组合。
+- 需要治理规则真正生效：同时确认控制面资源、发布状态与 SDK、Proxy、Gateway 等数据面消费者均支持对应能力。
+
+## 不作的承诺
+
+- 不以“完全替代”描述 Nacos、Apollo 或 PolarisMesh。
+- 不以 Envoy xDS 支持推导出 Istiod、Istio API、ambient、Waypoint 或 Kmesh 的完整兼容。
+- 不把控制 API、注册与配置同步描述成业务流量由控制面转发。
+- 不把 Kmesh 描述为独立控制面或已经与 Lattice Hub 开箱即用集成。
+
+对 Lattice Hub 已有协议入口和运行时接入方式，参见[接入方式](/docs/what-is/access)与[API 与协议](/docs/api)。上述竞品资料核验于 2026-08-01，并以各产品官方文档和官方仓库为准。
