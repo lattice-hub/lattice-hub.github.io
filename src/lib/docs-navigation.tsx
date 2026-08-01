@@ -27,6 +27,7 @@ const navigationCopy = {
     pages: {
       intro: '简介',
       features: '功能特性',
+      comparison: '产品对比',
       access: '接入方式',
       install: '服务端安装',
       console: '控制台使用',
@@ -83,6 +84,7 @@ const navigationCopy = {
     pages: {
       intro: 'Introduction',
       features: 'Features',
+      comparison: 'Product comparison',
       access: 'Integration options',
       install: 'Server installation',
       console: 'Using the Console',
@@ -264,6 +266,7 @@ function getProductDocsTree(tree: PageTree.Root, locale: DocsLocale): PageTree.R
       folder(copy.folders.overview, [
         alias(copy.pages.intro, []),
         alias(copy.pages.features, ['what-is', 'features']),
+        alias(copy.pages.comparison, ['what-is', 'comparison']),
         alias(copy.pages.access, ['what-is', 'access']),
       ]),
       folder(copy.folders.guides, [

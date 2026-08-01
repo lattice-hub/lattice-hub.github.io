@@ -589,6 +589,7 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
         name: 'Lattice Hub 是什么',
         children: [
           { type: 'page', name: '功能特性', url: '/docs/what-is/features' },
+          { type: 'page', name: '产品对比', url: '/docs/what-is/comparison' },
           { type: 'page', name: '接入方式', url: '/docs/what-is/access' },
         ],
       },
@@ -859,6 +860,7 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
     [
       '简介',
       '功能特性',
+      '产品对比',
       '接入方式',
       '服务端安装',
       '控制台使用',
@@ -876,6 +878,35 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
       '鉴权链与资源映射',
       'AI Registry 与 Pole Agent',
       '观测链路',
+    ],
+  );
+
+  const overview = getDocsSectionTree(tree, ['what-is', 'comparison']).children[0];
+  assert.equal(overview.type, 'folder');
+  assert.deepEqual(
+    overview.children.map((node) =>
+      node.type === 'page' ? { name: node.name, url: node.url } : { name: node.name },
+    ),
+    [
+      { name: '简介', url: '/docs' },
+      { name: '功能特性', url: '/docs/what-is/features' },
+      { name: '产品对比', url: '/docs/what-is/comparison' },
+      { name: '接入方式', url: '/docs/what-is/access' },
+    ],
+  );
+
+  const enTree = JSON.parse(JSON.stringify(tree).replaceAll('/docs', '/en/docs'));
+  const enOverview = getDocsSectionTree(enTree, ['what-is', 'comparison'], 'en').children[0];
+  assert.equal(enOverview.type, 'folder');
+  assert.deepEqual(
+    enOverview.children.map((node) =>
+      node.type === 'page' ? { name: node.name, url: node.url } : { name: node.name },
+    ),
+    [
+      { name: 'Introduction', url: '/en/docs' },
+      { name: 'Features', url: '/en/docs/what-is/features' },
+      { name: 'Product comparison', url: '/en/docs/what-is/comparison' },
+      { name: 'Integration options', url: '/en/docs/what-is/access' },
     ],
   );
 });
