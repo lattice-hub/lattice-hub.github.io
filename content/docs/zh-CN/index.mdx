@@ -51,9 +51,10 @@ Lattice Hub 解决的是“控制面碎片化”的问题：
 
 | 组件 | 产品职责 | 文档入口 |
 | --- | --- | --- |
-| Control Plane | 统一控制面（内嵌 Console），承载服务发现、配置中心、治理规则、权限、缓存和 AI Registry。 | [查看](/docs/components/control-plane) |
+| Control Plane | 统一控制面（内嵌 Console；Limiter 同仓可选进程），承载服务发现、配置中心、治理规则、权限、缓存和 AI Registry。 | [查看](/docs/components/control-plane) |
 | Pole Agent | Control Plane / Console 内的一等对话工作模式，使用白名单 MCP 工具读取资源并准备受控配置变更。 | [查看](/docs/principles/ai-registry) |
 | Rust SDK | Proxyless 接入形态，客户端直接消费控制面发现与治理视图。 | [查看](/docs/components/rust-sdk) |
+| Thin SDK | Go / Java / Python / Node.js 契约核心，面向本地 Pole Sidecar。 | [查看](/docs/components/thin-sdk) |
 | Kubernetes Controller | 把 Kubernetes Service 和注解同步到控制面，并承接集群侧自动化。 | [查看](/docs/components/kubernetes-controller) |
 | Pole Sidecar | 基于 Pingora 的轻量数据面骨架，用于承载路由、负载均衡和治理拦截器。 | [查看](/docs/components/pingora-sidecar) |
 | Specification | protobuf 与协议约束，是跨组件协作的契约层。 | [查看](/docs/components/specification) |

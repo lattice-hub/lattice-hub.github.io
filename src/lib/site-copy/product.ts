@@ -102,7 +102,7 @@ const productCopy = {
         { index: '01 / CONNECT', title: '接入', detail: '保留 Polaris、Nacos、Apollo、Eureka 与 Envoy xDS v3 等已有客户端入口。' },
         { index: '02 / MODEL', title: '建模', detail: '把服务、配置、治理、身份与能力目录放入明确的运行环境边界。' },
         { index: '03 / RELEASE', title: '发布', detail: '配置与治理变化经过确认后形成发布版本，再通过灰度或全量流程进入运行态。' },
-        { index: '04 / CONSUME', title: '消费', detail: 'Thin SDK、Pole Sidecar 与 Gateway 消费治理视图；Controller 同步资源并编排接入。' },
+        { index: '04 / CONSUME', title: '消费', detail: 'Rust SDK、Thin SDK、Pole Sidecar 与 Gateway 消费或承载治理视图；Controller 同步资源并编排接入。' },
       ],
     },
     capabilityMap: {
@@ -155,10 +155,10 @@ const productCopy = {
         { index: '05', name: 'Envoy', detail: 'xDS v3' },
       ],
       runtimes: [
-        { index: '01', name: 'Thin SDK', detail: '应用内直接读取治理视图' },
-        { index: '02', name: 'Pole Sidecar', detail: '在本地代理层执行治理' },
-        { index: '03', name: 'Proxy Mesh / Gateway', detail: '在集中或网格数据面消费策略' },
-        { index: '04', name: 'Kubernetes Controller', detail: '连接集群资源与控制面模型' },
+        { index: '01', name: 'Rust SDK', detail: 'Proxyless 直连控制面，进程内消费治理视图' },
+        { index: '02', name: 'Thin SDK', detail: '多语言契约核心，面向本地 Pole Sidecar' },
+        { index: '03', name: 'Pole Sidecar', detail: '在本地代理层执行治理' },
+        { index: '04', name: 'Proxy Mesh / Gateway', detail: '在集中或网格数据面消费策略' },
       ],
     },
     boundaries: {
@@ -222,7 +222,7 @@ const productCopy = {
         { index: '01 / CONNECT', title: 'Connect', detail: 'Keep existing client entry points for Polaris, Nacos, Apollo, Eureka, and Envoy xDS v3.' },
         { index: '02 / MODEL', title: 'Model', detail: 'Place services, configuration, governance, identity, and capability catalogs inside clear runtime environment boundaries.' },
         { index: '03 / RELEASE', title: 'Release', detail: 'Confirmed configuration and governance changes become release versions, then enter runtime through canary or full rollout.' },
-        { index: '04 / CONSUME', title: 'Consume', detail: 'Thin SDK, Pole Sidecar, and Gateway consume governance views; Controller syncs resources and orchestrates access.' },
+        { index: '04 / CONSUME', title: 'Consume', detail: 'Rust SDK, Thin SDK, Pole Sidecar, and Gateway consume or carry governance views; Controller syncs resources and orchestrates access.' },
       ],
     },
     capabilityMap: {
@@ -275,10 +275,10 @@ const productCopy = {
         { index: '05', name: 'Envoy', detail: 'xDS v3' },
       ],
       runtimes: [
-        { index: '01', name: 'Thin SDK', detail: 'Read governance views in-process' },
-        { index: '02', name: 'Pole Sidecar', detail: 'Enforce governance at the local proxy layer' },
-        { index: '03', name: 'Proxy Mesh / Gateway', detail: 'Consume policies in centralized or mesh data planes' },
-        { index: '04', name: 'Kubernetes Controller', detail: 'Connect cluster resources to the control-plane model' },
+        { index: '01', name: 'Rust SDK', detail: 'Proxyless: consume governance views in-process' },
+        { index: '02', name: 'Thin SDK', detail: 'Multi-language contract cores for local Pole Sidecar' },
+        { index: '03', name: 'Pole Sidecar', detail: 'Enforce governance at the local proxy layer' },
+        { index: '04', name: 'Proxy Mesh / Gateway', detail: 'Consume policies in centralized or mesh data planes' },
       ],
     },
     boundaries: {

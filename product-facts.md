@@ -23,6 +23,8 @@
 - Pole Agent 已具备真实 LLM / MCP 最小闭环；配置更新经过读取、提案、预览、哈希、并发检查和用户确认，最终只保存草稿。
 - Server / Console 共登记 63 项类型化系统配置，其中 Agent 配置支持受控热更新，其他字段可能需要重启或由部署锁定。
 - 当前 Console 使用 React 18 与 Fluent UI v9，主品牌色为 `#0f6cbd`，并具备 light / dark 主题 token。
+- Limiter 源码与制品已并入 `pole-control-plane`；通过 `--mode limiter-server|full` 部署，不再作为独立生态组件列出。统一制品不等于强制同进程。
+- Thin SDK（Go / Java / Python / Node.js）交付 TargetEnvelope v1 契约核心，面向 Pole Sidecar；与 Rust Proxyless SDK 不是同一产品线。Sidecar 端到端 listener 仍按实现范围演进，不得写成生产就绪。
 
 ## 首页禁止使用的断言
 
@@ -46,7 +48,7 @@
 2. 多协议入口覆盖 Polaris gRPC / REST、Nacos v1 / v2、Apollo、Eureka 与 Envoy xDS v3。
 3. 控制面统一承载 Namespace、Service、Config、Governance、MCP Registry 与 A2A Agent Registry 等资源视图。
 4. 只有配置与治理变化在首页图中进入“草稿 → 版本 → Active”发布链；服务与 Registry 不应被错误画成同一发布生命周期。
-5. 运行时消费者以 Thin SDK、Local Proxy / Sidecar、Proxy Mesh / Gateway 为主线；动态图只表达结构关系，不表达实时遥测状态。
+5. 运行时消费者以 Rust SDK（Proxyless）、Thin SDK、Local Proxy / Sidecar、Proxy Mesh / Gateway 为主线；动态图只表达结构关系，不表达实时遥测状态。
 
 ## 产品对比事实边界
 

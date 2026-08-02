@@ -3,7 +3,7 @@ title: Specification
 description: Lattice Hub 生态共享的 protobuf / gRPC 契约层，覆盖服务、配置、九类治理、安全身份与 MCP。
 ---
 
-Specification（仓库 `pole-io/specification`）是 Lattice Hub 的跨组件契约层：它定义消息与 gRPC 接口，不负责具体运行时实现。`pole-control-plane` 是主要服务端实现；Rust SDK、Pole Sidecar、Controller 与兼容协议适配层作为客户端或数据面消费同一套 wire contract。
+Specification（仓库 `lattice-hub/specification`）是 Lattice Hub 的跨组件契约层：它定义消息、gRPC 接口与 Thin SDK TargetEnvelope，不负责具体运行时实现。`pole-control-plane` 是主要服务端实现；Rust SDK、Thin SDK、Pole Sidecar、Controller 与兼容协议适配层作为客户端或数据面消费同一套 wire contract。
 
 ![specification protocol map](/diagrams/specification-protocol-map.svg)
 
@@ -71,4 +71,5 @@ Discover 可请求的资源类型包括 Namespaces、Services、Instances、Serv
 
 - [控制面装配架构](/docs/principles/architecture)
 - [Rust SDK](/docs/components/rust-sdk)
+- [Thin SDK](/docs/components/thin-sdk)
 - [术语与概念](/docs/what-is/concepts)

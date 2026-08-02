@@ -3,7 +3,7 @@ title: Control Plane
 description: Lattice Hub 的核心控制面，内嵌 Console，承载服务发现、配置中心、治理规则和 AI Native Registry。
 ---
 
-Control Plane 是 Lattice Hub 的核心组件。它组织 API、业务逻辑、缓存和存储，向外提供 HTTP、gRPC、xDS、Nacos、Apollo、Eureka 等多协议入口；Console 已合并在同一仓库与部署单元中，不再作为独立组件列出。
+Control Plane 是 Lattice Hub 的核心组件。它组织 API、业务逻辑、缓存和存储，向外提供 HTTP、gRPC、xDS、Nacos、Apollo、Eureka 等多协议入口；Console 与 Limiter 已合并在同一仓库与制品中，不再作为独立生态组件列出。
 
 ![deployment architecture](/diagrams/deployment-architecture.svg)
 
@@ -18,17 +18,20 @@ Control Plane 是 Lattice Hub 的核心组件。它组织 API、业务逻辑、�
 - 权限控制：资源支持细粒度鉴权，对标云厂商 CAM/RAM 类型能力。
 - 内嵌 Console：Fluent UI 管理界面，覆盖资源、治理、权限、Registry、系统配置与监控指标。
 
-## 内嵌 Console
+## 运行模式
 
-Console 与 Control Plane 同仓交付，可通过 `--mode all|server|console` 组合部署：
+Control Plane、Console 与 Limiter 同仓交付，通过 `--mode` 组合部署。统一制品不等于强制同进程：生产环境仍可把 `control-plane`、`console`、`limiter-server` 分成独立 workload。
 
 | 模式 | 作用 |
 | --- | --- |
-| `all` | 控制面 API + 内嵌 Console（本地默认） |
-| `server` | 仅控制面 API / 协议入口 |
+| `all` | Control Plane API + 内嵌 Console（本地默认产品入口） |
+| `full` | Control Plane + Limiter + Console 同进程启动 |
+| `control-plane` | 仅 Control Plane API / 协议入口 |
+| `limiter-server` | 仅 Limiter 运行时（默认内部 gRPC `8101`）；生产推荐与控制面分进程 |
 | `console` | 仅 Console 网关，通过网络访问 `poleServer.address` |
+| `server` | `control-plane` 的弃用兼容别名 |
 
-逐步操作见 [控制台使用](/docs/guides/console)。界面示例：
+CLI 的 `--mode` 优先于 YAML 中的 `bootstrap.mode`。逐步操作见 [控制台使用](/docs/guides/console)。界面示例：
 
 ![配置分组](/images/console/config-groups.png)
 

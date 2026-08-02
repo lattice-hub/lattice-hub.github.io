@@ -28,7 +28,7 @@ const architectureCopy = {
     },
     collaboration: {
       aria:
-        'Lattice.Hub 组织组件沉浸式全景协作图：Console 和 Kubernetes Controller 连接 Control Plane；Rust SDK、Limiter Server 与 Envoy 或 Gateway 使用当前已接入路径；Pole Sidecar 以虚线表示演进接入；Specification 是共享契约底座。',
+        'Lattice.Hub 组织组件沉浸式全景协作图：Console 和 Kubernetes Controller 连接 Control Plane；Rust SDK、Thin SDK、Control Plane Limiter 模块与 Envoy 或 Gateway 使用当前已接入路径；Pole Sidecar 以虚线表示演进接入；Specification 是共享契约底座。',
       planes: {
         managementCluster: '管理与集群',
         management: '管理入口',
@@ -42,7 +42,7 @@ const architectureCopy = {
         rustSdk: { label: 'Rust SDK', meta: '无代理接入', shortMeta: '无代理' },
         envoy: { label: 'Envoy / Gateway', meta: '外部运行时', shortMeta: '外部' },
         sidecar: { label: 'Pole Sidecar', meta: '演进接入', shortMeta: '演进中' },
-        limiter: { label: 'Limiter Server', shortLabel: 'Limiter', meta: '分布式限流', shortMeta: '限流' },
+        limiter: { label: 'Limiter', shortLabel: 'Limiter', meta: 'Control Plane 模块', shortMeta: 'CP 模块' },
       },
       contract: {
         label: 'SPECIFICATION',
@@ -156,7 +156,7 @@ const architectureCopy = {
     },
     collaboration: {
       aria:
-        'Immersive Lattice.Hub component panorama. Console and Kubernetes Controller connect to Control Plane. Rust SDK, Limiter Server, and Envoy or Gateway use connected paths. A dashed line marks the evolving Pole Sidecar integration, while Specification forms the shared contract foundation.',
+        'Immersive Lattice.Hub component panorama. Console and Kubernetes Controller connect to Control Plane. Rust SDK, Thin SDK, the Control Plane Limiter module, and Envoy or Gateway use connected paths. A dashed line marks the evolving Pole Sidecar integration, while Specification forms the shared contract foundation.',
       planes: {
         managementCluster: 'MANAGEMENT & CLUSTER',
         management: 'MANAGEMENT',
@@ -170,7 +170,7 @@ const architectureCopy = {
         rustSdk: { label: 'Rust SDK', meta: 'PROXYLESS', shortMeta: 'PROXYLESS' },
         envoy: { label: 'Envoy / Gateway', meta: 'EXTERNAL RUNTIME', shortMeta: 'EXTERNAL' },
         sidecar: { label: 'Pole Sidecar', meta: 'EVOLVING PATH', shortMeta: 'EVOLVING' },
-        limiter: { label: 'Limiter Server', shortLabel: 'Limiter', meta: 'DISTRIBUTED LIMITING', shortMeta: 'RUNTIME' },
+        limiter: { label: 'Limiter', shortLabel: 'Limiter', meta: 'CONTROL PLANE MODULE', shortMeta: 'CP MODULE' },
       },
       contract: {
         label: 'SPECIFICATION',

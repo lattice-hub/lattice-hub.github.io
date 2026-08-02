@@ -3,6 +3,7 @@
   "pages": [
     "control-plane",
     "rust-sdk",
+    "thin-sdk",
     "kubernetes-controller",
     "pingora-sidecar",
     "specification"

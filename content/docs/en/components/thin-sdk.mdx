@@ -1,0 +1,42 @@
+---
+title: Thin SDK
+description: Thin SDK contract cores for Go, Java, Python, and Node.js that encode TargetEnvelope v1 for the local Pole Sidecar.
+---
+
+Thin SDK is the multi-language access layer for **Pole Sidecar**. Unlike the Proxyless [Rust SDK](/en/docs/components/rust-sdk), applications do not talk to the control plane for full in-process governance. They build a formal `TargetEnvelope v1` and hand it to the local Sidecar.
+
+## Languages and repositories
+
+| Language | Repository | Notes |
+| --- | --- | --- |
+| Go | [pole-client-go](https://github.com/lattice-hub/pole-client-go) | Standard library only, Go 1.22+ |
+| Java | [pole-client-java](https://github.com/lattice-hub/pole-client-java) | Java 17+, no runtime dependencies |
+| Python | [pole-client-python](https://github.com/lattice-hub/pole-client-python) | Python 3.9–3.13, zero runtime dependencies |
+| Node.js | [pole-client-nodejs](https://github.com/lattice-hub/pole-client-nodejs) | Package `@pole-io/pole-client-nodejs` |
+
+The contract source lives in [specification / thin-sdk](https://github.com/lattice-hub/specification/tree/thin-sdk-contract-v1.0.0/thin-sdk) at tag `thin-sdk-contract-v1.0.0`. Each language repository vendors the same Schema and consistency vectors under `contract/`.
+
+## Current capability boundary
+
+Each language repository ships a **framework-independent contract core** today:
+
+- Build and validate `TargetEnvelope v1`
+- Encode HTTP headers for the local Sidecar
+- No `http.RoundTripper`, gRPC, Dubbo, or other framework adapters
+
+Pole Sidecar has not finished end-to-end validation of the matching local listener, so docs must **not** claim Thin SDK → Sidecar is production-ready. The site only records that the contract cores are available.
+
+## Division of labor with Rust SDK
+
+| Path | Component | Role |
+| --- | --- | --- |
+| Proxyless | [Rust SDK](/en/docs/components/rust-sdk) | Applications connect to discovery/config ports and evaluate routing and load balancing locally |
+| Sidecar | Thin SDK + [Pole Sidecar](/en/docs/components/pingora-sidecar) | Applications encode target envelopes; governance and forwarding run in the local data plane |
+
+Prefer Thin SDK / Sidecar when you want language-agnostic or out-of-process enforcement. Prefer Rust SDK when a Rust service wants full in-process governance.
+
+## Next reading
+
+- [Pole Sidecar](/en/docs/components/pingora-sidecar)
+- [Integration options](/en/docs/what-is/access)
+- [Specification](/en/docs/components/specification)

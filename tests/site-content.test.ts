@@ -245,11 +245,14 @@ test('component matrix covers the Lattice Hub ecosystem', () => {
   assert.deepEqual(componentNames, [
     'Control Plane',
     'Rust SDK',
+    'Thin SDK',
     'Kubernetes Controller',
     'Pole Sidecar',
-    'Limiter Server',
     'Specification',
   ]);
+  assert.doesNotMatch(JSON.stringify(componentGroups), /Limiter Server|pole-limiter-server/);
+  assert.match(componentGroups.find((item) => item.name === 'Control Plane')?.summary ?? '', /Limiter/);
+  assert.match(componentGroups.find((item) => item.name === 'Thin SDK')?.summary ?? '', /Go/);
 });
 
 test('docs routing exposes the five PRD landing destinations', () => {
@@ -306,8 +309,8 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.match(homeCopy.release.title, /变更不是保存/);
   assert.match(homeCopy.agent.title, /Agent 准备变更/);
   assert.match(homeCopy.agent.copy, /只保存编辑态草稿/);
-  assert.match(homeCopy.systemStrip.items[2].label, /Rust SDK、Pole Sidecar 与 Proxy Mesh \/ Gateway/);
-  assert.doesNotMatch(homepage, /Thin SDK/);
+  assert.match(homeCopy.systemStrip.items[2].label, /Rust \/ Thin SDK、Pole Sidecar 与 Proxy Mesh \/ Gateway/);
+  assert.match(homeCopy.scope.items[2].detail, /Thin SDK/);
   assert.match(homepage, /getGovernanceDomains\(locale\)/);
   assert.doesNotMatch(`${hero}\n${homepage}`, /console-preview|agent-workflow|fact-rail|get_config_file/);
   assert.doesNotMatch(`${hero}\n${homepage}`, />24<|>186<|22 正常|3 隔离|canary 20%/);
@@ -431,7 +434,9 @@ test('architecture page explains organization components without control-plane i
   assert.match(architectureCopy, /治理能力如何生效/);
   assert.match(architecturePage, /ComponentCollaborationDiagram/);
   assert.match(architecturePage, /GovernanceExecutionDiagram/);
-  assert.match(architectureCopy, /Limiter Server/);
+  assert.match(architectureCopy, /Thin SDK/);
+  assert.match(architectureCopy, /Limiter 同仓/);
+  assert.doesNotMatch(architectureCopy, /pole-limiter-server|Limiter Server/);
   assert.match(architectureCopy, /当前是支持 HTTP、HTTP\/2、gRPC-h2c/);
   assert.match(architectureCopy, /不进入每一次业务请求的同步热路径/);
   assert.match(architectureCopy, /自身当前支持的能力/);
@@ -526,7 +531,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 88);
+  assert.equal(chinese.length, 89);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
@@ -804,6 +809,7 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
         name: '组件',
         children: [
           { type: 'page', name: 'Rust SDK', url: '/docs/components/rust-sdk' },
+          { type: 'page', name: 'Thin SDK', url: '/docs/components/thin-sdk' },
           { type: 'page', name: 'Kubernetes Controller', url: '/docs/components/kubernetes-controller' },
           { type: 'page', name: 'Pole Sidecar', url: '/docs/components/pingora-sidecar' },
           { type: 'page', name: 'Specification', url: '/docs/components/specification' },
@@ -992,6 +998,7 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
       '服务端安装',
       '控制台使用',
       'Rust SDK 接入',
+      'Thin SDK',
       'K8s 和 Controller',
       'Pole Sidecar',
       '协议与网关',

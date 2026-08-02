@@ -30,7 +30,7 @@ const componentsCopy = {
       overline: 'Component ecosystem',
       title: '从控制面到运行时，组件围绕同一套资源模型协作。',
       intro:
-        'Control Plane 定义治理模型、多协议入口与内嵌 Console；Pole Agent、Controller、Pole Sidecar、SDK、Observability 与 Specification 分别承担智能操作、接入、执行、观测和开放契约。',
+        'Control Plane（内嵌 Console，Limiter 同仓可选进程）定义治理模型与多协议入口；Rust SDK、Thin SDK、Controller、Pole Sidecar 与 Specification 分别承担 Proxyless / Sidecar 接入、集群同步、本地数据面和开放契约。',
     },
     directory: {
       columns: ['COMPONENT', 'RESPONSIBILITY', 'IMPLEMENTATION NOTES'],
@@ -50,7 +50,7 @@ const componentsCopy = {
       overline: 'Component ecosystem',
       title: 'From control plane to runtime, components collaborate on one resource model.',
       intro:
-        'Control Plane defines the governance model, multi-protocol entry, and embedded Console; Pole Agent, Controller, Pole Sidecar, SDK, Observability, and Specification cover intelligent operations, access, execution, observability, and open contracts.',
+        'Control Plane (embedded Console; Limiter as an optional in-repo process) defines the governance model and multi-protocol entry; Rust SDK, Thin SDK, Controller, Pole Sidecar, and Specification cover Proxyless / Sidecar access, cluster sync, local data plane, and open contracts.',
     },
     directory: {
       columns: ['COMPONENT', 'RESPONSIBILITY', 'IMPLEMENTATION NOTES'],

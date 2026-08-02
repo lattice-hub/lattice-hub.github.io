@@ -3,7 +3,7 @@ title: Control Plane
 description: Core Lattice Hub control plane with embedded Console for discovery, configuration, governance, and AI Native registries.
 ---
 
-The Control Plane owns APIs, domain logic, caches, and storage, and exposes HTTP, gRPC, xDS, Nacos, Apollo, and Eureka-compatible entry points. Console ships in the same repository and deployment unit—it is no longer listed as a separate component.
+The Control Plane owns APIs, domain logic, caches, and storage, and exposes HTTP, gRPC, xDS, Nacos, Apollo, and Eureka-compatible entry points. Console and Limiter ship in the same repository and artifact—they are no longer listed as separate ecosystem components.
 
 ![deployment architecture](/diagrams/deployment-architecture.svg)
 
@@ -18,17 +18,20 @@ The Control Plane owns APIs, domain logic, caches, and storage, and exposes HTTP
 - Fine-grained authorization for management and client APIs.
 - Embedded Console: Fluent UI workbenches for resources, governance, auth, registries, system configuration, and metrics.
 
-## Embedded Console
+## Runtime modes
 
-Console is delivered with the Control Plane and can run via `--mode all|server|console`:
+Control Plane, Console, and Limiter ship in one repository. A unified artifact does not force a single process: production can still split `control-plane`, `console`, and `limiter-server` into separate workloads.
 
 | Mode | Purpose |
 | --- | --- |
-| `all` | Control-plane APIs + embedded Console (local default) |
-| `server` | APIs and protocol servers only |
+| `all` | Control Plane APIs + embedded Console (local default product entry) |
+| `full` | Control Plane + Limiter + Console in one process |
+| `control-plane` | Control Plane APIs and protocol servers only |
+| `limiter-server` | Limiter runtime only (default internal gRPC `8101`); prefer a separate process in production |
 | `console` | Console gateway only; reaches `poleServer.address` over the network |
+| `server` | Deprecated alias for `control-plane` |
 
-Step-by-step operations: [Using the Console](/en/docs/guides/console).
+CLI `--mode` overrides YAML `bootstrap.mode`. Step-by-step operations: [Using the Console](/en/docs/guides/console).
 
 ![Configuration groups](/images/console/config-groups.png)
 

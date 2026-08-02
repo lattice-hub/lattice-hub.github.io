@@ -120,10 +120,11 @@ const governanceCopy = {
         intro: '控制面提供确定的治理视图，各运行时按自身支持范围消费并执行；这里不把“协议兼容”夸大为“能力完全等价”。',
       },
       rows: [
-        { index: '01', title: 'Thin SDK', detail: '应用进程内读取可支持的治理视图。' },
-        { index: '02', title: 'Pole Sidecar', detail: '按当前组件支持范围消费治理视图，并为更多策略保留执行扩展点。' },
-        { index: '03', title: 'Proxy Mesh / Gateway', detail: '在网格或网关数据面消费已发布规则。' },
-        { index: '04', title: '协议客户端', detail: '通过兼容协议获得相应能力，但不承诺每种运行时覆盖全部九类规则。' },
+        { index: '01', title: 'Rust SDK', detail: 'Proxyless：应用进程内直连控制面，读取可支持的治理视图。' },
+        { index: '02', title: 'Thin SDK', detail: '多语言契约核心，把目标信封交给本地 Pole Sidecar 执行。' },
+        { index: '03', title: 'Pole Sidecar', detail: '按当前组件支持范围消费治理视图，并为更多策略保留执行扩展点。' },
+        { index: '04', title: 'Proxy Mesh / Gateway', detail: '在网格或网关数据面消费已发布规则。' },
+        { index: '05', title: '协议客户端', detail: '通过兼容协议获得相应能力，但不承诺每种运行时覆盖全部九类规则。' },
       ],
     },
     cta: {
@@ -206,10 +207,11 @@ const governanceCopy = {
         intro: 'The control plane delivers deterministic governance views; each runtime consumes and enforces within its supported scope—we do not equate protocol compatibility with full capability parity.',
       },
       rows: [
-        { index: '01', title: 'Thin SDK', detail: 'Read supported governance views inside the application process.' },
-        { index: '02', title: 'Pole Sidecar', detail: 'Consume governance views within current component support, with extension points for more policies.' },
-        { index: '03', title: 'Proxy Mesh / Gateway', detail: 'Consume published rules in mesh or gateway data planes.' },
-        { index: '04', title: 'Protocol clients', detail: 'Gain corresponding capability through compatible protocols without promising all nine rule types on every runtime.' },
+        { index: '01', title: 'Rust SDK', detail: 'Proxyless: consume supported governance views in-process against the control plane.' },
+        { index: '02', title: 'Thin SDK', detail: 'Multi-language contract cores that hand TargetEnvelope to the local Pole Sidecar.' },
+        { index: '03', title: 'Pole Sidecar', detail: 'Consume governance views within current component support, with extension points for more policies.' },
+        { index: '04', title: 'Proxy Mesh / Gateway', detail: 'Consume published rules in mesh or gateway data planes.' },
+        { index: '05', title: 'Protocol clients', detail: 'Gain corresponding capability through compatible protocols without promising all nine rule types on every runtime.' },
       ],
     },
     cta: {

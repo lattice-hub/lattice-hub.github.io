@@ -46,7 +46,7 @@ const architectureCopy = {
     metadata: {
       title: { absolute: '组件架构｜Lattice.Hub' },
       description:
-        '了解 Lattice.Hub 的 Control Plane、Kubernetes Controller、Rust SDK、Pole Sidecar、Limiter Server 与 Specification 如何协作，以及治理能力如何进入运行时执行。',
+        '了解 Lattice.Hub 的 Control Plane、Rust SDK、Thin SDK、Kubernetes Controller、Pole Sidecar 与 Specification 如何协作，以及治理能力如何进入运行时执行。',
     },
     hero: {
       eyebrow: 'ORGANIZATION ARCHITECTURE',
@@ -66,7 +66,7 @@ const architectureCopy = {
         index: '01 / COMPONENT MAP',
         title: '组件各司其职，控制面保持统一。',
         intro:
-          'Control Plane（内嵌 Console）与 Controller 从管理和集群侧接入；SDK、Limiter Server 与代理数据面从运行时侧接入；Specification 让各组件共享稳定契约。',
+          'Control Plane（内嵌 Console，Limiter 同仓可选进程）与 Controller 从管理和集群侧接入；Rust / Thin SDK 与代理数据面从运行时侧接入；Specification 让各组件共享稳定契约。',
       },
       diagramNote:
         '图中的实线表示当前明确的管理或协议路径，虚线表示同步、注入或仍按组件实现范围演进的接入边界。',
@@ -83,20 +83,13 @@ const architectureCopy = {
           index: '01',
           name: 'Control Plane',
           role: '核心控制面',
-          detail: '统一服务发现、配置、治理、权限、能力目录与多协议入口；内嵌 Console 提供管理与发布操作，不进入业务流量。',
+          detail:
+            '统一服务发现、配置、治理、权限、能力目录与多协议入口；内嵌 Console；Limiter 同仓以 limiter-server / full 模式可选独立部署，不进入业务流量同步热路径。',
           href: '/docs/components/control-plane',
           action: '了解组件',
         },
         {
           index: '02',
-          name: 'Kubernetes Controller',
-          role: '集群集成',
-          detail: '同步 Service、Endpoints、Namespace 与 ConfigMap，并按配置注入 Pole Sidecar、Java Agent 或 Envoy。',
-          href: '/docs/components/kubernetes-controller',
-          action: '了解组件',
-        },
-        {
-          index: '03',
           name: 'Rust SDK',
           role: 'Proxyless 客户端',
           detail: '为 Rust 应用提供轻量的 Proxyless 接入形态，并复用组织的开放协议契约。',
@@ -104,19 +97,28 @@ const architectureCopy = {
           action: '了解组件',
         },
         {
+          index: '03',
+          name: 'Thin SDK',
+          role: '多语言 Sidecar 契约客户端',
+          detail:
+            '为 Go、Java、Python 与 Node.js 提供 TargetEnvelope v1 契约核心，面向本地 Pole Sidecar；当前交付契约编码，端到端 listener 仍按实现范围演进。',
+          href: '/docs/components/thin-sdk',
+          action: '了解组件',
+        },
+        {
           index: '04',
-          name: 'Pole Sidecar',
-          role: '本地数据面',
-          detail: '当前是支持 HTTP、HTTP/2、gRPC-h2c 转发、前缀路由与轮询的轻量数据面骨架。',
-          href: '/docs/components/pingora-sidecar',
+          name: 'Kubernetes Controller',
+          role: '集群集成',
+          detail: '同步 Service、Endpoints、Namespace 与 ConfigMap，并按配置注入 Pole Sidecar、Java Agent 或 Envoy。',
+          href: '/docs/components/kubernetes-controller',
           action: '了解组件',
         },
         {
           index: '05',
-          name: 'Limiter Server',
-          role: '分布式限流运行时',
-          detail: '缓存并分配全局 Token，承接客户端配额获取与上报，是治理能力的专用运行时组件。',
-          href: 'https://github.com/lattice-hub/pole-limiter-server',
+          name: 'Pole Sidecar',
+          role: '本地数据面',
+          detail: '当前是支持 HTTP、HTTP/2、gRPC-h2c 转发、前缀路由与轮询的轻量数据面骨架。',
+          href: '/docs/components/pingora-sidecar',
           action: '了解组件',
         },
         {
@@ -134,7 +136,7 @@ const architectureCopy = {
         index: '03 / GOVERNANCE EXECUTION',
         title: '规则在控制面发布，在离流量最近的组件执行。',
         intro:
-          '平台工程师通过 Control Plane Console 或 API 确认作用域并发布规则。控制面将可消费治理视图交给对应运行时；SDK、专用运行时或代理数据面只执行自身当前支持的能力。',
+          '平台工程师通过 Control Plane Console 或 API 确认作用域并发布规则。控制面将可消费治理视图交给对应运行时；SDK、Limiter 运行时模块或代理数据面只执行自身当前支持的能力。',
       },
       notes: [
         { index: '01 / DEFINE', title: '管理面决定变化', detail: '调用方、被调方、规则内容与发布时间由平台工程师审阅，内嵌 Console 只是操作入口。' },
@@ -152,8 +154,8 @@ const architectureCopy = {
       tableHead: ['层级', '组件', '职责'],
       rows: [
         { layer: '管理面', names: 'Control Plane Console · Pole Agent', detail: '准备、审阅和决定变化；不执行真实服务请求。' },
-        { layer: '控制面', names: 'Lattice.Hub · Controller', detail: '管理统一资源视图，并连接 Kubernetes 等外部运行环境。' },
-        { layer: '执行面', names: 'Rust SDK · Limiter Server · Envoy / Gateway', detail: '在各自已支持的协议和能力范围内影响服务调用。' },
+        { layer: '控制面', names: 'Lattice.Hub · Controller · Limiter 模块', detail: '管理统一资源视图，连接 Kubernetes；Limiter 同仓可选独立进程承接分布式限流。' },
+        { layer: '执行面', names: 'Rust SDK · Thin SDK · Envoy / Gateway', detail: '在各自已支持的协议和能力范围内影响服务调用。' },
         { layer: '扩展数据面', names: 'Pole Sidecar', detail: '当前提供代理骨架；动态治理接入与更多执行能力按实现进度演进。' },
       ],
       actions: [
@@ -166,7 +168,7 @@ const architectureCopy = {
     metadata: {
       title: { absolute: 'Component Architecture | Lattice.Hub' },
       description:
-        'Learn how Lattice.Hub’s Control Plane, Kubernetes Controller, Rust SDK, Pole Sidecar, Limiter Server, and Specification collaborate—and how governance reaches runtime execution.',
+        'Learn how Lattice.Hub’s Control Plane, Rust SDK, Thin SDK, Kubernetes Controller, Pole Sidecar, and Specification collaborate—and how governance reaches runtime execution.',
     },
     hero: {
       eyebrow: 'ORGANIZATION ARCHITECTURE',
@@ -186,7 +188,7 @@ const architectureCopy = {
         index: '01 / COMPONENT MAP',
         title: 'Components stay distinct; the control plane stays unified.',
         intro:
-          'Control Plane (with embedded Console) and Controller connect from management and cluster sides; SDK, Limiter Server, and proxy data planes connect from runtime; Specification gives every component a stable contract.',
+          'Control Plane (embedded Console; Limiter as an optional in-repo process) and Controller connect from management and cluster sides; Rust / Thin SDKs and proxy data planes connect from runtime; Specification gives every component a stable contract.',
       },
       diagramNote:
         'Solid lines are current management or protocol paths; dashed lines are sync, injection, or integration boundaries still evolving with each component’s scope.',
@@ -203,20 +205,13 @@ const architectureCopy = {
           index: '01',
           name: 'Control Plane',
           role: 'Core control plane',
-          detail: 'Unifies discovery, configuration, governance, permissions, capability catalogs, and multi-protocol entry; embedded Console handles management and release without entering business traffic.',
+          detail:
+            'Unifies discovery, configuration, governance, permissions, capability catalogs, and multi-protocol entry; embeds Console; Limiter ships in-repo via limiter-server / full modes without entering the business-traffic hot path.',
           href: '/docs/components/control-plane',
           action: 'Learn about component',
         },
         {
           index: '02',
-          name: 'Kubernetes Controller',
-          role: 'Cluster integration',
-          detail: 'Syncs Service, Endpoints, Namespace, and ConfigMap; injects Pole Sidecar, Java Agent, or Envoy per configuration.',
-          href: '/docs/components/kubernetes-controller',
-          action: 'Learn about component',
-        },
-        {
-          index: '03',
           name: 'Rust SDK',
           role: 'Proxyless client',
           detail: 'Lightweight Proxyless access for Rust applications, reusing the organization’s open protocol contracts.',
@@ -224,19 +219,28 @@ const architectureCopy = {
           action: 'Learn about component',
         },
         {
+          index: '03',
+          name: 'Thin SDK',
+          role: 'Multi-language Sidecar contract client',
+          detail:
+            'TargetEnvelope v1 contract cores for Go, Java, Python, and Node.js aimed at local Pole Sidecar. Contract encoding ships today; end-to-end Sidecar listeners still evolve by implementation scope.',
+          href: '/docs/components/thin-sdk',
+          action: 'Learn about component',
+        },
+        {
           index: '04',
-          name: 'Pole Sidecar',
-          role: 'Local data plane',
-          detail: 'Currently a lightweight data-plane skeleton supporting HTTP, HTTP/2, gRPC-h2c forwarding, prefix routing, and round-robin.',
-          href: '/docs/components/pingora-sidecar',
+          name: 'Kubernetes Controller',
+          role: 'Cluster integration',
+          detail: 'Syncs Service, Endpoints, Namespace, and ConfigMap; injects Pole Sidecar, Java Agent, or Envoy per configuration.',
+          href: '/docs/components/kubernetes-controller',
           action: 'Learn about component',
         },
         {
           index: '05',
-          name: 'Limiter Server',
-          role: 'Distributed rate-limit runtime',
-          detail: 'Caches and allocates global tokens, handling client quota fetch and reporting—a dedicated runtime for governance capability.',
-          href: 'https://github.com/lattice-hub/pole-limiter-server',
+          name: 'Pole Sidecar',
+          role: 'Local data plane',
+          detail: 'Currently a lightweight data-plane skeleton supporting HTTP, HTTP/2, gRPC-h2c forwarding, prefix routing, and round-robin.',
+          href: '/docs/components/pingora-sidecar',
           action: 'Learn about component',
         },
         {
@@ -254,7 +258,7 @@ const architectureCopy = {
         index: '03 / GOVERNANCE EXECUTION',
         title: 'Rules publish on the control plane; enforcement sits closest to traffic.',
         intro:
-          'Platform engineers confirm scope and publish rules through Control Plane Console or API. The control plane hands consumable governance views to runtimes; SDK, dedicated runtimes, or proxy data planes enforce only what they support today.',
+          'Platform engineers confirm scope and publish rules through Control Plane Console or API. The control plane hands consumable governance views to runtimes; SDKs, the Limiter runtime module, or proxy data planes enforce only what they support today.',
       },
       notes: [
         { index: '01 / DEFINE', title: 'Management decides change', detail: 'Caller, callee, rule content, and release timing are reviewed by platform engineers; embedded Console is the entry point.' },
@@ -272,8 +276,8 @@ const architectureCopy = {
       tableHead: ['Layer', 'Components', 'Responsibility'],
       rows: [
         { layer: 'Management plane', names: 'Control Plane Console · Pole Agent', detail: 'Prepare, review, and decide change—does not execute real service requests.' },
-        { layer: 'Control plane', names: 'Lattice.Hub · Controller', detail: 'Owns the unified resource view and connects external runtime environments such as Kubernetes.' },
-        { layer: 'Execution plane', names: 'Rust SDK · Limiter Server · Envoy / Gateway', detail: 'Influence service calls within each component’s supported protocols and capabilities.' },
+        { layer: 'Control plane', names: 'Lattice.Hub · Controller · Limiter module', detail: 'Owns the unified resource view, connects Kubernetes, and optionally runs Limiter as a separate in-repo process for distributed rate limiting.' },
+        { layer: 'Execution plane', names: 'Rust SDK · Thin SDK · Envoy / Gateway', detail: 'Influence service calls within each component’s supported protocols and capabilities.' },
         { layer: 'Extended data plane', names: 'Pole Sidecar', detail: 'Currently a proxy skeleton; dynamic governance access and more execution capability evolve with implementation progress.' },
       ],
       actions: [

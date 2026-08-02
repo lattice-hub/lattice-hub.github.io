@@ -1,9 +1,9 @@
 import {
-  Activity,
   Braces,
   Cpu,
   FileText,
   GitFork,
+  Layers,
   Network,
   ServerCog,
   Workflow,
@@ -187,7 +187,7 @@ export const docsSections: ContentEntry[] = [
   {
     title: '组件生态',
     href: '/components',
-    summary: 'Control Plane、Controller、SDK、Pole Sidecar 与规范。',
+    summary: 'Control Plane、Rust / Thin SDK、Controller、Pole Sidecar 与规范。',
   },
   {
     title: '工程实践',
@@ -205,8 +205,9 @@ export const componentGroups: ComponentGroup[] = [
   {
     name: 'Control Plane',
     href: '/docs/components/control-plane',
-    summary: '统一服务发现、配置、治理、身份、Registry 与多协议接入；内嵌 Console 管理界面。',
-    details: ['管理 API、多协议入口与内嵌 Console', '向接入组件提供统一视图'],
+    summary:
+      '统一服务发现、配置、治理、身份、Registry 与多协议接入；内嵌 Console；Limiter 以同仓可选进程模式交付。',
+    details: ['管理 API、多协议入口与内嵌 Console', 'Limiter：limiter-server / full 模式'],
     icon: ServerCog,
   },
   {
@@ -215,6 +216,14 @@ export const componentGroups: ComponentGroup[] = [
     summary: '面向 Rust 应用的轻量 Proxyless Service Governance 接入。',
     details: ['crate: pole_rust = "0.2.0"', 'Rust >= 1.63.0'],
     icon: Braces,
+  },
+  {
+    name: 'Thin SDK',
+    href: '/docs/components/thin-sdk',
+    summary:
+      '面向 Go、Java、Python 与 Node.js 的 Thin SDK 核心，按 TargetEnvelope v1 编码本地 Sidecar 目标信封。',
+    details: ['Go / Java / Python / Node.js', '契约核心已交付；Sidecar 端到端仍演进'],
+    icon: Layers,
   },
   {
     name: 'Kubernetes Controller',
@@ -229,13 +238,6 @@ export const componentGroups: ComponentGroup[] = [
     summary: '基于 Pingora 的轻量数据面骨架，支持 HTTP、HTTP/2 与 gRPC-h2c 转发。',
     details: ['前缀路由与轮询负载均衡', '动态治理接入仍按路线演进'],
     icon: Network,
-  },
-  {
-    name: 'Limiter Server',
-    href: 'https://github.com/lattice-hub/pole-limiter-server',
-    summary: '分布式限流专用运行时，缓存并分配全局 Token，承接客户端配额获取与上报。',
-    details: ['全局 Token 分配', '注册中心自注册'],
-    icon: Activity,
   },
   {
     name: 'Specification',
@@ -350,12 +352,18 @@ const productTopicsEn: LocalizedProductTopic[] = [
 const componentGroupsEn: LocalizedComponentGroup[] = componentGroups.map((group, index) => {
   const english = [
     {
-      summary: 'Unified discovery, configuration, governance, identity, Registry, and multi-protocol access; embedded Console management UI.',
-      details: ['Management API, multi-protocol entry, and embedded Console', 'Provides a unified view to connected components'],
+      summary:
+        'Unified discovery, configuration, governance, identity, Registry, and multi-protocol access; embedded Console; Limiter ships in the same artifact as an optional process mode.',
+      details: ['Management API, multi-protocol entry, and embedded Console', 'Limiter: limiter-server / full modes'],
     },
     {
       summary: 'Lightweight Proxyless Service Governance access for Rust applications.',
       details: ['crate: pole_rust = "0.2.0"', 'Rust >= 1.63.0'],
+    },
+    {
+      summary:
+        'Framework-independent Thin SDK cores for Go, Java, Python, and Node.js that encode TargetEnvelope v1 for the local Pole Sidecar.',
+      details: ['Go / Java / Python / Node.js', 'Contract cores ship today; Sidecar e2e still evolving'],
     },
     {
       summary: 'Connects Kubernetes to the control plane; syncs Service, Endpoints, Namespace, and ConfigMap.',
@@ -364,10 +372,6 @@ const componentGroupsEn: LocalizedComponentGroup[] = componentGroups.map((group,
     {
       summary: 'Pingora-based lightweight data-plane skeleton supporting HTTP, HTTP/2, and gRPC-h2c forwarding.',
       details: ['Prefix routing and round-robin load balancing', 'Dynamic governance access still evolving on the roadmap'],
-    },
-    {
-      summary: 'Dedicated distributed rate-limit runtime that caches and allocates global tokens for client quota fetch and reporting.',
-      details: ['Global token allocation', 'Self-registration with the registry'],
     },
     {
       summary: 'Open service governance and protobuf protocol definitions covering governance, security, and MCP.',

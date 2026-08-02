@@ -104,7 +104,7 @@ const homeCopy = {
       items: [
         { index: '01 / PROTOCOLS', label: 'Polaris、Nacos、Apollo、Eureka 与 Envoy xDS v3' },
         { index: '02 / RELEASE', label: '草稿、版本、灰度、发布与回滚' },
-        { index: '03 / RUNTIME', label: 'Rust SDK、Pole Sidecar 与 Proxy Mesh / Gateway' },
+        { index: '03 / RUNTIME', label: 'Rust / Thin SDK、Pole Sidecar 与 Proxy Mesh / Gateway' },
       ],
     },
     evidence: {
@@ -177,7 +177,7 @@ const homeCopy = {
         },
         {
           title: '运行时视图',
-          detail: 'Rust SDK、Pole Sidecar 与 Proxy Mesh / Gateway 读取版本化治理视图。',
+          detail: 'Rust SDK、Thin SDK、Pole Sidecar 与 Proxy Mesh / Gateway 读取或承载版本化治理视图。',
         },
         {
           title: '能力目录',
@@ -246,7 +246,7 @@ const homeCopy = {
       items: [
         { index: '01 / PROTOCOLS', label: 'Polaris, Nacos, Apollo, Eureka, and Envoy xDS v3' },
         { index: '02 / RELEASE', label: 'Draft, version, canary, release, and rollback' },
-        { index: '03 / RUNTIME', label: 'Rust SDK, Pole Sidecar, and Proxy Mesh / Gateway' },
+        { index: '03 / RUNTIME', label: 'Rust / Thin SDK, Pole Sidecar, and Proxy Mesh / Gateway' },
       ],
     },
     evidence: {
@@ -319,7 +319,7 @@ const homeCopy = {
         },
         {
           title: 'Runtime view',
-          detail: 'Rust SDK, Pole Sidecar, and Proxy Mesh / Gateway consume versioned governance views.',
+          detail: 'Rust SDK, Thin SDK, Pole Sidecar, and Proxy Mesh / Gateway consume or carry versioned governance views.',
         },
         {
           title: 'Capability catalog',
