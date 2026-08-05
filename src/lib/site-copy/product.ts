@@ -113,7 +113,7 @@ const productCopy = {
           '能力边界各自清晰，并共享运行环境与身份上下文；配置和治理进一步共享版本化发布语义。操作者因此能从一次变化追溯到它的作用域和运行状态。',
       },
       capabilities: [
-        { index: '01 / ENVIRONMENT', title: '运行环境', detail: 'Namespace 承载同一逻辑资源的开发、预发与生产实例，并隔离各自的发布状态。' },
+        { index: '01 / ENVIRONMENT', title: '运行环境', detail: 'Namespace 表示环境，不表示租户。同一逻辑资源在开发、预发与生产各自隔离发布状态。' },
         { index: '02 / DISCOVERY', title: '服务发现', detail: '统一多协议注册、发现、心跳与实例视图，不要求客户端迁移到单一协议。' },
         { index: '03 / CONFIG', title: '配置中心', detail: '以编辑、版本、发布与回滚区分“正在改什么”和“运行时正在使用什么”。' },
         { index: '04 / GOVERNANCE', title: '服务治理', detail: '九类治理规则共享作用域、版本与发布语义，避免不同策略各自为政。' },
@@ -233,7 +233,7 @@ const productCopy = {
           'Capability boundaries stay distinct while sharing runtime environment and identity context; configuration and governance further share versioned release semantics. Operators can trace a change back to its scope and runtime state.',
       },
       capabilities: [
-        { index: '01 / ENVIRONMENT', title: 'Runtime environment', detail: 'Namespace holds dev, staging, and production instances of the same logical resource and isolates their release state.' },
+        { index: '01 / ENVIRONMENT', title: 'Runtime environment', detail: 'Namespace means environment—not tenant. Dev, staging, and production isolate release state for the same logical resource.' },
         { index: '02 / DISCOVERY', title: 'Service discovery', detail: 'Unify multi-protocol registration, discovery, heartbeats, and instance views without forcing a single client protocol.' },
         { index: '03 / CONFIG', title: 'Configuration center', detail: 'Separate “what is being edited” from “what runtime is using” through edit, version, release, and rollback.' },
         { index: '04 / GOVERNANCE', title: 'Service governance', detail: 'Nine governance rule types share scope, version, and release semantics instead of isolated policy silos.' },

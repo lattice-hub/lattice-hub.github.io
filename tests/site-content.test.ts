@@ -22,8 +22,7 @@ import {
   localizeHref,
 } from '../src/lib/site-locale';
 import { getSiteUi } from '../src/lib/site-ui';
-import { getHomeCopy } from '../src/lib/site-copy';
-import { getHomeCopy } from '../src/lib/site-copy/home';
+import { getHomeCopy, getProductCopy } from '../src/lib/site-copy';
 
 function collectMdxRelativePaths(root: string, current = ''): string[] {
   const directory = current ? `${root}/${current}` : root;
@@ -80,7 +79,9 @@ test('site language switch mirrors marketing pages and docs deep links', () => {
   assert.equal(enUi.githubAria.includes('GitHub'), true);
   assert.doesNotMatch(enUi.githubAria, /\p{Script=Han}/u);
   assert.doesNotMatch(getHomeCopy('en').hero.title, /\p{Script=Han}/u);
-  assert.match(getHomeCopy('zh-CN').hero.title, /把服务变化/);
+  assert.match(getHomeCopy('zh-CN').hero.title, /AI Native 服务治理/);
+  assert.doesNotMatch(getProductCopy('en').hero.title, /\p{Script=Han}/u);
+  assert.match(getProductCopy('zh-CN').hero.title, /一个控制面/);
 
   for (const path of [
     'src/app/en/page.tsx',
@@ -93,6 +94,9 @@ test('site language switch mirrors marketing pages and docs deep links', () => {
   ]) {
     assert.ok(existsSync(path), `missing English marketing route: ${path}`);
   }
+
+  assert.match(readFileSync('src/app/page.tsx', 'utf8'), /HomePageView/);
+  assert.match(readFileSync('src/app/product/page.tsx', 'utf8'), /ProductPageView/);
 });
 
 test('site navigation exposes real site-level destinations', () => {
@@ -284,7 +288,7 @@ test('docs brand navigation returns to the website homepage', () => {
   assert.doesNotMatch(docsLayout, /nav=\{\{[\s\S]*url:\s*getDocsUrl\(locale\)/);
 });
 
-test('homepage uses the selected B+A direction and real product evidence', () => {
+test('homepage keeps architecture hero, Swiss-grid colors, and real product evidence', () => {
   const homepage = readFileSync('src/components/site/pages/HomePageView.tsx', 'utf8');
   const homeCopy = getHomeCopy('zh-CN');
   const hero = readFileSync('src/components/site/HomeHero.tsx', 'utf8');
@@ -297,10 +301,13 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
     'utf8',
   );
   const homeCss = readFileSync('src/components/site/HomePage.module.css', 'utf8');
+  const layout = readFileSync('src/app/layout.tsx', 'utf8');
   const globalCss = readFileSync('src/app/global.css', 'utf8');
 
-  assert.equal(homeCopy.hero.title, '把服务变化，');
-  assert.equal(homeCopy.hero.titleAccent, '收进一个控制面。');
+  assert.equal(homeCopy.hero.title, 'AI Native 服务治理，');
+  assert.equal(homeCopy.hero.titleAccent, '一个控制面。');
+  assert.match(homeCopy.hero.title, /AI Native/);
+  assert.match(homeCopy.hero.eyebrow, /Pole control plane/);
   assert.match(hero, /getHomeCopy\(locale\)/);
   assert.match(hero, /<ArchitectureFlow locale=\{locale\} \/>/);
   assert.doesNotMatch(hero, /console-platform-metrics\.webp/);
@@ -312,6 +319,10 @@ test('homepage uses the selected B+A direction and real product evidence', () =>
   assert.match(homeCopy.systemStrip.items[2].label, /Rust \/ Thin SDK、Pole Sidecar 与 Proxy Mesh \/ Gateway/);
   assert.match(homeCopy.scope.items[2].detail, /Thin SDK/);
   assert.match(homepage, /getGovernanceDomains\(locale\)/);
+  assert.match(globalCss, /--page:\s*#fafafa/);
+  assert.match(globalCss, /--font-plex-sans/);
+  assert.match(layout, /IBM_Plex_Sans/);
+  assert.doesNotMatch(globalCss, /#f2f0eb/);
   assert.doesNotMatch(`${hero}\n${homepage}`, /console-preview|agent-workflow|fact-rail|get_config_file/);
   assert.doesNotMatch(`${hero}\n${homepage}`, />24<|>186<|22 正常|3 隔离|canary 20%/);
   assert.doesNotMatch(homepage, /负载均衡、超时、重试、节点熔断、故障转移/);

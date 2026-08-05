@@ -43,19 +43,19 @@ nextjs-portal,
 }
 
 .site-shell {
-  --page: #f2f0eb;
+  --page: #fafafa;
   --surface: #ffffff;
-  --surface-subtle: #e9e6df;
-  --ink: #202120;
-  --text: #242424;
-  --text-secondary: #616161;
-  --text-tertiary: #8a8886;
-  --text-muted: #6b6c69;
-  --text-soft: #595a57;
-  --border: #d9d9d9;
-  --border-subtle: #e7e7e7;
-  --border-strong: #d4d1ca;
-  --border-mid: #c8c6c0;
+  --surface-subtle: #f0f0f0;
+  --ink: #111111;
+  --text: #111111;
+  --text-secondary: #5c5c5c;
+  --text-tertiary: #7a7a7a;
+  --text-muted: #5c5c5c;
+  --text-soft: #5c5c5c;
+  --border: #d0d0d0;
+  --border-subtle: #e4e4e4;
+  --border-strong: #c4c4c4;
+  --border-mid: #c8c8c8;
   --brand: #0f6cbd;
   --brand-hover: #115ea3;
   --brand-deep: #0c3b5e;
@@ -63,39 +63,39 @@ nextjs-portal,
   --brand-bright: #72b5ef;
   --on-brand: #ffffff;
   --on-ink: #ffffff;
-  --panel-dark: #1d2022;
-  --panel-dark-elevated: #25292c;
-  --panel-dark-text: #f5f4ef;
-  --panel-dark-heading: #f7f6f1;
-  --panel-dark-muted: #aeb3b5;
-  --panel-dark-muted-alt: #aeb4b6;
-  --panel-dark-soft: #b9bdc0;
-  --panel-dark-soft-alt: #c1c5c7;
-  --panel-dark-border: #464a4d;
-  --panel-dark-border-alt: #454a4d;
-  --panel-dark-border-strong: #3c4042;
-  --frame-border: rgba(32, 33, 32, 0.14);
-  --shadow: rgba(35, 38, 39, 0.12);
-  --shadow-soft: rgba(35, 38, 39, 0.06);
+  --panel-dark: #141618;
+  --panel-dark-elevated: #1c1f22;
+  --panel-dark-text: #f5f5f5;
+  --panel-dark-heading: #fafafa;
+  --panel-dark-muted: #a8adb0;
+  --panel-dark-muted-alt: #a8adb0;
+  --panel-dark-soft: #b4b8bb;
+  --panel-dark-soft-alt: #bdbfc2;
+  --panel-dark-border: #3a3e42;
+  --panel-dark-border-alt: #3a3e42;
+  --panel-dark-border-strong: #32363a;
+  --frame-border: rgba(17, 17, 17, 0.12);
+  --shadow: rgba(17, 17, 17, 0.1);
+  --shadow-soft: rgba(17, 17, 17, 0.05);
   --success: #107c10;
   --warning: #8a4f0a;
   --danger: #c50f1f;
-  --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --mono: var(--font-plex-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --container: 1240px;
   --gutter: 32px;
   min-height: 100dvh;
   overflow-x: clip;
   background: var(--page);
   color: var(--text);
-  font-family: "Segoe UI Variable", "Segoe UI", -apple-system, BlinkMacSystemFont, "Noto Sans SC", sans-serif;
+  font-family: var(--font-plex-sans), "Noto Sans SC", system-ui, sans-serif;
 }
 
 html.dark .site-shell {
-  --page: #121314;
-  --surface: #1a1c1e;
-  --surface-subtle: #222526;
-  --ink: #f2f1ec;
-  --text: #ecebe6;
+  --page: #111213;
+  --surface: #181a1c;
+  --surface-subtle: #202325;
+  --ink: #f5f5f5;
+  --text: #f0f0f0;
   --text-secondary: #a8aba9;
   --text-tertiary: #7d817e;
   --text-muted: #a8aba9;
@@ -212,8 +212,8 @@ html.dark .site-shell img:not([src*="lattice-hub-logo"]) {
 
 .brand-name {
   font-size: 17px;
-  font-weight: 650;
-  letter-spacing: -.025em;
+  font-weight: 600;
+  letter-spacing: -.02em;
 }
 
 .nav-links {

@@ -88,14 +88,14 @@ const homeCopy = {
     metadata: {
       title: { absolute: 'Lattice.Hub 服务治理控制面' },
       description:
-        'Lattice.Hub 将运行环境、服务发现、配置、治理、身份与 AI 能力目录收进同一个控制面。变更先形成版本，再由确定性发布流程进入运行时。',
+        'Lattice.Hub 是面向服务与 Agent 的 AI Native 服务治理控制面，统一运行环境、服务发现、配置、治理、身份与 AI 能力目录。变更先形成版本，再进入运行时。',
     },
     hero: {
-      eyebrow: 'Service governance control plane',
-      title: '把服务变化，',
-      titleAccent: '收进一个控制面。',
+      eyebrow: 'Pole control plane',
+      title: 'AI Native 服务治理，',
+      titleAccent: '一个控制面。',
       lede:
-        'Lattice.Hub 让 AI 服务的路由、限流、熔断、镜像与 Mock 共享同一治理视图。Pole Agent 的 Prompt 受控发布；模型凭据由 Pole Secret 仅在运行时解析，不进入浏览器、日志或模型上下文。',
+        '面向服务与 Agent 的云原生控制面。统一运行环境、发现、配置、治理与 AI 能力目录；变更先成版本再发布，SDK、Sidecar 与 Gateway 共享同一治理语义。',
       primary: { href: '/docs', label: '开始阅读文档' },
       secondary: { href: '/architecture', label: '查看完整架构' },
     },
@@ -112,11 +112,11 @@ const homeCopy = {
       title: '控制面应该可见，',
       titleBreak: '而不是靠想象。',
       intro:
-        '当前 Console 将控制面组件、接口指标与延迟分布放进同一视图，帮助操作者检查系统状态和变化影响。它是控制面自身的观测入口，不是独立的全链路观测平台。',
+        'Console 将控制面组件、接口指标与延迟分布放进同一视图，帮助操作者检查系统自身状态。它是控制面观测入口，不是独立的全链路观测平台。',
       imageAlt: 'Lattice.Hub Console 平台监控完整真实界面',
       captions: [
         { label: 'A', text: '当前 Console 真实界面 · Platform Metrics。' },
-        { label: 'B', text: '界面只证明产品能力存在，不把本地测试数据描述成线上运行指标。' },
+        { label: 'B', text: '界面证明能力存在；不把示意数字描述成线上运行指标。' },
       ],
       action: { href: '/product', label: '了解完整产品' },
     },
@@ -127,7 +127,7 @@ const homeCopy = {
       stepsAriaLabel: '发布语义',
       steps: [
         { index: '01 / DRAFT', title: '保存草稿', detail: '先记录变化，不直接改变运行态。' },
-        { index: '02 / VERSION', title: '形成版本', detail: '配置生成不可变发布快照，治理规则保留版本记录。' },
+        { index: '02 / VERSION', title: '形成版本', detail: '配置生成不可变发布快照；治理规则保留版本记录。' },
         { index: '03 / RELEASE', title: '受控发布', detail: '通过灰度或全量流程，将已确认版本送入运行时。' },
         { index: '04 / ROLLBACK', title: '历史回滚', detail: '出现偏差时返回已知版本，而不是重新猜测旧状态。' },
       ],
@@ -150,7 +150,7 @@ const homeCopy = {
       title: 'Agent 准备变更，',
       titleBreak: '人决定发布。',
       copy:
-        '当前 Pole Agent 可在登录用户权限内读取命名空间、MCP Registry 和配置文件。对已有配置文件的更新，它会生成不可变提案与差异预览；确认后只保存编辑态草稿。',
+        'Pole Agent 可在登录用户权限内读取命名空间、MCP Registry 和配置文件，生成不可变提案与差异预览；确认后只保存编辑态草稿。',
       action: { href: '/agent', label: '了解 Pole Agent' },
       boundariesAriaLabel: 'Pole Agent 权限边界',
       boundaries: [
@@ -160,7 +160,7 @@ const homeCopy = {
         { index: '04', action: '保存编辑态草稿', owner: 'Agent' },
       ],
       note:
-        '发布、回滚与删除仍由确定性的产品流程承担。当前写路径仅覆盖已有配置文件更新；治理规则写入、新建资源、流式输出与服务端会话持久化仍未覆盖。',
+        '发布、回滚与删除仍由确定性产品流程承担。当前写路径仅覆盖已有配置文件更新；治理规则写入、新建资源等仍未覆盖。',
     },
     scope: {
       kicker: '05 / One environment',
@@ -169,7 +169,7 @@ const homeCopy = {
       items: [
         {
           title: '运行环境',
-          detail: 'Namespace 组织服务、配置与治理资源，但不冒充租户或团队空间。',
+          detail: 'Namespace 表示环境，不表示租户；服务、配置与治理按环境隔离发布状态。',
         },
         {
           title: '协议接入',
@@ -230,14 +230,14 @@ const homeCopy = {
     metadata: {
       title: { absolute: 'Lattice.Hub Service Governance Control Plane' },
       description:
-        'Lattice.Hub unifies runtime environments, service discovery, configuration, governance, identity, and AI capability catalogs in one control plane. Changes become versions first, then enter runtime through a deterministic release flow.',
+        'Lattice.Hub is an AI Native service governance control plane for services and Agents—unifying runtime environments, discovery, configuration, governance, identity, and AI capability catalogs. Changes become versions first, then enter runtime.',
     },
     hero: {
-      eyebrow: 'Service governance control plane',
-      title: 'Bring service change',
-      titleAccent: 'into one control plane.',
+      eyebrow: 'Pole control plane',
+      title: 'AI Native service governance.',
+      titleAccent: 'One control plane.',
       lede:
-        'Lattice.Hub gives AI services a shared governance view for routing, rate limiting, circuit breaking, mirroring, and Mock. Pole Agent publishes Prompt changes under control; model credentials are resolved by Pole Secret at runtime only—never in the browser, logs, or model context.',
+        'A cloud-native control plane for services and Agents. Unify runtime environments, discovery, configuration, governance, and AI capability catalogs; changes become versions before release, and SDKs, Sidecar, and Gateway share the same governance semantics.',
       primary: { href: '/docs', label: 'Read the docs' },
       secondary: { href: '/architecture', label: 'View full architecture' },
     },
@@ -254,11 +254,11 @@ const homeCopy = {
       title: 'The control plane should be visible,',
       titleBreak: 'not imagined.',
       intro:
-        'The Console puts control-plane components, API metrics, and latency distributions in one view so operators can inspect system health and change impact. It is the control plane’s own observability entry—not a standalone full-stack APM platform.',
+        'The Console puts control-plane components, API metrics, and latency distributions in one view so operators can inspect the system itself. It is the control plane’s own observability entry—not a standalone full-stack APM platform.',
       imageAlt: 'Full Lattice.Hub Console platform metrics screen',
       captions: [
         { label: 'A', text: 'Current Console screen · Platform Metrics.' },
-        { label: 'B', text: 'Screens prove capability exists; local test data is not described as production metrics.' },
+        { label: 'B', text: 'Screens prove capability exists; illustrative numbers are not production metrics.' },
       ],
       action: { href: '/product', label: 'Explore the full product' },
     },
@@ -292,7 +292,7 @@ const homeCopy = {
       title: 'Agent prepares change;',
       titleBreak: 'humans decide release.',
       copy:
-        'Pole Agent reads Namespaces, the MCP Registry, and configuration files within the signed-in user’s permissions. For updates to existing config files, it produces immutable proposals and diff previews; after confirmation it saves edit-state drafts only.',
+        'Within signed-in user permissions, Pole Agent reads Namespaces, the MCP Registry, and configuration files, produces immutable proposals and diff previews, and after confirmation saves edit-state drafts only.',
       action: { href: '/agent', label: 'Learn about Pole Agent' },
       boundariesAriaLabel: 'Pole Agent permission boundary',
       boundaries: [
@@ -302,7 +302,7 @@ const homeCopy = {
         { index: '04', action: 'Save edit-state draft', owner: 'Agent' },
       ],
       note:
-        'Release, rollback, and delete remain in deterministic product flows. The current write path covers updates to existing config files only; governance writes, new resources, streaming output, and server-side session persistence are not covered yet.',
+        'Release, rollback, and delete remain in deterministic product flows. The current write path covers updates to existing config files only; governance writes and new resources are not covered yet.',
     },
     scope: {
       kicker: '05 / One environment',
@@ -311,7 +311,7 @@ const homeCopy = {
       items: [
         {
           title: 'Runtime environment',
-          detail: 'Namespace organizes services, configuration, and governance resources—it is an environment, not a tenant or team space.',
+          detail: 'Namespace means environment—not tenant. Services, configuration, and governance isolate release state per environment.',
         },
         {
           title: 'Protocol access',
