@@ -78,10 +78,12 @@ test('site language switch mirrors marketing pages and docs deep links', () => {
   assert.equal(zhUi.githubAria.includes('GitHub'), true);
   assert.equal(enUi.githubAria.includes('GitHub'), true);
   assert.doesNotMatch(enUi.githubAria, /\p{Script=Han}/u);
-  assert.doesNotMatch(getHomeCopy('en').hero.title, /\p{Script=Han}/u);
-  assert.match(getHomeCopy('zh-CN').hero.title, /AI Native 服务治理/);
   assert.doesNotMatch(getProductCopy('en').hero.title, /\p{Script=Han}/u);
-  assert.match(getProductCopy('zh-CN').hero.title, /一个控制面/);
+  assert.match(getProductCopy('zh-CN').hero.title, /AI Native 服务治理/);
+  assert.deepEqual(
+    zhUi.nav.map((item) => item.href),
+    ['/', '/components', '/docs'],
+  );
 
   for (const path of [
     'src/app/en/page.tsx',
@@ -95,32 +97,33 @@ test('site language switch mirrors marketing pages and docs deep links', () => {
     assert.ok(existsSync(path), `missing English marketing route: ${path}`);
   }
 
-  assert.match(readFileSync('src/app/page.tsx', 'utf8'), /HomePageView/);
+  assert.match(readFileSync('src/app/page.tsx', 'utf8'), /ProductPageView/);
+  assert.match(readFileSync('src/app/page.tsx', 'utf8'), /showArchitecture/);
   assert.match(readFileSync('src/app/product/page.tsx', 'utf8'), /ProductPageView/);
+  assert.doesNotMatch(readFileSync('src/app/product/page.tsx', 'utf8'), /ProductRedirect|router\.replace/);
 });
 
 test('site navigation exposes real site-level destinations', () => {
   assert.deepEqual(
     siteNav.map((item) => item.href),
-    ['/product', '/components', '/docs'],
+    ['/', '/components', '/docs'],
   );
   assert.ok(siteNav.every((item) => item.href.startsWith('/') || item.href.startsWith('https://')));
   assert.deepEqual(
     siteFooterNav.map((item) => item.href),
-    ['/product', '/components', '/docs', 'https://github.com/lattice-hub'],
+    ['/', '/components', '/docs', 'https://github.com/lattice-hub'],
   );
   assert.deepEqual(productTopics.map((item) => item.href), ['/governance', '/agent', '/compare']);
-  assert.equal(isSiteNavActive('/product', '/product'), true);
-  assert.equal(isSiteNavActive('/product/', '/product'), true);
-  assert.equal(isSiteNavActive('/product/runtime', '/product'), true);
-  assert.equal(isSiteNavActive('/governance', '/product'), true);
-  assert.equal(isSiteNavActive('/governance/', '/product'), true);
-  assert.equal(isSiteNavActive('/agent', '/product'), true);
-  assert.equal(isSiteNavActive('/compare', '/product'), true);
-  assert.equal(isSiteNavActive('/compare/', '/product'), true);
-  assert.equal(isSiteNavActive('/architecture', '/product'), true);
-  assert.equal(isSiteNavActive('/components', '/product'), false);
-  assert.equal(isSiteNavActive('/product', 'https://github.com/lattice-hub/pole-control-plane'), false);
+  assert.equal(isSiteNavActive('/', '/'), true);
+  assert.equal(isSiteNavActive('/en', '/'), true);
+  assert.equal(isSiteNavActive('/product', '/'), true);
+  assert.equal(isSiteNavActive('/governance', '/'), true);
+  assert.equal(isSiteNavActive('/agent', '/'), true);
+  assert.equal(isSiteNavActive('/compare', '/'), true);
+  assert.equal(isSiteNavActive('/architecture', '/'), true);
+  assert.equal(isSiteNavActive('/components', '/'), false);
+  assert.equal(isSiteNavActive('/components', '/components'), true);
+  assert.equal(isSiteNavActive('/', 'https://github.com/lattice-hub/pole-control-plane'), false);
   assert.equal(isSiteNavActive('/docs', '/docs'), true);
   assert.equal(isSiteNavActive('/docs/developers', '/docs'), true);
   assert.equal(isSiteNavActive('/en/docs', '/docs'), true);
@@ -133,9 +136,10 @@ test('product topics stay available without occupying primary navigation', () =>
   const siteUi = readFileSync('src/lib/site-ui.ts', 'utf8');
   const homepage = readFileSync('src/components/site/pages/HomePageView.tsx', 'utf8');
   const productPage = readFileSync('src/components/site/pages/ProductPageView.tsx', 'utf8');
+  const landingPage = readFileSync('src/app/page.tsx', 'utf8');
   const interiorFooter = readFileSync('src/components/site/InteriorPage.tsx', 'utf8');
   const pages = [
-    ['src/components/site/pages/ProductPageView.tsx', 'src/lib/site-copy/product.ts', /一个控制面，/, /console-platform-metrics\.webp/],
+    ['src/components/site/pages/ProductPageView.tsx', 'src/lib/site-copy/product.ts', /AI Native 服务治理，/, /ProductEvidenceCarousel/],
     ['src/components/site/pages/GovernancePageView.tsx', 'src/lib/site-copy/governance.ts', /九类规则，/, /getGovernanceDomains/],
     ['src/components/site/pages/AgentPageView.tsx', 'src/lib/site-copy/agent.ts', /让 Agent 理解变更，/, /console-agent-readiness\.webp/],
     ['src/components/site/pages/ComparePageView.tsx', 'src/lib/site-copy/compare.ts', /比较产品之前，/, /copy\.comparisons\.items\.map/],
@@ -153,6 +157,10 @@ test('product topics stay available without occupying primary navigation', () =>
   assert.match(header, /aria-live="polite"/);
   assert.doesNotMatch(header, /href="\/experience"/);
   assert.doesNotMatch(JSON.stringify(siteNav), /governance|agent|GitHub/);
+  assert.match(JSON.stringify(siteNav), /"href":"\/"/);
+  assert.match(landingPage, /ProductPageView/);
+  assert.match(landingPage, /showArchitecture/);
+  assert.match(productPage, /ArchitectureFlow/);
 
   for (const [file, copyFile, heading, evidence] of pages) {
     assert.ok(existsSync(file), `missing dedicated primary navigation page: ${file}`);
@@ -165,12 +173,8 @@ test('product topics stay available without occupying primary navigation', () =>
   }
 
   assert.match(homepage, /localizeHref\(copy\.evidence\.action\.href, locale\)/);
-  assert.match(homepage, /localizeHref\(copy\.governance\.action\.href, locale\)/);
-  assert.match(homepage, /localizeHref\(copy\.agent\.action\.href, locale\)/);
-  assert.match(homepage, /localizeHref\(copy\.comparison\.action\.href, locale\)/);
   assert.match(productPage, /productTopics\.map/);
   assert.match(productPage, /localizeHref\(topic\.href, locale\)/);
-  assert.match(homepage, /getSiteFooterNav\(locale\)/);
   assert.match(interiorFooter, /getSiteFooterNav\(locale\)/);
   assert.doesNotMatch(`${homepage}\n${interiorFooter}`, /href="\/#(?:capabilities|governance|agent)"/);
 });
@@ -257,6 +261,9 @@ test('component matrix covers the Lattice Hub ecosystem', () => {
   assert.doesNotMatch(JSON.stringify(componentGroups), /Limiter Server|pole-limiter-server/);
   assert.match(componentGroups.find((item) => item.name === 'Control Plane')?.summary ?? '', /Limiter/);
   assert.match(componentGroups.find((item) => item.name === 'Thin SDK')?.summary ?? '', /Go/);
+  assert.match(componentGroups.find((item) => item.name === 'Thin SDK')?.summary ?? '', /C\+\+/);
+  assert.match(componentGroups.find((item) => item.name === 'Thin SDK')?.summary ?? '', /C#/);
+  assert.match(componentGroups.find((item) => item.name === 'Thin SDK')?.details.join(' ') ?? '', /C\+\+ \/ C#/);
 });
 
 test('docs routing exposes the five PRD landing destinations', () => {
@@ -288,10 +295,10 @@ test('docs brand navigation returns to the website homepage', () => {
   assert.doesNotMatch(docsLayout, /nav=\{\{[\s\S]*url:\s*getDocsUrl\(locale\)/);
 });
 
-test('homepage keeps architecture hero, Swiss-grid colors, and real product evidence', () => {
-  const homepage = readFileSync('src/components/site/pages/HomePageView.tsx', 'utf8');
+test('landing uses product narrative, architecture band, Swiss-grid colors, and real evidence', () => {
+  const landing = readFileSync('src/components/site/pages/ProductPageView.tsx', 'utf8');
+  const productCopy = getProductCopy('zh-CN');
   const homeCopy = getHomeCopy('zh-CN');
-  const hero = readFileSync('src/components/site/HomeHero.tsx', 'utf8');
   const architectureFlow = readFileSync('src/components/site/ArchitectureFlow.tsx', 'utf8');
   const architectureDiagrams = readFileSync('src/components/site/ArchitectureDiagrams.tsx', 'utf8');
   const architectureLocale = readFileSync('src/components/site/architectureLocale.ts', 'utf8');
@@ -300,34 +307,30 @@ test('homepage keeps architecture hero, Swiss-grid colors, and real product evid
     'src/components/site/ArchitectureDiagrams.module.css',
     'utf8',
   );
-  const homeCss = readFileSync('src/components/site/HomePage.module.css', 'utf8');
   const layout = readFileSync('src/app/layout.tsx', 'utf8');
   const globalCss = readFileSync('src/app/global.css', 'utf8');
 
-  assert.equal(homeCopy.hero.title, 'AI Native 服务治理，');
-  assert.equal(homeCopy.hero.titleAccent, '一个控制面。');
-  assert.match(homeCopy.hero.title, /AI Native/);
-  assert.match(homeCopy.hero.eyebrow, /Pole control plane/);
-  assert.match(hero, /getHomeCopy\(locale\)/);
-  assert.match(hero, /<ArchitectureFlow locale=\{locale\} \/>/);
-  assert.doesNotMatch(hero, /console-platform-metrics\.webp/);
-  assert.match(homepage, /console-platform-metrics\.webp/);
-  assert.match(homepage, /console-governance-scope\.webp/);
-  assert.match(homeCopy.release.title, /变更不是保存/);
-  assert.match(homeCopy.agent.title, /Agent 准备变更/);
-  assert.match(homeCopy.agent.copy, /只保存编辑态草稿/);
-  assert.match(homeCopy.systemStrip.items[2].label, /Rust \/ Thin SDK、Pole Sidecar 与 Proxy Mesh \/ Gateway/);
-  assert.match(homeCopy.scope.items[2].detail, /Thin SDK/);
-  assert.match(homepage, /getGovernanceDomains\(locale\)/);
+  assert.equal(productCopy.hero.title, 'AI Native 服务治理，');
+  assert.equal(productCopy.hero.accent, '一个控制面。');
+  assert.match(productCopy.hero.lede, /AI Native/);
+  assert.match(productCopy.hero.primary.label, /阅读文档/);
+  assert.match(productCopy.howItWorks.heading.title, /变更不是保存/);
+  assert.match(productCopy.cta.title, /从文档开始/);
+  assert.match(landing, /ProductEvidenceCarousel/);
+  assert.doesNotMatch(landing, /console-governance-scope\.webp/);
+  assert.match(landing, /ArchitectureFlow/);
+  assert.match(landing, /showArchitecture/);
+  assert.match(landing, /productTopics\.map/);
+  assert.match(readFileSync('src/lib/site-copy/product.ts', 'utf8'), /console-carousel-metrics\.webp/);
+  assert.match(readFileSync('src/lib/site-copy/product.ts', 'utf8'), /console-carousel-governance\.webp/);
   assert.match(globalCss, /--page:\s*#fafafa/);
   assert.match(globalCss, /--font-plex-sans/);
   assert.match(layout, /IBM_Plex_Sans/);
   assert.doesNotMatch(globalCss, /#f2f0eb/);
-  assert.doesNotMatch(`${hero}\n${homepage}`, /console-preview|agent-workflow|fact-rail|get_config_file/);
-  assert.doesNotMatch(`${hero}\n${homepage}`, />24<|>186<|22 正常|3 隔离|canary 20%/);
-  assert.doesNotMatch(homepage, /负载均衡、超时、重试、节点熔断、故障转移/);
-  assert.doesNotMatch(homeCss, /:root\s*{/);
+  assert.doesNotMatch(landing, /console-preview|agent-workflow|fact-rail|get_config_file/);
+  assert.doesNotMatch(landing, />24<|>186<|22 正常|3 隔离|canary 20%/);
   assert.doesNotMatch(globalCss, /aurora|glass-card|backdrop-filter|radial-gradient/);
+  assert.match(homeCopy.systemStrip.items[2].label, /Rust \/ Thin SDK、Pole Sidecar 与 Proxy Mesh \/ Gateway/);
   assert.match(architectureDiagramCss, /:global\(html\.dark\) \.nodeLabel/);
   assert.match(architectureDiagramCss, /:global\(html\.dark\) \.nodeMeta/);
   assert.match(architectureDiagramCss, /:global\(html\.dark\) \.planeLabel/);
@@ -463,6 +466,13 @@ test('website product screenshots are checked-in optimized assets', () => {
     'public/product/console-platform-metrics.webp',
     'public/product/console-governance-scope.webp',
     'public/product/console-agent-readiness.webp',
+    'public/product/console-carousel-metrics.webp',
+    'public/product/console-carousel-governance.webp',
+    'public/product/console-carousel-services.webp',
+    'public/product/console-carousel-config.webp',
+    'public/product/console-carousel-mcp.webp',
+    'public/product/console-carousel-a2a.webp',
+    'public/product/console-carousel-agent.webp',
   ];
 
   for (const asset of assets) {
@@ -542,7 +552,7 @@ test('docs expose complete and symmetric Chinese and English content', () => {
     'utf8',
   );
 
-  assert.equal(chinese.length, 89);
+  assert.equal(chinese.length, 95);
   assert.deepEqual(english, chinese);
   assert.doesNotMatch(englishContent, /\p{Script=Han}/u);
   assert.match(sourceConfig, /languages: \[\.\.\.docsLocales\]/);
@@ -820,7 +830,19 @@ test('docs layout uses fumadocs section switcher for docs api blog reports and d
         name: '组件',
         children: [
           { type: 'page', name: 'Rust SDK', url: '/docs/components/rust-sdk' },
-          { type: 'page', name: 'Thin SDK', url: '/docs/components/thin-sdk' },
+          {
+            type: 'folder',
+            name: 'Thin SDK',
+            index: { type: 'page', name: 'Thin SDK', url: '/docs/components/thin-sdk' },
+            children: [
+              { type: 'page', name: 'Go Thin SDK', url: '/docs/components/thin-sdk/go' },
+              { type: 'page', name: 'Java Thin SDK', url: '/docs/components/thin-sdk/java' },
+              { type: 'page', name: 'Python Thin SDK', url: '/docs/components/thin-sdk/python' },
+              { type: 'page', name: 'Node.js Thin SDK', url: '/docs/components/thin-sdk/nodejs' },
+              { type: 'page', name: 'C++ Thin SDK', url: '/docs/components/thin-sdk/cpp' },
+              { type: 'page', name: 'C# Thin SDK', url: '/docs/components/thin-sdk/csharp' },
+            ],
+          },
           { type: 'page', name: 'Kubernetes Controller', url: '/docs/components/kubernetes-controller' },
           { type: 'page', name: 'Pole Sidecar', url: '/docs/components/pingora-sidecar' },
           { type: 'page', name: 'Specification', url: '/docs/components/specification' },

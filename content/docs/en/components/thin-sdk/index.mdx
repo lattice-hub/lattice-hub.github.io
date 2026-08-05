@@ -1,0 +1,50 @@
+---
+title: Thin SDK
+description: Multi-language Thin SDK overview—join local Pole Sidecar via Sidecar Session and TargetService v1.
+---
+
+Thin SDK is the multi-language access layer for **Pole Sidecar**. Unlike the Proxyless [Rust SDK](/en/docs/components/rust-sdk), applications do not talk to the control plane for full in-process governance. They open a local Sidecar Session, receive listener snapshots, and inject `TargetService v1` metadata so the Sidecar can govern and forward traffic.
+
+## Language guides
+
+| Language | Guide | Repository | Package coordinate |
+| --- | --- | --- | --- |
+| Go | [Go Thin SDK](/en/docs/components/thin-sdk/go) | [pole-client-go](https://github.com/lattice-hub/pole-client-go) | module `github.com/lattice-hub/pole-client-go` |
+| Java | [Java Thin SDK](/en/docs/components/thin-sdk/java) | [pole-client-java](https://github.com/lattice-hub/pole-client-java) | Maven `io.github.lattice-hub:pole-client-java` |
+| Python | [Python Thin SDK](/en/docs/components/thin-sdk/python) | [pole-client-python](https://github.com/lattice-hub/pole-client-python) | PyPI project name `pole-client-python` |
+| Node.js | [Node.js Thin SDK](/en/docs/components/thin-sdk/nodejs) | [pole-client-nodejs](https://github.com/lattice-hub/pole-client-nodejs) | npm `@lattice-hub/pole-client-nodejs` |
+| C++ | [C++ Thin SDK](/en/docs/components/thin-sdk/cpp) | [pole-client-cpp](https://github.com/lattice-hub/pole-client-cpp) | CMake package `PoleClientCpp` |
+| C# | [C# Thin SDK](/en/docs/components/thin-sdk/csharp) | [pole-client-csharp](https://github.com/lattice-hub/pole-client-csharp) | NuGet `LatticeHub.Pole.Client` |
+
+Each language page covers package coordinates, requirements, install steps, a minimal usage sample, and metadata conventions. Current publish status:
+
+| Language | Status | Pinned version |
+| --- | --- | --- |
+| Node.js | Published on npm | `0.2.1` |
+| C# | Published on NuGet | `0.1.0-ALPHA.46` |
+| Java | Maven Snapshot published (not a release) | `0.1.0-SNAPSHOT` |
+| Go | Go module (pseudo-version) | see language page |
+| Python | Not on PyPI yet | install from source |
+| C++ | No central registry | CMake from source |
+
+## Contract
+
+The contract source lives in [specification / thin-sdk](https://github.com/lattice-hub/specification/tree/main/thin-sdk). Current contract version is `2.0.0`:
+
+- Sidecar Session wire v1
+- TargetService wire v1 (`namespace` + `service` only)
+
+Legacy `TargetEnvelope v1` (contract `1.0.0`) is deprecated. Default bootstrap UDS: `/var/run/pole/sidecar/bootstrap.sock`, overridable with `POLE_SIDECAR_SOCKET`.
+
+## Capability boundary
+
+- Ships framework-independent contract cores: open Sidecar Session, receive listener snapshots, encode TargetService metadata
+- No HTTP / gRPC / Dubbo framework adapters
+- Business traffic still uses the original protocol against `127.0.0.1:<listener-port>`—not the bootstrap gRPC session
+- End-to-end compatibility still follows the [compatibility matrix](https://github.com/lattice-hub/specification/blob/main/thin-sdk/compatibility.json); docs must **not** claim production readiness
+
+## Next reading
+
+- [Pole Sidecar](/en/docs/components/pingora-sidecar)
+- [Integration options](/en/docs/what-is/access)
+- [Specification](/en/docs/components/specification)

@@ -1,0 +1,60 @@
+---
+title: C# Thin SDK
+description: "LatticeHub.Pole.Client 的 NuGet 包名、安装与 Sidecar Session / TargetService 用法。"
+---
+
+C# Thin SDK（仓库 [pole-client-csharp](https://github.com/lattice-hub/pole-client-csharp)）面向 .NET，经 UDS 建立 Sidecar Session，并编码 TargetService 元信息。
+
+## 官方包
+
+| 项 | 值 |
+| --- | --- |
+| 仓库 | [github.com/lattice-hub/pole-client-csharp](https://github.com/lattice-hub/pole-client-csharp) |
+| NuGet PackageId | [`LatticeHub.Pole.Client`](https://www.nuget.org/packages/LatticeHub.Pole.Client) |
+| 当前版本 | `0.1.0-ALPHA.46` |
+| 协议依赖 | NuGet `LatticeHub.Pole.Specification`（同版本线） |
+
+```bash
+dotnet add package LatticeHub.Pole.Client --version 0.1.0-ALPHA.46
+```
+
+或在项目文件中：
+
+```xml
+<PackageReference Include="LatticeHub.Pole.Client" Version="0.1.0-ALPHA.46" />
+```
+
+## 最小用法
+
+默认 UDS：`/var/run/pole/sidecar/bootstrap.sock`。可用 `SidecarSessionOptions.SocketPath` 或 `POLE_SIDECAR_SOCKET` 覆盖。
+
+```csharp
+await using var session = await SidecarSession.ConnectAsync();
+var grpcAddress = session.ListenerAddress(SidecarProtocol.Grpc);
+
+var target = new TargetService("default", "orders");
+var metadata = target.EncodeGrpcMetadata();
+
+// 将业务客户端指向 grpcAddress，并注入 metadata。
+```
+
+会话断开后快照立即失效；重连并收到完整首帧后恢复。
+
+## 元信息
+
+```text
+latticehub-target-namespace
+latticehub-target-service
+```
+
+`TargetService v1` 仅含 `namespace` 与 `service`。
+
+## 边界
+
+- 框架无关核心，不含 ASP.NET / gRPC 业务 adapter
+- 端到端兼容仍演进中，见 [Thin SDK 总览](/docs/components/thin-sdk)
+
+## 下一步
+
+- [Thin SDK 总览](/docs/components/thin-sdk)
+- [Pole Sidecar](/docs/components/pingora-sidecar)

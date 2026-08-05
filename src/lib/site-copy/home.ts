@@ -95,33 +95,32 @@ const homeCopy = {
       title: 'AI Native 服务治理，',
       titleAccent: '一个控制面。',
       lede:
-        '面向服务与 Agent 的云原生控制面。统一运行环境、发现、配置、治理与 AI 能力目录；变更先成版本再发布，SDK、Sidecar 与 Gateway 共享同一治理语义。',
-      primary: { href: '/docs', label: '开始阅读文档' },
-      secondary: { href: '/architecture', label: '查看完整架构' },
+        '面向服务与 Agent 的 AI Native 控制面。发现、配置、治理与能力目录共用同一版本化发布语义。',
+      primary: { href: '/docs', label: '阅读文档' },
+      secondary: { href: '/architecture', label: '查看架构' },
     },
     systemStrip: {
       ariaLabel: '产品能力概览',
       items: [
-        { index: '01 / PROTOCOLS', label: 'Polaris、Nacos、Apollo、Eureka 与 Envoy xDS v3' },
-        { index: '02 / RELEASE', label: '草稿、版本、灰度、发布与回滚' },
-        { index: '03 / RUNTIME', label: 'Rust / Thin SDK、Pole Sidecar 与 Proxy Mesh / Gateway' },
+        { index: 'PROTOCOLS', label: 'Polaris、Nacos、Apollo、Eureka 与 Envoy xDS v3' },
+        { index: 'RELEASE', label: '草稿、版本、灰度、发布与回滚' },
+        { index: 'RUNTIME', label: 'Rust / Thin SDK、Pole Sidecar 与 Proxy Mesh / Gateway' },
       ],
     },
     evidence: {
-      kicker: '01 / Product evidence',
-      title: '控制面应该可见，',
-      titleBreak: '而不是靠想象。',
+      kicker: '01 / Console',
+      title: '控制面状态，真实可见。',
       intro:
-        'Console 将控制面组件、接口指标与延迟分布放进同一视图，帮助操作者检查系统自身状态。它是控制面观测入口，不是独立的全链路观测平台。',
+        'Console 将组件、接口指标与延迟分布放进同一视图，用于检查控制面自身状态——不是独立的全链路观测平台。',
       imageAlt: 'Lattice.Hub Console 平台监控完整真实界面',
       captions: [
         { label: 'A', text: '当前 Console 真实界面 · Platform Metrics。' },
         { label: 'B', text: '界面证明能力存在；不把示意数字描述成线上运行指标。' },
       ],
-      action: { href: '/product', label: '了解完整产品' },
+      action: { href: '/product', label: '了解产品模型' },
     },
     release: {
-      kicker: '02 / Deterministic release',
+      kicker: '02 / Release',
       title: '变更不是保存，',
       titleAccent: '是版本。',
       stepsAriaLabel: '发布语义',
@@ -133,7 +132,7 @@ const homeCopy = {
       ],
     },
     governance: {
-      kicker: '03 / Governance semantics',
+      kicker: '03 / Governance',
       title: '规则的作用域，和规则本身一样重要。',
       introSuffix: '，共享一致的资源表达与发布语义。',
       scopeItems: [
@@ -150,7 +149,7 @@ const homeCopy = {
       title: 'Agent 准备变更，',
       titleBreak: '人决定发布。',
       copy:
-        'Pole Agent 可在登录用户权限内读取命名空间、MCP Registry 和配置文件，生成不可变提案与差异预览；确认后只保存编辑态草稿。',
+        '在登录用户权限内读取上下文、生成不可变提案与差异预览；确认后只保存编辑态草稿。',
       action: { href: '/agent', label: '了解 Pole Agent' },
       boundariesAriaLabel: 'Pole Agent 权限边界',
       boundaries: [
@@ -163,7 +162,7 @@ const homeCopy = {
         '发布、回滚与删除仍由确定性产品流程承担。当前写路径仅覆盖已有配置文件更新；治理规则写入、新建资源等仍未覆盖。',
     },
     scope: {
-      kicker: '05 / One environment',
+      kicker: '05 / Access',
       title: '不替换现有入口，统一背后的控制面。',
       intro: '从协议接入到运行时消费，每类资源都回到同一份版本化控制面视图。',
       items: [
@@ -186,10 +185,10 @@ const homeCopy = {
       ],
     },
     comparison: {
-      kicker: '06 / Why Pole',
+      kicker: '06 / Compare',
       title: '不是所有服务治理产品，都在同一层。',
       intro: '先判断是保留入口、迁移控制面，还是组合 Mesh 数据面，再决定 Pole 应该负责什么。',
-      action: { href: '/compare', label: '查看完整产品对比' },
+      action: { href: '/compare', label: '查看产品对比' },
       relationships: [
         {
           index: '01 / KEEP THE ENTRY',
@@ -212,17 +211,17 @@ const homeCopy = {
       ],
     },
     finalCta: {
-      eyebrow: 'Read the control plane',
-      title: '从一份确定的发布语义开始。',
+      eyebrow: 'Get started',
+      title: '从文档开始。',
       primary: { href: '/docs', label: '阅读文档' },
       secondary: {
         href: 'https://github.com/lattice-hub/pole-control-plane',
-        label: '查看 Pole Control Plane',
+        label: '查看源码',
       },
     },
     footer: {
       brand: 'Lattice.Hub',
-      tagline: 'Open source service governance control plane.',
+      tagline: 'Open source AI Native service governance control plane.',
       githubNote: 'Open source on GitHub.',
     },
   },
@@ -237,33 +236,32 @@ const homeCopy = {
       title: 'AI Native service governance.',
       titleAccent: 'One control plane.',
       lede:
-        'A cloud-native control plane for services and Agents. Unify runtime environments, discovery, configuration, governance, and AI capability catalogs; changes become versions before release, and SDKs, Sidecar, and Gateway share the same governance semantics.',
+        'An AI Native control plane for services and Agents. Discovery, configuration, governance, and capability catalogs share one versioned release model.',
       primary: { href: '/docs', label: 'Read the docs' },
-      secondary: { href: '/architecture', label: 'View full architecture' },
+      secondary: { href: '/architecture', label: 'View architecture' },
     },
     systemStrip: {
       ariaLabel: 'Product capability overview',
       items: [
-        { index: '01 / PROTOCOLS', label: 'Polaris, Nacos, Apollo, Eureka, and Envoy xDS v3' },
-        { index: '02 / RELEASE', label: 'Draft, version, canary, release, and rollback' },
-        { index: '03 / RUNTIME', label: 'Rust / Thin SDK, Pole Sidecar, and Proxy Mesh / Gateway' },
+        { index: 'PROTOCOLS', label: 'Polaris, Nacos, Apollo, Eureka, and Envoy xDS v3' },
+        { index: 'RELEASE', label: 'Draft, version, canary, release, and rollback' },
+        { index: 'RUNTIME', label: 'Rust / Thin SDK, Pole Sidecar, and Proxy Mesh / Gateway' },
       ],
     },
     evidence: {
-      kicker: '01 / Product evidence',
-      title: 'The control plane should be visible,',
-      titleBreak: 'not imagined.',
+      kicker: '01 / Console',
+      title: 'Control-plane state, visibly real.',
       intro:
-        'The Console puts control-plane components, API metrics, and latency distributions in one view so operators can inspect the system itself. It is the control plane’s own observability entry—not a standalone full-stack APM platform.',
+        'The Console puts components, API metrics, and latency distributions in one view for inspecting the control plane itself—not a standalone full-stack APM platform.',
       imageAlt: 'Full Lattice.Hub Console platform metrics screen',
       captions: [
         { label: 'A', text: 'Current Console screen · Platform Metrics.' },
         { label: 'B', text: 'Screens prove capability exists; illustrative numbers are not production metrics.' },
       ],
-      action: { href: '/product', label: 'Explore the full product' },
+      action: { href: '/product', label: 'Explore the product model' },
     },
     release: {
-      kicker: '02 / Deterministic release',
+      kicker: '02 / Release',
       title: 'Change is not a save—',
       titleAccent: 'it is a version.',
       stepsAriaLabel: 'Release semantics',
@@ -275,7 +273,7 @@ const homeCopy = {
       ],
     },
     governance: {
-      kicker: '03 / Governance semantics',
+      kicker: '03 / Governance',
       title: 'Rule scope matters as much as the rule itself.',
       introSuffix: ' share consistent resource expression and release semantics.',
       scopeItems: [
@@ -292,7 +290,7 @@ const homeCopy = {
       title: 'Agent prepares change;',
       titleBreak: 'humans decide release.',
       copy:
-        'Within signed-in user permissions, Pole Agent reads Namespaces, the MCP Registry, and configuration files, produces immutable proposals and diff previews, and after confirmation saves edit-state drafts only.',
+        'Within signed-in user permissions, read context, produce immutable proposals and diff previews, and after confirmation save edit-state drafts only.',
       action: { href: '/agent', label: 'Learn about Pole Agent' },
       boundariesAriaLabel: 'Pole Agent permission boundary',
       boundaries: [
@@ -305,7 +303,7 @@ const homeCopy = {
         'Release, rollback, and delete remain in deterministic product flows. The current write path covers updates to existing config files only; governance writes and new resources are not covered yet.',
     },
     scope: {
-      kicker: '05 / One environment',
+      kicker: '05 / Access',
       title: 'Keep existing entry points; unify the control plane behind them.',
       intro: 'From protocol access to runtime consumption, every resource type returns to the same versioned control-plane view.',
       items: [
@@ -328,10 +326,10 @@ const homeCopy = {
       ],
     },
     comparison: {
-      kicker: '06 / Why Pole',
+      kicker: '06 / Compare',
       title: 'Not every service governance product sits at the same layer.',
       intro: 'Decide whether you are keeping entry points, migrating the control plane, or composing a Mesh data plane—then decide what Pole should own.',
-      action: { href: '/compare', label: 'View full product comparison' },
+      action: { href: '/compare', label: 'Compare products' },
       relationships: [
         {
           index: '01 / KEEP THE ENTRY',
@@ -354,17 +352,17 @@ const homeCopy = {
       ],
     },
     finalCta: {
-      eyebrow: 'Read the control plane',
-      title: 'Start with deterministic release semantics.',
+      eyebrow: 'Get started',
+      title: 'Start with the docs.',
       primary: { href: '/docs', label: 'Read the docs' },
       secondary: {
         href: 'https://github.com/lattice-hub/pole-control-plane',
-        label: 'View Pole Control Plane',
+        label: 'View source',
       },
     },
     footer: {
       brand: 'Lattice.Hub',
-      tagline: 'Open source service governance control plane.',
+      tagline: 'Open source AI Native service governance control plane.',
       githubNote: 'Open source on GitHub.',
     },
   },

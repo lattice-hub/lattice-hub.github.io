@@ -108,10 +108,17 @@ export function SiteHeader() {
         <nav className="nav-links" aria-label={ui.primaryNav}>
           {ui.nav.map((item) => {
             const href = localizeHref(item.href, siteLanguage.locale);
+            const active = isSiteNavActive(pathname, item.href);
+            const className = [
+              active ? 'active' : undefined,
+              item.href === '/docs' ? 'nav-docs' : undefined,
+            ]
+              .filter(Boolean)
+              .join(' ') || undefined;
             return (
               <Link
-                aria-current={isSiteNavActive(pathname, item.href) ? 'page' : undefined}
-                className={isSiteNavActive(pathname, item.href) ? 'active' : undefined}
+                aria-current={active ? 'page' : undefined}
+                className={className}
                 href={href}
                 key={item.href}
               >
@@ -170,10 +177,17 @@ export function SiteHeader() {
       >
         {ui.nav.map((item) => {
           const href = localizeHref(item.href, siteLanguage.locale);
+          const active = isSiteNavActive(pathname, item.href);
+          const className = [
+            active ? 'active' : undefined,
+            item.href === '/docs' ? 'nav-docs' : undefined,
+          ]
+            .filter(Boolean)
+            .join(' ') || undefined;
           return (
             <Link
-              aria-current={isSiteNavActive(pathname, item.href) ? 'page' : undefined}
-              className={isSiteNavActive(pathname, item.href) ? 'active' : undefined}
+              aria-current={active ? 'page' : undefined}
+              className={className}
               href={href}
               key={item.href}
               onClick={() => closeDrawer()}

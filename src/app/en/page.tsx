@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { HomePageView } from '@/components/site/pages/HomePageView';
-import { getHomeCopy } from '@/lib/site-copy';
+import { ProductPageView } from '@/components/site/pages/ProductPageView';
+import { getProductCopy } from '@/lib/site-copy';
 
 export function generateMetadata(): Metadata {
-  const { metadata } = getHomeCopy('en');
+  const { metadata } = getProductCopy('en');
   return metadata;
 }
 
 export default function Page() {
-  return <HomePageView locale="en" />;
+  return <ProductPageView locale="en" showArchitecture />;
 }

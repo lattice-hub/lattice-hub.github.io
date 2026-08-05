@@ -16,7 +16,7 @@ Use this page to align on product language before reading guides or principles. 
 | Console | Platform UI; can run in-process (`--mode all`) or separately (`--mode console`). |
 | Pole Agent | Conversational Console workspace. Reads via allowlisted MCP tools; confirmed config writes become drafts only. |
 | Rust SDK | Proxyless client that consumes discovery, configuration, and governance views. |
-| Thin SDK | Multi-language Sidecar contract clients (Go / Java / Python / Node.js) that encode TargetEnvelope v1—not a full Proxyless governance SDK. |
+| Thin SDK | Multi-language Sidecar contract clients (Go / Java / Python / Node.js / C++ / C#) via Sidecar Session and TargetService v1—not a full Proxyless governance SDK. |
 | Pole Sidecar | Pingora-based local data plane. Executes routing locally; facts still come from the control plane. |
 | Limiter | Distributed rate-limit runtime module in the Control Plane artifact; deploy via `limiter-server` / `full` modes instead of listing it as a separate ecosystem component. |
 | Kubernetes Controller | Syncs Kubernetes Services/annotations and can inject the Sidecar. |

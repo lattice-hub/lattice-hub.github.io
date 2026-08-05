@@ -64,7 +64,7 @@ export type CapabilityPillar = {
 };
 
 export const siteNav: SiteNavItem[] = [
-  { label: '产品', href: '/product' },
+  { label: '产品', href: '/' },
   { label: '组件', href: '/components' },
   { label: '文档', href: '/docs' },
 ];
@@ -104,13 +104,14 @@ export function isSiteNavActive(pathname: string, href: string): boolean {
   const normalizedPath = pathname
     .replace(/\/+$/, '')
     .replace(/^\/en(?=\/|$)/, '') || '/';
-  const productAliases = ['/architecture', '/governance', '/agent', '/compare'];
-  const isProductTopic = productAliases.some(
+  const productAliases = ['/architecture', '/governance', '/agent', '/compare', '/product'];
+  const isProductSurface = productAliases.some(
     (topic) => normalizedPath === topic || normalizedPath.startsWith(`${topic}/`),
   );
 
-  if (href === '/product' && isProductTopic) {
-    return true;
+  // Product lives at `/` (landing). Keep it active on product topic pages too.
+  if (href === '/') {
+    return normalizedPath === '/' || isProductSurface;
   }
 
   return (
@@ -221,8 +222,11 @@ export const componentGroups: ComponentGroup[] = [
     name: 'Thin SDK',
     href: '/docs/components/thin-sdk',
     summary:
-      '面向 Go、Java、Python 与 Node.js 的 Thin SDK 核心，按 TargetEnvelope v1 编码本地 Sidecar 目标信封。',
-    details: ['Go / Java / Python / Node.js', '契约核心已交付；Sidecar 端到端仍演进'],
+      '面向 Go、Java、Python、Node.js、C++ 与 C# 的 Thin SDK 核心，经 Sidecar Session 与 TargetService v1 接入本地 Sidecar。',
+    details: [
+      'Go / Java / Python / Node.js / C++ / C#',
+      'Node.js 0.2.1 · C# 0.1.0-ALPHA.46 · Java 0.1.0-SNAPSHOT',
+    ],
     icon: Layers,
   },
   {
@@ -362,8 +366,11 @@ const componentGroupsEn: LocalizedComponentGroup[] = componentGroups.map((group,
     },
     {
       summary:
-        'Framework-independent Thin SDK cores for Go, Java, Python, and Node.js that encode TargetEnvelope v1 for the local Pole Sidecar.',
-      details: ['Go / Java / Python / Node.js', 'Contract cores ship today; Sidecar e2e still evolving'],
+        'Framework-independent Thin SDK cores for Go, Java, Python, Node.js, C++, and C# that join the local Pole Sidecar via Sidecar Session and TargetService v1.',
+      details: [
+        'Go / Java / Python / Node.js / C++ / C#',
+        'Node.js 0.2.1 · C# 0.1.0-ALPHA.46 · Java 0.1.0-SNAPSHOT',
+      ],
     },
     {
       summary: 'Connects Kubernetes to the control plane; syncs Service, Endpoints, Namespace, and ConfigMap.',
@@ -396,7 +403,7 @@ const componentPageActionsEn: LocalizedComponentPageAction[] = [
 ];
 
 const siteNavEn: SiteNavItem[] = [
-  { label: 'Product', href: '/product' },
+  { label: 'Product', href: '/' },
   { label: 'Components', href: '/components' },
   { label: 'Docs', href: '/docs' },
 ];

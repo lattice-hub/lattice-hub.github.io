@@ -1,0 +1,95 @@
+---
+title: Java Thin SDK
+description: "pole-client-java 的 Maven 坐标、安装与 Sidecar Session / TargetService 用法。"
+---
+
+Java Thin SDK（仓库 [pole-client-java](https://github.com/lattice-hub/pole-client-java)）面向 Java 17+，经 gRPC over UDS 与本地 Pole Sidecar 建立会话。
+
+## 官方包
+
+| 项 | 值 |
+| --- | --- |
+| 仓库 | [github.com/lattice-hub/pole-client-java](https://github.com/lattice-hub/pole-client-java) |
+| Maven coordinates | `io.github.lattice-hub:pole-client-java` |
+| 当前版本 | `0.1.0-SNAPSHOT`（Central Portal Snapshots；非 release） |
+| 要求 | Java 17+；Maven 3.8+；Unix-like（支持 JDK UDS）；Windows 不在 v1 范围 |
+
+消费 Snapshot 需启用 Central Portal Snapshots 仓库：
+
+```xml
+<repositories>
+  <repository>
+    <id>central-portal-snapshots</id>
+    <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+    <releases>
+      <enabled>false</enabled>
+    </releases>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+  </repository>
+</repositories>
+
+<dependency>
+  <groupId>io.github.lattice-hub</groupId>
+  <artifactId>pole-client-java</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
+
+## 最小用法
+
+默认 UDS：`/var/run/pole/sidecar/bootstrap.sock`，可用 `POLE_SIDECAR_SOCKET` 覆盖。
+
+```java
+import io.github.latticehub.client.SidecarBootstrapClient;
+import io.github.latticehub.client.SidecarProtocol;
+import io.github.latticehub.client.TargetService;
+import io.github.latticehub.client.TargetServiceMetadata;
+
+import java.net.InetSocketAddress;
+import java.util.Map;
+
+try (SidecarBootstrapClient sidecar = SidecarBootstrapClient.connect()) {
+    InetSocketAddress grpcAddress = sidecar.listenerAddress(SidecarProtocol.GRPC);
+
+    TargetService target = TargetService.builder()
+            .namespace("default")
+            .service("orders")
+            .build();
+    Map<String, String> metadata = TargetServiceMetadata.encode(target);
+
+    // 将业务 gRPC / HTTP 客户端指向 grpcAddress（或对应协议 listener），并注入 metadata。
+}
+```
+
+可按启动预算调整初始化超时与退避：
+
+```java
+SidecarBootstrapClient sidecar = SidecarBootstrapClient.builder()
+        .initializationTimeout(Duration.ofSeconds(20))
+        .initialBackoff(Duration.ofMillis(100))
+        .maxBackoff(Duration.ofSeconds(2))
+        .connect();
+```
+
+## 元信息
+
+规范键：
+
+```text
+latticehub-target-namespace
+latticehub-target-service
+```
+
+`TargetServiceMetadata.encode` 会按大小写不敏感删除调用方同名内部字段后再写入权威值。
+
+## 边界
+
+- 核心包不含 Spring / Dubbo / Thrift / HTTP client adapter
+- 端到端兼容仍演进中，见 [Thin SDK 总览](/docs/components/thin-sdk)
+
+## 下一步
+
+- [Thin SDK 总览](/docs/components/thin-sdk)
+- [Pole Sidecar](/docs/components/pingora-sidecar)

@@ -24,7 +24,7 @@
 - Server / Console 共登记 63 项类型化系统配置，其中 Agent 配置支持受控热更新，其他字段可能需要重启或由部署锁定。
 - 当前 Console 使用 React 18 与 Fluent UI v9，主品牌色为 `#0f6cbd`，并具备 light / dark 主题 token。
 - Limiter 源码与制品已并入 `pole-control-plane`；通过 `--mode limiter-server|full` 部署，不再作为独立生态组件列出。统一制品不等于强制同进程。
-- Thin SDK（Go / Java / Python / Node.js）交付 TargetEnvelope v1 契约核心，面向 Pole Sidecar；与 Rust Proxyless SDK 不是同一产品线。Sidecar 端到端 listener 仍按实现范围演进，不得写成生产就绪。
+- Thin SDK（Go / Java / Python / Node.js / C++ / C#）交付 Sidecar Session v1 + TargetService v1 契约核心，面向 Pole Sidecar；与 Rust Proxyless SDK 不是同一产品线。旧版 TargetEnvelope v1 已废弃。当前可引用包版本：Node.js npm `@lattice-hub/pole-client-nodejs@0.2.1`、C# NuGet `LatticeHub.Pole.Client` `0.1.0-ALPHA.46`、Java Maven Snapshot `io.github.lattice-hub:pole-client-java:0.1.0-SNAPSHOT`（需 Central Portal Snapshots）。Python / C++ 仍以源码安装为主。Sidecar 端到端兼容组合仍按实现范围演进，不得写成生产就绪。
 
 ## 首页禁止使用的断言
 

@@ -1,0 +1,70 @@
+---
+title: C++ Thin SDK
+description: "CMake package name, build/install, and Sidecar Session / TargetService usage for pole-client-cpp."
+---
+
+The C++ Thin SDK ([pole-client-cpp](https://github.com/lattice-hub/pole-client-cpp)) opens a Sidecar Session over UDS, receives HTTP / gRPC / Dubbo / Thrift listener snapshots, and encodes TargetService metadata.
+
+## Official package
+
+| Item | Value |
+| --- | --- |
+| Repository | [github.com/lattice-hub/pole-client-cpp](https://github.com/lattice-hub/pole-client-cpp) |
+| CMake package | `PoleClientCpp` |
+| Link target | `PoleClient::pole-client-cpp` |
+| Dependencies | Official gRPC via `CMAKE_PREFIX_PATH`; Specification pinned as a Git submodule |
+
+Install from source today:
+
+```bash
+git clone --recursive https://github.com/lattice-hub/pole-client-cpp.git
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/path/to/grpc
+cmake --build build
+ctest --test-dir build --output-on-failure
+cmake --install build
+```
+
+Consumers:
+
+```cmake
+find_package(PoleClientCpp CONFIG REQUIRED)
+target_link_libraries(your_target PRIVATE PoleClient::pole-client-cpp)
+```
+
+## Minimal usage
+
+Default UDS: `/var/run/pole/sidecar/bootstrap.sock`. Override with `SidecarSessionOptions.socket_path` or `POLE_SIDECAR_SOCKET`.
+
+```cpp
+#include <pole/client/sidecar_session.h>
+#include <pole/client/target_service.h>
+
+auto session = pole::client::SidecarSession::Connect();
+const auto grpc_address = session->ListenerAddress(pole::client::Protocol::kGrpc);
+
+const pole::client::TargetService target("default", "orders");
+const auto metadata = target.EncodeMetadata();
+
+// Point your business client at grpc_address and inject metadata.
+```
+
+Snapshots invalidate immediately when the session drops and recover after reconnect + a full first frame. The SDK does not hard-code business listener ports.
+
+## Metadata
+
+```text
+latticehub-target-namespace
+latticehub-target-service
+```
+
+`TargetService v1` has only `namespace` and `service`. Values use canonical UTF-8 `%HH` encoding.
+
+## Boundary
+
+- Framework-independent core with no business-framework adapters
+- End-to-end compatibility is still evolving—see the [Thin SDK overview](/en/docs/components/thin-sdk)
+
+## Next
+
+- [Thin SDK overview](/en/docs/components/thin-sdk)
+- [Pole Sidecar](/en/docs/components/pingora-sidecar)

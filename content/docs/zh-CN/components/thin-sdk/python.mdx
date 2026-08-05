@@ -1,0 +1,70 @@
+---
+title: Python Thin SDK
+description: "pole-client-python 包名、安装与 Sidecar Session / TargetService 用法。"
+---
+
+Python Thin SDK（仓库 [pole-client-python](https://github.com/lattice-hub/pole-client-python)）通过本机 UDS 上的 gRPC `OpenSession` 接收 Sidecar listener，并注入 `TargetService v1` 元信息。
+
+## 官方包
+
+| 项 | 值 |
+| --- | --- |
+| 仓库 | [github.com/lattice-hub/pole-client-python](https://github.com/lattice-hub/pole-client-python) |
+| 项目名 | `pole-client-python` |
+| import 包 | `pole_client` |
+| 要求 | Python 3.9–3.13；`grpcio>=1.71,<2`；`protobuf>=5.29,<6` |
+
+PyPI 正式发布前，从源码安装：
+
+```bash
+git clone https://github.com/lattice-hub/pole-client-python.git
+cd pole-client-python
+python -m pip install .
+```
+
+发布后：
+
+```bash
+python -m pip install pole-client-python
+```
+
+## 最小用法
+
+默认 UDS：`/var/run/pole/sidecar/bootstrap.sock`，仅可通过 `POLE_SIDECAR_SOCKET` 覆盖。
+
+```python
+from pole_client import ListenerProtocol, SidecarSession, TargetService
+
+session = SidecarSession().start()
+try:
+    grpc_endpoint = session.endpoint(ListenerProtocol.GRPC)
+    target = TargetService(namespace="default", service="orders")
+
+    http_headers = target.to_metadata({"traceparent": "00-..."})
+    grpc_metadata = target.to_grpc_metadata((("traceparent", "00-..."),))
+
+    # 将业务客户端连接到 grpc_endpoint，并传入对应 metadata / headers。
+finally:
+    session.close()
+```
+
+`endpoint(protocol)` 返回 `127.0.0.1:{port}`。会话断开时快照立即失效；adapter 应在 generation 变化或 `SidecarUnavailableError` 时废弃旧连接池。
+
+## 元信息
+
+```text
+latticehub-target-namespace
+latticehub-target-service
+```
+
+合并时会覆盖调用方伪造的同名字段；值使用 canonical UTF-8 `%HH` 编码。
+
+## 边界
+
+- 核心包不代理业务流量，不含框架 adapter
+- 端到端兼容仍演进中，见 [Thin SDK 总览](/docs/components/thin-sdk)
+
+## 下一步
+
+- [Thin SDK 总览](/docs/components/thin-sdk)
+- [Pole Sidecar](/docs/components/pingora-sidecar)

@@ -1,0 +1,60 @@
+---
+title: C# Thin SDK
+description: "NuGet package id, install steps, and Sidecar Session / TargetService usage for LatticeHub.Pole.Client."
+---
+
+The C# Thin SDK ([pole-client-csharp](https://github.com/lattice-hub/pole-client-csharp)) targets .NET. It opens a Sidecar Session over UDS and encodes TargetService metadata.
+
+## Official package
+
+| Item | Value |
+| --- | --- |
+| Repository | [github.com/lattice-hub/pole-client-csharp](https://github.com/lattice-hub/pole-client-csharp) |
+| NuGet PackageId | [`LatticeHub.Pole.Client`](https://www.nuget.org/packages/LatticeHub.Pole.Client) |
+| Current version | `0.1.0-ALPHA.46` |
+| Protocol dependency | NuGet `LatticeHub.Pole.Specification` (same version line) |
+
+```bash
+dotnet add package LatticeHub.Pole.Client --version 0.1.0-ALPHA.46
+```
+
+Or in the project file:
+
+```xml
+<PackageReference Include="LatticeHub.Pole.Client" Version="0.1.0-ALPHA.46" />
+```
+
+## Minimal usage
+
+Default UDS: `/var/run/pole/sidecar/bootstrap.sock`. Override with `SidecarSessionOptions.SocketPath` or `POLE_SIDECAR_SOCKET`.
+
+```csharp
+await using var session = await SidecarSession.ConnectAsync();
+var grpcAddress = session.ListenerAddress(SidecarProtocol.Grpc);
+
+var target = new TargetService("default", "orders");
+var metadata = target.EncodeGrpcMetadata();
+
+// Point your business client at grpcAddress and inject metadata.
+```
+
+Snapshots invalidate immediately when the session drops and recover after reconnect + a full first frame.
+
+## Metadata
+
+```text
+latticehub-target-namespace
+latticehub-target-service
+```
+
+`TargetService v1` has only `namespace` and `service`.
+
+## Boundary
+
+- Framework-independent core with no ASP.NET / business gRPC adapters
+- End-to-end compatibility is still evolving—see the [Thin SDK overview](/en/docs/components/thin-sdk)
+
+## Next
+
+- [Thin SDK overview](/en/docs/components/thin-sdk)
+- [Pole Sidecar](/en/docs/components/pingora-sidecar)

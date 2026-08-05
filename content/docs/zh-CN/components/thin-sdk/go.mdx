@@ -1,0 +1,89 @@
+---
+title: Go Thin SDK
+description: "pole-client-go 安装、包坐标与 Sidecar Session / TargetService 最小用法。"
+---
+
+Go Thin SDK（仓库 [pole-client-go](https://github.com/lattice-hub/pole-client-go)）是框架无关契约核心：经 UDS 建立 Sidecar Session，接收本地 listener，并编码 `TargetService v1` 元信息。
+
+## 官方包
+
+| 项 | 值 |
+| --- | --- |
+| 仓库 | [github.com/lattice-hub/pole-client-go](https://github.com/lattice-hub/pole-client-go) |
+| Go module | `github.com/lattice-hub/pole-client-go` |
+| 安装 | `go get github.com/lattice-hub/pole-client-go` |
+| 要求 | Go 1.22+；与 Sidecar 共享 UDS |
+
+## 安装
+
+```bash
+go get github.com/lattice-hub/pole-client-go
+```
+
+在 `go.mod` 中：
+
+```go
+require github.com/lattice-hub/pole-client-go v0.0.0-20260802050415-168166bbae61
+```
+
+若 proxy 尚未缓存模块，可直接：
+
+```bash
+git clone https://github.com/lattice-hub/pole-client-go.git
+cd pole-client-go && go test ./...
+```
+
+## 最小用法
+
+默认 bootstrap：`/var/run/pole/sidecar/bootstrap.sock`。可用 `BootstrapConfig.SocketPath` 或 `POLE_SIDECAR_SOCKET` 覆盖。
+
+```go
+client, err := pole.NewSidecarClient(ctx, pole.BootstrapConfig{
+	SDKVersion: "1.0.0",
+})
+if err != nil {
+	return err
+}
+defer client.Close()
+
+httpAddress, err := client.ListenerAddress(pole.ProtocolHTTP)
+if err != nil {
+	return err
+}
+
+target, err := pole.NewTargetService("default", "orders")
+if err != nil {
+	return err
+}
+
+request, err := http.NewRequest(http.MethodGet, "http://"+httpAddress+"/orders/42", nil)
+if err != nil {
+	return err
+}
+request.Header, err = target.EncodeHTTPHeaders(request.Header)
+```
+
+`httpAddress` 是 Sidecar 下发的 `127.0.0.1:port`，不是真实服务实例地址。不要缓存 listener；会话断开后 SDK 会使快照失效。
+
+## 元信息
+
+SDK 写入并覆盖同名键：
+
+```text
+latticehub-target-namespace
+latticehub-target-service
+```
+
+- HTTP / Thrift-over-HTTP：`EncodeHTTPHeaders`
+- gRPC：`EncodeGRPCMetadata`
+- Dubbo：`EncodeAttachments`
+
+## 边界
+
+- 不包含框架 adapter
+- 端到端 Sidecar 兼容组合仍演进中，见 [Thin SDK 总览](/docs/components/thin-sdk)
+
+## 下一步
+
+- [Thin SDK 总览](/docs/components/thin-sdk)
+- [Pole Sidecar](/docs/components/pingora-sidecar)

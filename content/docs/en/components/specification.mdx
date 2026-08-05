@@ -3,7 +3,7 @@ title: Specification
 description: Shared protobuf/gRPC contracts for Lattice Hub across discovery, configuration, governance, security, and MCP.
 ---
 
-Specification (`lattice-hub/specification`) is the cross-component contract layer. It defines messages, gRPC interfaces, and Thin SDK TargetEnvelope contracts; it does not run the control plane. `pole-control-plane` is the primary server implementation. Rust SDK, Thin SDK, Pole Sidecar, Controllers, and protocol adapters consume the same wire contract.
+Specification (`lattice-hub/specification`) is the cross-component contract layer. It defines messages, gRPC interfaces, and Thin SDK contracts (Sidecar Session / TargetService); it does not run the control plane. `pole-control-plane` is the primary server implementation. Rust SDK, Thin SDK, Pole Sidecar, Controllers, and protocol adapters consume the same wire contract.
 
 ![specification protocol map](/diagrams/specification-protocol-map.svg)
 

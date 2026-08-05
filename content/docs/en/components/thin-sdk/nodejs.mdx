@@ -1,0 +1,67 @@
+---
+title: Node.js Thin SDK
+description: "npm package name, install steps, and Sidecar Session / TargetService usage for @lattice-hub/pole-client-nodejs."
+---
+
+The Node.js Thin SDK ([pole-client-nodejs](https://github.com/lattice-hub/pole-client-nodejs)) is a framework-neutral contract core. It receives Sidecar listeners over gRPC on UDS and encodes `TargetService v1`.
+
+## Official package
+
+| Item | Value |
+| --- | --- |
+| Repository | [github.com/lattice-hub/pole-client-nodejs](https://github.com/lattice-hub/pole-client-nodejs) |
+| npm package | [`@lattice-hub/pole-client-nodejs`](https://www.npmjs.com/package/@lattice-hub/pole-client-nodejs) |
+| Current version | `0.2.1` |
+| Runtime deps | `@grpc/grpc-js`, `@grpc/proto-loader` |
+
+```bash
+npm install @lattice-hub/pole-client-nodejs@0.2.1
+```
+
+## Minimal usage
+
+```ts
+import {
+  connectSidecarSession,
+  createTargetService,
+  encodeTargetServiceMetadata
+} from "@lattice-hub/pole-client-nodejs";
+
+const sidecar = await connectSidecarSession();
+const target = createTargetService({
+  namespace: "production",
+  service: "catalog"
+});
+
+const headers = encodeTargetServiceMetadata(target, {
+  authorization: "Bearer token"
+});
+
+const response = await fetch(
+  `http://${sidecar.listenerAddress("http")}/catalog.Product/GetProduct`,
+  { method: "POST", headers, body: requestBody }
+);
+
+sidecar.close();
+```
+
+Default UDS: `/var/run/pole/sidecar/bootstrap.sock`, overridable with `POLE_SIDECAR_SOCKET`. Each Node.js worker should create and close its own session; do not cache `listenerAddress`.
+
+## Metadata
+
+```text
+latticehub-target-namespace
+latticehub-target-service
+```
+
+`encodeTargetServiceMetadata` returns a plain key/value object for HTTP / Thrift-over-HTTP headers. gRPC adapters should write `grpc.Metadata`; Dubbo adapters should write invocation attachments.
+
+## Boundary
+
+- No service discovery or instance selection
+- End-to-end compatibility is still evolving—see the [Thin SDK overview](/en/docs/components/thin-sdk)
+
+## Next
+
+- [Thin SDK overview](/en/docs/components/thin-sdk)
+- [Pole Sidecar](/en/docs/components/pingora-sidecar)

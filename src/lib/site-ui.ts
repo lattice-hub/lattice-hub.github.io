@@ -51,12 +51,12 @@ const siteUiCopy = {
       system: '自动',
     },
     nav: [
-      { label: '产品', href: '/product' },
+      { label: '产品', href: '/' },
       { label: '组件', href: '/components' },
       { label: '文档', href: '/docs' },
     ],
     footer: [
-      { label: '产品', href: '/product' },
+      { label: '产品', href: '/' },
       { label: '组件', href: '/components' },
       { label: '文档', href: '/docs' },
       { label: 'GitHub', href: GITHUB_ORGANIZATION_URL },
@@ -85,12 +85,12 @@ const siteUiCopy = {
       system: 'System',
     },
     nav: [
-      { label: 'Product', href: '/product' },
+      { label: 'Product', href: '/' },
       { label: 'Components', href: '/components' },
       { label: 'Docs', href: '/docs' },
     ],
     footer: [
-      { label: 'Product', href: '/product' },
+      { label: 'Product', href: '/' },
       { label: 'Components', href: '/components' },
       { label: 'Docs', href: '/docs' },
       { label: 'GitHub', href: GITHUB_ORGANIZATION_URL },

@@ -1,0 +1,50 @@
+---
+title: Thin SDK
+description: 多语言 Thin SDK 总览：经 Sidecar Session 与 TargetService v1 接入本地 Pole Sidecar。
+---
+
+Thin SDK 是面向 **Pole Sidecar** 的多语言接入层，与 [Rust SDK](/docs/components/rust-sdk) 的 Proxyless 路径不同：应用不直连控制面做完整治理消费，而是通过本机 Sidecar Session 获取 listener，并注入 `TargetService v1` 元信息，由本地 Sidecar 执行治理与转发。
+
+## 语言文档
+
+| 语言 | 使用文档 | 仓库 | 官方包坐标 |
+| --- | --- | --- | --- |
+| Go | [Go Thin SDK](/docs/components/thin-sdk/go) | [pole-client-go](https://github.com/lattice-hub/pole-client-go) | module `github.com/lattice-hub/pole-client-go` |
+| Java | [Java Thin SDK](/docs/components/thin-sdk/java) | [pole-client-java](https://github.com/lattice-hub/pole-client-java) | Maven `io.github.lattice-hub:pole-client-java` |
+| Python | [Python Thin SDK](/docs/components/thin-sdk/python) | [pole-client-python](https://github.com/lattice-hub/pole-client-python) | PyPI 项目名 `pole-client-python` |
+| Node.js | [Node.js Thin SDK](/docs/components/thin-sdk/nodejs) | [pole-client-nodejs](https://github.com/lattice-hub/pole-client-nodejs) | npm `@lattice-hub/pole-client-nodejs` |
+| C++ | [C++ Thin SDK](/docs/components/thin-sdk/cpp) | [pole-client-cpp](https://github.com/lattice-hub/pole-client-cpp) | CMake package `PoleClientCpp` |
+| C# | [C# Thin SDK](/docs/components/thin-sdk/csharp) | [pole-client-csharp](https://github.com/lattice-hub/pole-client-csharp) | NuGet `LatticeHub.Pole.Client` |
+
+各语言页包含：包坐标、环境要求、安装、最小用法与元信息约定。当前发布状态：
+
+| 语言 | 状态 | 固化版本 |
+| --- | --- | --- |
+| Node.js | npm 已发布 | `0.2.1` |
+| C# | NuGet 已发布 | `0.1.0-ALPHA.46` |
+| Java | Maven Snapshot 已发布（非 release） | `0.1.0-SNAPSHOT` |
+| Go | Go module（pseudo-version） | 见语言页 |
+| Python | 尚未上 PyPI | 源码安装 |
+| C++ | 无中央包仓 | CMake 源码构建 |
+
+## 契约
+
+契约源在 [specification / thin-sdk](https://github.com/lattice-hub/specification/tree/main/thin-sdk)。当前契约版本为 `2.0.0`：
+
+- Sidecar Session wire v1
+- TargetService wire v1（仅 `namespace` + `service`）
+
+旧版 `TargetEnvelope v1`（契约 `1.0.0`）已废弃。默认 bootstrap UDS：`/var/run/pole/sidecar/bootstrap.sock`，可用环境变量 `POLE_SIDECAR_SOCKET` 覆盖。
+
+## 能力边界
+
+- 交付框架无关契约核心：建立 Sidecar Session、接收 listener 快照、编码 TargetService 元信息
+- 不绑定具体 HTTP / gRPC / Dubbo 框架 adapter
+- 业务流量仍走原协议访问 `127.0.0.1:<listener-port>`，不经过 bootstrap gRPC
+- 端到端兼容组合仍按 [compatibility matrix](https://github.com/lattice-hub/specification/blob/main/thin-sdk/compatibility.json) 演进，**不得写成生产就绪**
+
+## 阅读下一步
+
+- [Pole Sidecar](/docs/components/pingora-sidecar)
+- [接入方式](/docs/what-is/access)
+- [Specification](/docs/components/specification)

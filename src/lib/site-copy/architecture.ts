@@ -101,7 +101,7 @@ const architectureCopy = {
           name: 'Thin SDK',
           role: '多语言 Sidecar 契约客户端',
           detail:
-            '为 Go、Java、Python 与 Node.js 提供 TargetEnvelope v1 契约核心，面向本地 Pole Sidecar；当前交付契约编码，端到端 listener 仍按实现范围演进。',
+            '为 Go、Java、Python、Node.js、C++ 与 C# 提供 Sidecar Session / TargetService v1 契约核心，面向本地 Pole Sidecar；当前交付契约核心，端到端兼容组合仍按实现范围演进。',
           href: '/docs/components/thin-sdk',
           action: '了解组件',
         },
@@ -223,7 +223,7 @@ const architectureCopy = {
           name: 'Thin SDK',
           role: 'Multi-language Sidecar contract client',
           detail:
-            'TargetEnvelope v1 contract cores for Go, Java, Python, and Node.js aimed at local Pole Sidecar. Contract encoding ships today; end-to-end Sidecar listeners still evolve by implementation scope.',
+            'Sidecar Session / TargetService v1 contract cores for Go, Java, Python, Node.js, C++, and C# aimed at local Pole Sidecar. Contract cores ship today; end-to-end Sidecar compatibility still evolves by implementation scope.',
           href: '/docs/components/thin-sdk',
           action: 'Learn about component',
         },

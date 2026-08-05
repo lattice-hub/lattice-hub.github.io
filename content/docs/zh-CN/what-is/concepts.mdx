@@ -16,7 +16,7 @@ description: Lattice Hub 核心名词、资源模型和发布语义的统一解�
 | Console | 平台团队的可视化入口，可与 Control Plane 同进程（`--mode all`）或独立部署（`--mode console`）。 |
 | Pole Agent | Console 内的对话工作模式。使用白名单 MCP 工具读取资源；配置写操作经预览、确认后只保存草稿。 |
 | Rust SDK | Proxyless 客户端，直接消费发现、配置与治理视图。 |
-| Thin SDK | 多语言 Sidecar 契约客户端（Go / Java / Python / Node.js），编码 TargetEnvelope v1；不是 Proxyless 完整治理 SDK。 |
+| Thin SDK | 多语言 Sidecar 契约客户端（Go / Java / Python / Node.js / C++ / C#），经 Sidecar Session 与 TargetService v1 接入；不是 Proxyless 完整治理 SDK。 |
 | Pole Sidecar | 基于 Pingora 的轻量数据面，在本地执行路由与转发，事实仍来自控制面。 |
 | Limiter | Control Plane 同仓的分布式限流运行时模块，可通过 `limiter-server` / `full` 模式部署，不再单独列为生态组件。 |
 | Kubernetes Controller | 把 Kubernetes Service / annotation 同步到控制面，并支持 Sidecar 注入。 |

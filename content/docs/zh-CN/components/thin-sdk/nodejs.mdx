@@ -1,0 +1,67 @@
+---
+title: Node.js Thin SDK
+description: "@lattice-hub/pole-client-nodejs 的 npm 包名、安装与 Sidecar Session / TargetService 用法。"
+---
+
+Node.js Thin SDK（仓库 [pole-client-nodejs](https://github.com/lattice-hub/pole-client-nodejs)）提供框架无关契约核心：经 gRPC over UDS 接收 Sidecar listener，并编码 `TargetService v1`。
+
+## 官方包
+
+| 项 | 值 |
+| --- | --- |
+| 仓库 | [github.com/lattice-hub/pole-client-nodejs](https://github.com/lattice-hub/pole-client-nodejs) |
+| npm 包名 | [`@lattice-hub/pole-client-nodejs`](https://www.npmjs.com/package/@lattice-hub/pole-client-nodejs) |
+| 当前版本 | `0.2.1` |
+| 运行时依赖 | `@grpc/grpc-js`、`@grpc/proto-loader` |
+
+```bash
+npm install @lattice-hub/pole-client-nodejs@0.2.1
+```
+
+## 最小用法
+
+```ts
+import {
+  connectSidecarSession,
+  createTargetService,
+  encodeTargetServiceMetadata
+} from "@lattice-hub/pole-client-nodejs";
+
+const sidecar = await connectSidecarSession();
+const target = createTargetService({
+  namespace: "production",
+  service: "catalog"
+});
+
+const headers = encodeTargetServiceMetadata(target, {
+  authorization: "Bearer token"
+});
+
+const response = await fetch(
+  `http://${sidecar.listenerAddress("http")}/catalog.Product/GetProduct`,
+  { method: "POST", headers, body: requestBody }
+);
+
+sidecar.close();
+```
+
+默认 UDS：`/var/run/pole/sidecar/bootstrap.sock`，可用 `POLE_SIDECAR_SOCKET` 覆盖。每个 Node.js worker 应创建并关闭自己的 session；不要缓存 `listenerAddress`。
+
+## 元信息
+
+```text
+latticehub-target-namespace
+latticehub-target-service
+```
+
+`encodeTargetServiceMetadata` 返回普通键值对象，可用于 HTTP / Thrift-over-HTTP Header；gRPC adapter 写入 `grpc.Metadata`，Dubbo adapter 写入 invocation attachment。
+
+## 边界
+
+- 不做服务发现或实例选址
+- 端到端兼容仍演进中，见 [Thin SDK 总览](/docs/components/thin-sdk)
+
+## 下一步
+
+- [Thin SDK 总览](/docs/components/thin-sdk)
+- [Pole Sidecar](/docs/components/pingora-sidecar)

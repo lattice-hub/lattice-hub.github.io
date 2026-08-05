@@ -7,6 +7,7 @@ export function generateMetadata(): Metadata {
   return metadata;
 }
 
+/** Legacy `/en/product` URL renders the same product landing as `/en`. */
 export default function Page() {
-  return <ProductPageView locale="en" />;
+  return <ProductPageView locale="en" showArchitecture />;
 }

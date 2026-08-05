@@ -13,8 +13,8 @@
 
 .hero {
   display: block;
-  min-height: 920px;
-  padding-block: 78px 80px;
+  min-height: 820px;
+  padding-block: 64px 56px;
 }
 
 .heroCopy {
@@ -29,19 +29,19 @@
 .sectionKicker,
 .systemStrip article > span,
 .releaseSteps article > span {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: .18em;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .16em;
   text-transform: uppercase;
 }
 
 .eyebrow {
   grid-column: 1;
   grid-row: 1;
-  margin: 0 0 26px;
-  color: var(--text-soft);
-  letter-spacing: .24em;
+  margin: 0 0 22px;
+  color: var(--brand);
+  letter-spacing: .18em;
 }
 
 .hero h1 {
@@ -70,11 +70,11 @@
 .heroLede {
   grid-column: 2;
   grid-row: 2;
-  max-width: 500px;
+  max-width: 460px;
   margin: 0;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 17px;
-  line-height: 1.72;
+  line-height: 1.65;
   text-wrap: pretty;
 }
 
@@ -116,13 +116,15 @@
 }
 
 .buttonPrimary {
-  background: var(--ink);
-  color: var(--on-ink);
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
 }
 
 .buttonPrimary:hover {
   border-color: var(--brand-hover);
   background: var(--brand-hover);
+  color: var(--on-brand);
 }
 
 .buttonPrimary:active {
@@ -153,16 +155,16 @@
 .heroVisual {
   position: relative;
   min-width: 0;
-  margin-top: 54px;
+  margin-top: 48px;
   animation-delay: 90ms;
 }
 
 .productFrame {
   overflow: hidden;
-  border: 1px solid var(--frame-border);
-  border-radius: 3px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
   background: var(--surface);
-  box-shadow: 0 28px 70px var(--shadow), 0 2px 8px var(--shadow-soft);
+  box-shadow: 0 12px 32px var(--shadow-soft);
 }
 
 .productFrame img {
@@ -182,9 +184,9 @@
 }
 
 .systemStrip article {
-  min-height: 148px;
-  border-right: 1px solid var(--border-strong);
-  padding: 32px 40px 34px 0;
+  min-height: 120px;
+  border-right: 1px solid var(--border);
+  padding: 28px 36px 30px 0;
 }
 
 .systemStrip article + article {
@@ -197,8 +199,8 @@
 
 .systemStrip article > span {
   display: block;
-  margin-bottom: 17px;
-  color: var(--text-soft);
+  margin-bottom: 14px;
+  color: var(--brand);
 }
 
 .systemStrip strong {
@@ -209,21 +211,21 @@
 }
 
 .section {
-  padding-block: 150px;
+  padding-block: 112px;
 }
 
 .sectionHead {
   display: grid;
   grid-template-columns: .72fr 1.28fr;
-  gap: 76px;
+  gap: 64px;
   align-items: start;
-  margin-bottom: 76px;
+  margin-bottom: 56px;
 }
 
 .sectionKicker {
   margin: 8px 0 0;
-  color: var(--text-soft);
-  letter-spacing: .22em;
+  color: var(--brand);
+  letter-spacing: .16em;
 }
 
 .section h2,
@@ -637,7 +639,7 @@
 }
 
 .finalCta {
-  padding-block: 154px;
+  padding-block: 112px;
   background: var(--brand);
   color: var(--on-brand);
 }

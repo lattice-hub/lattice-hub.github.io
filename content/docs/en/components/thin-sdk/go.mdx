@@ -1,0 +1,89 @@
+---
+title: Go Thin SDK
+description: "Install pole-client-go and use Sidecar Session / TargetService with the official Go module."
+---
+
+The Go Thin SDK ([pole-client-go](https://github.com/lattice-hub/pole-client-go)) is a framework-independent contract core. It opens a Sidecar Session over UDS, receives local listeners, and encodes `TargetService v1` metadata.
+
+## Official package
+
+| Item | Value |
+| --- | --- |
+| Repository | [github.com/lattice-hub/pole-client-go](https://github.com/lattice-hub/pole-client-go) |
+| Go module | `github.com/lattice-hub/pole-client-go` |
+| Install | `go get github.com/lattice-hub/pole-client-go` |
+| Requirements | Go 1.22+; shared UDS with Sidecar |
+
+## Install
+
+```bash
+go get github.com/lattice-hub/pole-client-go
+```
+
+In `go.mod`:
+
+```go
+require github.com/lattice-hub/pole-client-go v0.0.0-20260802050415-168166bbae61
+```
+
+If the module proxy has not cached it yet:
+
+```bash
+git clone https://github.com/lattice-hub/pole-client-go.git
+cd pole-client-go && go test ./...
+```
+
+## Minimal usage
+
+Default bootstrap: `/var/run/pole/sidecar/bootstrap.sock`. Override with `BootstrapConfig.SocketPath` or `POLE_SIDECAR_SOCKET`.
+
+```go
+client, err := pole.NewSidecarClient(ctx, pole.BootstrapConfig{
+	SDKVersion: "1.0.0",
+})
+if err != nil {
+	return err
+}
+defer client.Close()
+
+httpAddress, err := client.ListenerAddress(pole.ProtocolHTTP)
+if err != nil {
+	return err
+}
+
+target, err := pole.NewTargetService("default", "orders")
+if err != nil {
+	return err
+}
+
+request, err := http.NewRequest(http.MethodGet, "http://"+httpAddress+"/orders/42", nil)
+if err != nil {
+	return err
+}
+request.Header, err = target.EncodeHTTPHeaders(request.Header)
+```
+
+`httpAddress` is the Sidecar loopback `127.0.0.1:port`, not a real instance address. Do not cache listeners; the SDK invalidates the snapshot when the session drops.
+
+## Metadata
+
+The SDK writes and overwrites these keys:
+
+```text
+latticehub-target-namespace
+latticehub-target-service
+```
+
+- HTTP / Thrift-over-HTTP: `EncodeHTTPHeaders`
+- gRPC: `EncodeGRPCMetadata`
+- Dubbo: `EncodeAttachments`
+
+## Boundary
+
+- No framework adapters
+- End-to-end Sidecar compatibility is still evolving—see the [Thin SDK overview](/en/docs/components/thin-sdk)
+
+## Next
+
+- [Thin SDK overview](/en/docs/components/thin-sdk)
+- [Pole Sidecar](/en/docs/components/pingora-sidecar)
