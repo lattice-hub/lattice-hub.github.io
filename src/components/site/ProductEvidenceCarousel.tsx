@@ -2,9 +2,11 @@
 
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './InteriorPage.module.css';
+
+const emptySubscribe = () => () => undefined;
 
 export type ProductEvidenceSlide = {
   src: string;
@@ -55,13 +57,9 @@ export function ProductEvidenceCarousel({
   const titleId = useId();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const slide = slides[index] ?? slides[0];
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (slides.length < 2 || paused || lightboxOpen) return undefined;
